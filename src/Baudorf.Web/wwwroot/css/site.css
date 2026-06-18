@@ -390,6 +390,62 @@ h1, h2, h3 {
 }
 
 /* ==========================================================================
+   Kontaktformular
+   ========================================================================== */
+
+.bd-kontakt-grid { display: grid; grid-template-columns: 1.3fr 0.9fr; gap: 3rem; align-items: start; }
+
+.bd-kontakt-objekt { background: var(--white); border: 1px solid var(--line); border-left: 3px solid var(--gold); border-radius: 4px; padding: 1rem 1.2rem; margin-bottom: 1.6rem; }
+.bd-kontakt-objekt strong { display: block; margin-top: 0.3rem; }
+
+.bd-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+.bd-form-field { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.2rem; }
+.bd-form-field label { font-size: 0.82rem; font-weight: 500; color: var(--ink); }
+.bd-form-field input,
+.bd-form-field select,
+.bd-form-field textarea {
+  font-family: inherit; font-size: 0.95rem; padding: 0.75rem 0.85rem;
+  border: 1px solid var(--line2, #DCD5C8); border-radius: 3px; background: var(--white); color: var(--ink);
+  width: 100%; transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+.bd-form-field textarea { resize: vertical; min-height: 120px; }
+.bd-form-field input:focus,
+.bd-form-field select:focus,
+.bd-form-field textarea:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(196,164,107,0.18); }
+.bd-form-field .field-validation-error { color: #9b2c2c; font-size: 0.82rem; }
+.bd-form-field input.input-validation-error,
+.bd-form-field textarea.input-validation-error,
+.bd-form-field select.input-validation-error { border-color: #c0564a; }
+
+.bd-validation-summary:not(:empty) { background: #fbeceb; border: 1px solid #e3b9b4; border-radius: 4px; padding: 0.8rem 1rem; margin-bottom: 1.2rem; color: #9b2c2c; font-size: 0.9rem; }
+.bd-validation-summary ul { margin: 0; padding-left: 1.1rem; }
+
+.bd-form-check { display: flex; gap: 0.6rem; align-items: flex-start; margin: 0.4rem 0 0.4rem; }
+.bd-form-check input { margin-top: 0.25rem; width: 16px; height: 16px; accent-color: var(--gold-dk); flex: 0 0 auto; }
+.bd-form-check label { font-size: 0.88rem; color: var(--stone); line-height: 1.5; }
+.bd-form-check a { color: var(--gold-dk); text-decoration: underline; }
+.bd-check-error { display: block; color: #9b2c2c; font-size: 0.82rem; margin-bottom: 1rem; }
+.bd-kontakt-form button[type="submit"] { margin-top: 1.4rem; }
+
+/* Honeypot — visuell entfernt, aber für Bots im DOM */
+.bd-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+/* Danke-Screen */
+.bd-thanks { background: var(--white); border: 1px solid var(--line); border-radius: 6px; padding: 3rem 2.5rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+.bd-thanks__mark { width: 56px; height: 56px; border-radius: 50%; background: var(--gold); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; }
+.bd-thanks h2 { margin: 0; }
+.bd-thanks p { color: var(--stone); max-width: 420px; margin: 0; }
+
+.bd-kontakt-actions { display: flex; gap: 0.7rem; margin-top: 0.4rem; }
+
+@media (max-width: 900px) {
+  .bd-kontakt-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  .bd-form-row { grid-template-columns: 1fr; }
+}
+
+/* ==========================================================================
    Admin
    ========================================================================== */
 

@@ -1,7 +1,9 @@
+using System.Threading.RateLimiting;
 using Baudorf.Web.Data;
 using Baudorf.Web.Models.Entities;
 using Baudorf.Web.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +37,21 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("AdminArea", p => p.RequireRole(Roles.Admin, Roles.Redakteur));
 });
 
+// --- Rate Limiting (Kontaktformular gegen Spam) ---
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy("kontakt", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 5,
+                Window = TimeSpan.FromMinutes(10),
+                QueueLimit = 0
+            }));
+});
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
@@ -52,6 +69,8 @@ else
 
 app.UseHttpsRedirection();
 app.UseRouting();
+
+app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseAuthorization();

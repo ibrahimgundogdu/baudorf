@@ -30,12 +30,12 @@
                 <a asp-controller="Home" asp-action="Index" asp-fragment="leistungen">Leistungen</a>
                 <a asp-controller="Home" asp-action="Index" asp-fragment="ueber-uns">Über uns</a>
                 <a asp-controller="Home" asp-action="Index" asp-fragment="insights">Insights</a>
-                <a asp-controller="Home" asp-action="Index" asp-fragment="kontakt">Kontakt</a>
+                <a asp-controller="Kontakt" asp-action="Index">Kontakt</a>
             </nav>
 
             <div class="bd-nav__actions">
                 <a class="bd-nav__account" asp-area="Identity" asp-page="/Account/Login">Mein Konto</a>
-                <a class="bd-btn bd-btn--gold bd-btn--sm" asp-controller="Home" asp-action="Index" asp-fragment="kontakt">Objekte anfragen</a>
+                <a class="bd-btn bd-btn--gold bd-btn--sm" asp-controller="Kontakt" asp-action="Index">Objekte anfragen</a>
                 <button class="bd-nav__burger" @@click="open = true" aria-label="Menü öffnen">
                     <span></span><span></span><span></span>
                 </button>
@@ -53,7 +53,7 @@
                 <a asp-controller="Home" asp-action="Index" asp-fragment="leistungen" @@click="open = false">Leistungen</a>
                 <a asp-controller="Home" asp-action="Index" asp-fragment="ueber-uns" @@click="open = false">Über uns</a>
                 <a asp-controller="Home" asp-action="Index" asp-fragment="insights" @@click="open = false">Insights</a>
-                <a asp-controller="Home" asp-action="Index" asp-fragment="kontakt" @@click="open = false">Kontakt</a>
+                <a asp-controller="Kontakt" asp-action="Index" @@click="open = false">Kontakt</a>
                 <a asp-area="Identity" asp-page="/Account/Login" @@click="open = false">Mein Konto</a>
             </nav>
         </div>

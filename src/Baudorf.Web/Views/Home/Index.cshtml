@@ -25,7 +25,7 @@
             außergewöhnliche Immobilien mit den richtigen Investoren. Still, wirkungsvoll, mit Stil.
         </p>
         <div class="bd-hero__cta">
-            <a class="bd-btn bd-btn--gold" asp-controller="Home" asp-action="Index" asp-fragment="kontakt">Objekte anfragen</a>
+            <a class="bd-btn bd-btn--gold" asp-controller="Kontakt" asp-action="Index">Objekte anfragen</a>
             <a class="bd-btn bd-btn--ghost" asp-controller="Home" asp-action="Index" asp-fragment="ueber-uns">Über uns</a>
         </div>
     </div>
@@ -233,7 +233,7 @@
             <h2>Empfehlen Sie uns — und <em class="bd-italic-accent">profitieren Sie.</em></h2>
             <p>Kennen Sie eine Immobilie oder einen Eigentümer? Reichen Sie Ihren Tipp diskret ein.</p>
         </div>
-        <a class="bd-btn bd-btn--gold" asp-controller="Home" asp-action="Index" asp-fragment="kontakt">Tipp einreichen &rarr;</a>
+        <a class="bd-btn bd-btn--gold" asp-controller="Kontakt" asp-action="Index">Tipp einreichen &rarr;</a>
     </div>
 </section>
 
@@ -253,8 +253,8 @@
             </ul>
         </div>
         <div class="bd-kontakt__cta" data-reveal>
-            <p>Ein vollständiges Kontaktformular folgt in Kürze. Bis dahin erreichen Sie uns direkt:</p>
-            <a class="bd-btn bd-btn--gold" href="mailto:andrea.krueger@baudorf.de">Kontakt aufnehmen &rarr;</a>
+            <p>Schreiben Sie uns über unser Kontaktformular — vertraulich und unverbindlich.</p>
+            <a class="bd-btn bd-btn--gold" asp-controller="Kontakt" asp-action="Index">Kontaktformular öffnen &rarr;</a>
             <a class="bd-btn bd-btn--outline" href="tel:+4901778387898">Andrea Krüger anrufen</a>
         </div>
     </div>
