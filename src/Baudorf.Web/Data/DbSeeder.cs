@@ -96,9 +96,9 @@ public static class DbSeeder
 
     private static async Task SeedPropertiesAsync(ApplicationDbContext db)
     {
-        if (await db.Properties.AnyAsync()) return;
-
-        db.Properties.AddRange(
+        // Idempotent pro Slug: neue Objekte werden bei jedem Start ergänzt, vorhandene bleiben unberührt.
+        var saat = new[]
+        {
             new Property
             {
                 Titel = "Faktor 20,7 — 40 Wohneinheiten · KfW 40 / QNG",
@@ -106,17 +106,18 @@ public static class DbSeeder
                 Art = PropertyKind.Kapitalanlage,
                 Status = PropertyStatus.OffMarket,
                 Region = "NRW",
-                Land = "Deutschland",
                 Wohnflaeche = 2809,
                 Grundstuecksflaeche = 2940,
                 Baujahr = 2027,
                 Einheiten = 40,
                 Faktor = 20.7m,
+                RenditeProzent = 4.8m,
                 Kaufpreis = 9_750_000m,
                 Zustand = "Neubau",
                 Energieklasse = "A+",
-                Beschreibung = "Hochwertiges Neubauprojekt mit 40 Wohneinheiten nach KfW 40 / QNG-Standard. " +
-                               "Details für vorgemerkte Investoren nach Freigabe.",
+                Beschreibung = "Hochwertiges Neubauprojekt mit 40 Wohneinheiten nach KfW 40 / QNG-Standard.\n" +
+                               "Nachhaltige Bauweise, attraktiver Faktor, langfristige Wertstabilität.\n" +
+                               "Vollständige Unterlagen für vorgemerkte Investoren nach Freigabe.",
                 IstOffMarket = true,
                 IstFeatured = true,
                 IstVeroeffentlicht = true,
@@ -129,18 +130,107 @@ public static class DbSeeder
                 Art = PropertyKind.Investment,
                 Status = PropertyStatus.Verfuegbar,
                 Region = "Herne, NRW",
-                Land = "Deutschland",
                 Grundstuecksflaeche = 7565,
                 Baujahr = 2023,
                 Einheiten = 80,
+                Faktor = 19.2m,
+                Kaufpreis = 18_400_000m,
                 Zustand = "Neubau",
                 Energieklasse = "A",
-                Beschreibung = "Moderne Senioreneinrichtung mit 80 stationären Plätzen — langfristig vermietet, " +
-                               "institutionelle Kapitalanlage.",
+                Beschreibung = "Moderne Senioreneinrichtung mit 80 stationären Plätzen.\n" +
+                               "Langfristiger Pachtvertrag mit etabliertem Betreiber — institutionelle Kapitalanlage.",
                 IstOffMarket = false,
                 IstFeatured = true,
                 IstVeroeffentlicht = true,
                 MetaTitle = "Pflegeimmobilie Herne — 80 Plätze"
-            });
+            },
+            new Property
+            {
+                Titel = "Wohn- und Geschäftshaus in zentraler Lage",
+                Slug = "wohn-geschaeftshaus-wuppertal-zentrum",
+                Art = PropertyKind.Gewerbe,
+                Status = PropertyStatus.Verfuegbar,
+                Region = "Wuppertal, NRW",
+                Wohnflaeche = 1240,
+                Grundstuecksflaeche = 680,
+                Baujahr = 1998,
+                Einheiten = 14,
+                Faktor = 16.5m,
+                RenditeProzent = 5.6m,
+                Kaufpreis = 3_950_000m,
+                Zustand = "Gepflegt",
+                Energieklasse = "C",
+                Beschreibung = "Etabliertes Wohn- und Geschäftshaus mit stabilem Mietermix in Innenstadtlage.\n" +
+                               "Solide Bestandsimmobilie mit Entwicklungspotenzial.",
+                IstOffMarket = false,
+                IstFeatured = false,
+                IstVeroeffentlicht = true
+            },
+            new Property
+            {
+                Titel = "Exklusive Wohnanlage — 24 Einheiten",
+                Slug = "exklusive-wohnanlage-24-einheiten-duesseldorf",
+                Art = PropertyKind.Wohnimmobilie,
+                Status = PropertyStatus.Reserviert,
+                Region = "Düsseldorf, NRW",
+                Wohnflaeche = 2150,
+                Grundstuecksflaeche = 3100,
+                Baujahr = 2021,
+                Einheiten = 24,
+                Faktor = 24.0m,
+                Kaufpreis = 14_200_000m,
+                Zustand = "Neuwertig",
+                Energieklasse = "A+",
+                Beschreibung = "Gehobene Wohnanlage in begehrter Lage — hochwertige Ausstattung, voll vermietet.",
+                IstOffMarket = true,
+                IstFeatured = false,
+                IstVeroeffentlicht = true
+            },
+            new Property
+            {
+                Titel = "Baugrundstück mit Projektentwicklung",
+                Slug = "baugrundstueck-projektentwicklung-essen",
+                Art = PropertyKind.Grundstueck,
+                Status = PropertyStatus.Verfuegbar,
+                Region = "Essen, NRW",
+                Grundstuecksflaeche = 4800,
+                Beschreibung = "Erschlossenes Baugrundstück mit Baugenehmigung für Wohnbebauung.\n" +
+                               "Ideal für Bauträger und Projektentwickler.",
+                Kaufpreis = 2_600_000m,
+                Zustand = "Erschlossen",
+                IstOffMarket = false,
+                IstFeatured = false,
+                IstVeroeffentlicht = true
+            },
+            new Property
+            {
+                Titel = "Ferienresort am Mittelmeer — Bestandsobjekt",
+                Slug = "ferienresort-mittelmeer-bestandsobjekt",
+                Art = PropertyKind.Auslandsimmobilie,
+                Status = PropertyStatus.OffMarket,
+                Region = "Costa Blanca",
+                Land = "Spanien",
+                Wohnflaeche = 5400,
+                Grundstuecksflaeche = 12000,
+                Baujahr = 2016,
+                Einheiten = 60,
+                Faktor = 18.0m,
+                RenditeProzent = 6.2m,
+                Kaufpreis = 22_500_000m,
+                Zustand = "Sehr gut",
+                Energieklasse = "B",
+                Beschreibung = "Etabliertes Ferienresort in erster Linie — stabile Auslastung, internationales Klientel.\n" +
+                               "Vertrauliche Vermarktung für vorgemerkte Investoren.",
+                IstOffMarket = true,
+                IstFeatured = false,
+                IstVeroeffentlicht = true,
+                MetaTitle = "Off-Market Ferienresort Spanien — Auslandsimmobilie"
+            }
+        };
+
+        var vorhanden = await db.Properties.Select(p => p.Slug).ToListAsync();
+        var neue = saat.Where(s => !vorhanden.Contains(s.Slug)).ToList();
+        if (neue.Count > 0)
+            db.Properties.AddRange(neue);
     }
 }

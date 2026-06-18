@@ -1,0 +1,170 @@
+@model PropertyDetailViewModel
+@{
+    var p = Model.Objekt;
+    var bilder = p.Medien.Where(m => m.Typ == MediaType.Image).ToList();
+    var cover = p.CoverUrl();
+}
+
+<section class="bd-detail">
+    <div class="bd-container">
+        <a class="bd-back" asp-controller="Immobilien" asp-action="Index">&larr; Zurück zum Portfolio</a>
+
+        <div class="bd-detail__head">
+            <div>
+                <span class="bd-overline">@p.Art.Label() · @(string.IsNullOrWhiteSpace(p.Region) ? p.Land : p.Region)</span>
+                <h1>@p.Titel</h1>
+            </div>
+            <span class="bd-objekt__badge bd-detail__badge">@p.Status.Label()</span>
+        </div>
+
+        <!-- Galerie -->
+        <div class="bd-gallery @(Model.IstGesperrt ? "is-locked" : "")"
+             x-data="{ lightbox: false, src: '' }">
+            <div class="bd-gallery__main">
+                @if (cover != null)
+                {
+                    <img src="@cover" alt="@(bilder.FirstOrDefault(m => m.IstCover)?.Alt ?? p.Titel)"
+                         @(Model.IstGesperrt ? "" : "@click=\"lightbox = true; src = $el.src\"") />
+                }
+                else
+                {
+                    <span class="bd-objekt__placeholder"><img src="~/img/brand/baudorf-emblem-cream.png" alt="" /></span>
+                }
+                @if (Model.IstGesperrt)
+                {
+                    <div class="bd-gallery__lock">
+                        <span class="bd-lock-icon">&#128274;</span>
+                        <p>Off-Market — Bilder nach Freigabe</p>
+                    </div>
+                }
+            </div>
+
+            @if (!Model.IstGesperrt && bilder.Count > 1)
+            {
+                <div class="bd-gallery__thumbs">
+                    @foreach (var b in bilder.Take(8))
+                    {
+                        <button type="button" class="bd-gallery__thumb" @@click="lightbox = true; src = '@b.Url'">
+                            <img src="@(b.ThumbnailUrl ?? b.Url)" alt="@(b.Alt ?? p.Titel)" loading="lazy" />
+                        </button>
+                    }
+                </div>
+
+                <div class="bd-lightbox" x-show="lightbox" x-cloak @@click="lightbox = false" @@keydown.escape.window="lightbox = false">
+                    <img :src="src" alt="@p.Titel" />
+                    <button class="bd-lightbox__close" @@click="lightbox = false" aria-label="Schließen">&times;</button>
+                </div>
+            }
+        </div>
+
+        <div class="bd-detail__grid">
+            <!-- Hauptspalte -->
+            <div class="bd-detail__main">
+                @if (Model.IstGesperrt)
+                {
+                    <div class="bd-gate" data-reveal>
+                        <span class="bd-lock-icon">&#128274;</span>
+                        <h2>Vertrauliches Off-Market-Objekt</h2>
+                        <p>
+                            Vollständige Kennzahlen, Unterlagen und Bilder sind ausschließlich vorgemerkten,
+                            freigegebenen Investoren zugänglich. Beantragen Sie Ihren Zugang — persönliche
+                            Freischaltung durch Andrea Krüger.
+                        </p>
+                        <div class="bd-gate__cta">
+                            @if (Model.IstAngemeldet)
+                            {
+                                <p class="bd-muted">Ihr Konto wartet noch auf Freigabe. Wir prüfen Ihr Investitionsprofil und melden uns.</p>
+                            }
+                            else
+                            {
+                                <a class="bd-btn bd-btn--gold" asp-area="Identity" asp-page="/Account/Register">Jetzt registrieren</a>
+                                <a class="bd-btn bd-btn--outline" asp-area="Identity" asp-page="/Account/Login">Anmelden</a>
+                            }
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="bd-prose" data-reveal>
+                        <h2>Objektbeschreibung</h2>
+                        @if (!string.IsNullOrWhiteSpace(p.Beschreibung))
+                        {
+                            @Html.Raw(System.Net.WebUtility.HtmlEncode(p.Beschreibung).Replace("\n", "<br />"))
+                        }
+                        else
+                        {
+                            <p class="bd-muted">Detaillierte Beschreibung auf Anfrage.</p>
+                        }
+                    </div>
+                }
+
+                <!-- Künye / Eckdaten -->
+                <div class="bd-fakten" data-reveal>
+                    <h2>Eckdaten</h2>
+                    <dl class="bd-fakten__list">
+                        <div><dt>Objektart</dt><dd>@p.Art.Label()</dd></div>
+                        <div><dt>Status</dt><dd>@p.Status.Label()</dd></div>
+                        <div><dt>Standort</dt><dd>@(string.IsNullOrWhiteSpace(p.Region) ? p.Land : p.Region)</dd></div>
+                        @if (!Model.IstGesperrt)
+                        {
+                            @if (p.Wohnflaeche.HasValue) { <div><dt>Wohnfläche</dt><dd>@DisplayHelpers.FlaecheText(p.Wohnflaeche)</dd></div> }
+                            @if (p.Grundstuecksflaeche.HasValue) { <div><dt>Grundstück</dt><dd>@DisplayHelpers.FlaecheText(p.Grundstuecksflaeche)</dd></div> }
+                            @if (p.Baujahr.HasValue) { <div><dt>Baujahr</dt><dd>@p.Baujahr</dd></div> }
+                            @if (!string.IsNullOrWhiteSpace(p.Zustand)) { <div><dt>Zustand</dt><dd>@p.Zustand</dd></div> }
+                            @if (!string.IsNullOrWhiteSpace(p.Energieklasse)) { <div><dt>Energie / Standard</dt><dd>@p.Energieklasse</dd></div> }
+                            @if (p.Einheiten.HasValue) { <div><dt>Einheiten</dt><dd>@p.Einheiten</dd></div> }
+                        }
+                        else
+                        {
+                            <div><dt>Kennzahlen</dt><dd>&#128274; nach Freigabe</dd></div>
+                        }
+                    </dl>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <aside class="bd-detail__aside">
+                <div class="bd-aside-card" data-reveal>
+                    @if (Model.IstGesperrt)
+                    {
+                        <span class="bd-aside-card__label">Kaufpreis</span>
+                        <span class="bd-aside-card__price">&#128274; vertraulich</span>
+                    }
+                    else
+                    {
+                        <span class="bd-aside-card__label">Kaufpreis</span>
+                        <span class="bd-aside-card__price">@p.PreisText()</span>
+                        @if (p.Faktor.HasValue || p.RenditeProzent.HasValue)
+                        {
+                            <ul class="bd-aside-card__kpi">
+                                @if (p.Faktor.HasValue) { <li><span>Faktor</span><strong>@p.Faktor</strong></li> }
+                                @if (p.RenditeProzent.HasValue) { <li><span>Rendite</span><strong>@p.RenditeProzent %</strong></li> }
+                            </ul>
+                        }
+                    }
+
+                    <a class="bd-btn bd-btn--gold bd-btn--block"
+                       asp-controller="Home" asp-action="Index" asp-fragment="kontakt">Vertraulich anfragen</a>
+                    <a class="bd-btn bd-btn--outline bd-btn--block" href="tel:+4901778387898">Andrea Krüger anrufen</a>
+                    <p class="bd-aside-card__note">Diskrete Bearbeitung — Reaktion i. d. R. innerhalb von 24 Stunden.</p>
+                </div>
+            </aside>
+        </div>
+
+        @if (Model.AehnlicheObjekte.Count > 0)
+        {
+            <div class="bd-similar">
+                <div class="bd-sec-head" data-reveal>
+                    <span class="bd-overline">Ähnliche Objekte</span>
+                    <h2>Das könnte Sie interessieren</h2>
+                </div>
+                <div class="bd-objekte">
+                    @foreach (var s in Model.AehnlicheObjekte)
+                    {
+                        <partial name="_ObjektCard" model="s" />
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</section>

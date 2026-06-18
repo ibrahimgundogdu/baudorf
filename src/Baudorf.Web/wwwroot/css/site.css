@@ -291,6 +291,105 @@ h1, h2, h3 {
 }
 
 /* ==========================================================================
+   Immobilien — Liste, Filter, Detail
+   ========================================================================== */
+
+.bd-objekt__title a { color: inherit; }
+.bd-objekt__title a:hover { color: var(--gold-dk); }
+.bd-btn--block { width: 100%; justify-content: center; }
+
+/* Page head (dunkler Banner unter Nav) */
+.bd-pagehead { background: var(--ink); color: var(--linen); padding: calc(5rem + 60px) 0 3.5rem; }
+.bd-pagehead h1 { color: var(--white); font-size: clamp(2.2rem, 5vw, 3.6rem); margin: 0.6rem 0 0.8rem; }
+.bd-pagehead p { color: var(--linen); max-width: 560px; margin: 0; }
+.bd-section--top { padding-top: 3rem; }
+
+/* Filter */
+.bd-filter { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; padding: 1.5rem; background: var(--white); border: 1px solid var(--line); border-radius: 5px; margin-bottom: 1.5rem; }
+.bd-filter__field { display: flex; flex-direction: column; gap: 0.35rem; flex: 1 1 170px; }
+.bd-filter__field label { font-size: 0.74rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--stone); }
+.bd-filter input, .bd-filter select {
+  font-family: inherit; font-size: 0.92rem; padding: 0.6rem 0.7rem;
+  border: 1px solid var(--line2, #DCD5C8); border-radius: 3px; background: var(--parch); color: var(--ink);
+}
+.bd-filter input:focus, .bd-filter select:focus { outline: 2px solid var(--gold); outline-offset: 1px; border-color: var(--gold); }
+.bd-filter .bd-btn { flex: 0 0 auto; }
+
+.bd-result-meta { color: var(--stone); font-size: 0.9rem; margin-bottom: 1.4rem; }
+
+.bd-empty { text-align: center; padding: 4rem 1rem; display: flex; flex-direction: column; align-items: center; gap: 1.2rem; }
+.bd-empty p { color: var(--stone); margin: 0; }
+
+/* Pager */
+.bd-pager { display: flex; align-items: center; justify-content: center; gap: 1.5rem; margin-top: 3rem; }
+.bd-pager__link { color: var(--gold-dk); font-weight: 500; }
+.bd-pager__link:hover { color: var(--gold); }
+.bd-pager__info { color: var(--stone); font-size: 0.9rem; }
+
+/* Detail */
+.bd-detail { padding: calc(2rem + 80px) 0 5rem; background: var(--parch); }
+.bd-back { display: inline-block; color: var(--stone); font-size: 0.9rem; margin-bottom: 1.5rem; }
+.bd-back:hover { color: var(--gold-dk); }
+.bd-detail__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1.5rem; margin-bottom: 1.8rem; }
+.bd-detail__head h1 { font-size: clamp(1.8rem, 4vw, 3rem); margin: 0.4rem 0 0; }
+.bd-detail__badge { position: static; }
+
+/* Galerie */
+.bd-gallery { margin-bottom: 2.5rem; }
+.bd-gallery__main { position: relative; aspect-ratio: 16 / 9; border-radius: 6px; overflow: hidden; background: var(--linen); }
+.bd-gallery__main img { width: 100%; height: 100%; object-fit: cover; cursor: zoom-in; }
+.bd-gallery.is-locked .bd-gallery__main img { filter: blur(16px); cursor: default; }
+.bd-gallery__lock { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.6rem; color: var(--white); background: rgba(12,12,12,0.45); }
+.bd-gallery__thumbs { display: flex; gap: 0.7rem; margin-top: 0.7rem; flex-wrap: wrap; }
+.bd-gallery__thumb { width: 92px; height: 68px; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; padding: 0; cursor: pointer; background: none; }
+.bd-gallery__thumb img { width: 100%; height: 100%; object-fit: cover; }
+.bd-gallery__thumb:hover { border-color: var(--gold); }
+
+.bd-lightbox { position: fixed; inset: 0; z-index: 80; background: rgba(12,12,12,0.92); display: flex; align-items: center; justify-content: center; padding: 2rem; }
+.bd-lightbox img { max-width: 92vw; max-height: 88vh; object-fit: contain; }
+.bd-lightbox__close { position: absolute; top: 1.4rem; right: 1.8rem; background: none; border: 0; color: var(--white); font-size: 2.4rem; cursor: pointer; line-height: 1; }
+
+.bd-lock-icon { font-size: 1.6rem; }
+
+/* Detail grid */
+.bd-detail__grid { display: grid; grid-template-columns: 1fr 340px; gap: 2.5rem; align-items: start; }
+.bd-detail__main h2 { font-size: 1.5rem; margin: 0 0 1rem; }
+.bd-prose { margin-bottom: 2.5rem; }
+.bd-prose p { color: var(--stone); }
+
+.bd-gate { background: var(--ink); color: var(--linen); border-radius: 6px; padding: 2.5rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0.8rem; margin-bottom: 2.5rem; }
+.bd-gate h2 { color: var(--white); margin: 0; }
+.bd-gate p { color: var(--linen); max-width: 460px; }
+.bd-gate__cta { display: flex; gap: 0.8rem; margin-top: 1rem; flex-wrap: wrap; justify-content: center; }
+
+.bd-fakten { background: var(--white); border: 1px solid var(--line); border-radius: 6px; padding: 1.8rem 2rem; }
+.bd-fakten__list { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+.bd-fakten__list > div { display: flex; justify-content: space-between; gap: 1rem; padding: 0.8rem 0; border-bottom: 1px solid var(--line); }
+.bd-fakten__list dt { color: var(--stone); margin: 0; }
+.bd-fakten__list dd { margin: 0; font-weight: 500; text-align: right; }
+
+/* Sidebar card */
+.bd-detail__aside { position: sticky; top: 90px; }
+.bd-aside-card { background: var(--white); border: 1px solid var(--line); border-radius: 6px; padding: 1.8rem; display: flex; flex-direction: column; gap: 0.8rem; }
+.bd-aside-card__label { font-size: 0.74rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--stone); }
+.bd-aside-card__price { font-size: 1.9rem; font-weight: 600; letter-spacing: -0.02em; }
+.bd-aside-card__kpi { list-style: none; padding: 0; margin: 0 0 0.6rem; display: flex; gap: 1.5rem; }
+.bd-aside-card__kpi li { display: flex; flex-direction: column; }
+.bd-aside-card__kpi span { font-size: 0.78rem; color: var(--stone); }
+.bd-aside-card__kpi strong { font-size: 1.1rem; }
+.bd-aside-card__note { font-size: 0.8rem; color: var(--stone); margin: 0.4rem 0 0; }
+
+.bd-similar { margin-top: 4rem; }
+
+@media (max-width: 900px) {
+  .bd-detail__grid { grid-template-columns: 1fr; }
+  .bd-detail__aside { position: static; }
+}
+@media (max-width: 520px) {
+  .bd-fakten__list { grid-template-columns: 1fr; }
+}
+
+/* ==========================================================================
    Admin
    ========================================================================== */
 

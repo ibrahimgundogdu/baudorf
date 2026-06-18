@@ -1,0 +1,42 @@
+@model Property
+@{
+    var cover = Model.CoverUrl();
+    var locked = Model.IstOffMarket;
+}
+<article class="bd-objekt @(locked ? "is-locked" : "")" data-reveal>
+    <a class="bd-objekt__media" asp-controller="Immobilien" asp-action="Details" asp-route-slug="@Model.Slug">
+        @if (cover != null)
+        {
+            <img src="@cover" alt="@(Model.Medien.FirstOrDefault(m => m.IstCover)?.Alt ?? Model.Titel)" loading="lazy" />
+        }
+        else
+        {
+            <span class="bd-objekt__placeholder" aria-hidden="true">
+                <img src="~/img/brand/baudorf-emblem-cream.png" alt="" />
+            </span>
+        }
+        <span class="bd-objekt__badge">@Model.Status.Label()</span>
+    </a>
+    <div class="bd-objekt__body">
+        <span class="bd-objekt__loc">@(string.IsNullOrWhiteSpace(Model.Region) ? Model.Land : Model.Region) · @Model.Art.Label()</span>
+        <h3 class="bd-objekt__title">
+            <a asp-controller="Immobilien" asp-action="Details" asp-route-slug="@Model.Slug">@Model.Titel</a>
+        </h3>
+        <ul class="bd-objekt__specs">
+            @if (Model.Wohnflaeche.HasValue) { <li>Wfl. @DisplayHelpers.FlaecheText(Model.Wohnflaeche)</li> }
+            @if (Model.Grundstuecksflaeche.HasValue) { <li>GF @DisplayHelpers.FlaecheText(Model.Grundstuecksflaeche)</li> }
+            @if (Model.Baujahr.HasValue) { <li>BJ @Model.Baujahr</li> }
+            @if (Model.Faktor.HasValue) { <li>Faktor @Model.Faktor</li> }
+        </ul>
+        <div class="bd-objekt__foot">
+            @if (locked)
+            {
+                <span class="bd-objekt__lock">&#128274; Für vorgemerkte Investoren</span>
+            }
+            else
+            {
+                <span class="bd-objekt__price">@Model.PreisText()</span>
+            }
+        </div>
+    </div>
+</article>

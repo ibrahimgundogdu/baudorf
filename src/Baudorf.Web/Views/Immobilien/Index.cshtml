@@ -1,0 +1,112 @@
+@model ImmobilienListViewModel
+@{
+    ViewData["Title"] = "Immobilien";
+    ViewData["MetaDescription"] = "Off-Market-Immobilien, Kapitalanlagen und Investments in NRW — diskret vermittelt von Baudorf Immobilien.";
+
+    string SortLabel(string v) => v switch
+    {
+        "preis-auf" => "Preis aufsteigend",
+        "preis-ab" => "Preis absteigend",
+        "flaeche" => "Größte Fläche",
+        _ => "Neueste zuerst"
+    };
+}
+
+<section class="bd-pagehead">
+    <div class="bd-container">
+        <span class="bd-overline">Portfolio</span>
+        <h1>Immobilien</h1>
+        <p>Ausgewählte Objekte — verfügbar und Off-Market. Vertraulich, kuratiert, für Investoren.</p>
+    </div>
+</section>
+
+<section class="bd-section bd-section--parch bd-section--top">
+    <div class="bd-container">
+        <form class="bd-filter" method="get" asp-action="Index">
+            <div class="bd-filter__field">
+                <label for="f-q">Suche</label>
+                <input id="f-q" type="text" name="q" value="@Model.Filter.Q" placeholder="Titel oder Region" />
+            </div>
+            <div class="bd-filter__field">
+                <label for="f-art">Objektart</label>
+                <select id="f-art" name="art">
+                    <option value="">Alle</option>
+                    @foreach (var k in Enum.GetValues<PropertyKind>())
+                    {
+                        <option value="@((int)k)" selected="@(Model.Filter.Art == k)">@k.Label()</option>
+                    }
+                </select>
+            </div>
+            <div class="bd-filter__field">
+                <label for="f-status">Status</label>
+                <select id="f-status" name="status">
+                    <option value="">Alle</option>
+                    @foreach (var s in Enum.GetValues<PropertyStatus>())
+                    {
+                        <option value="@((int)s)" selected="@(Model.Filter.Status == s)">@s.Label()</option>
+                    }
+                </select>
+            </div>
+            <div class="bd-filter__field">
+                <label for="f-sort">Sortierung</label>
+                <select id="f-sort" name="sort">
+                    @foreach (var v in new[] { "neu", "preis-auf", "preis-ab", "flaeche" })
+                    {
+                        <option value="@v" selected="@(Model.Filter.Sort == v)">@SortLabel(v)</option>
+                    }
+                </select>
+            </div>
+            <button type="submit" class="bd-btn bd-btn--gold bd-btn--sm">Filtern</button>
+        </form>
+
+        <div class="bd-result-meta">
+            <span>@Model.TotalCount Objekt@(Model.TotalCount == 1 ? "" : "e")</span>
+        </div>
+
+        @if (Model.Objekte.Count == 0)
+        {
+            <div class="bd-empty" data-reveal>
+                <p>Keine Objekte gefunden. Passen Sie die Filter an oder sprechen Sie uns vertraulich an.</p>
+                <a class="bd-btn bd-btn--outline" asp-controller="Home" asp-action="Index" asp-fragment="kontakt">Kontakt aufnehmen</a>
+            </div>
+        }
+        else
+        {
+            <div class="bd-objekte">
+                @foreach (var p in Model.Objekte)
+                {
+                    <partial name="_ObjektCard" model="p" />
+                }
+            </div>
+
+            @if (Model.TotalPages > 1)
+            {
+                <nav class="bd-pager" aria-label="Seitennavigation">
+                    @if (Model.HatVorige)
+                    {
+                        <a class="bd-pager__link" asp-action="Index"
+                           asp-all-route-data="@RouteData(Model, Model.Page - 1)">&larr; Zurück</a>
+                    }
+                    <span class="bd-pager__info">Seite @Model.Page von @Model.TotalPages</span>
+                    @if (Model.HatNaechste)
+                    {
+                        <a class="bd-pager__link" asp-action="Index"
+                           asp-all-route-data="@RouteData(Model, Model.Page + 1)">Weiter &rarr;</a>
+                    }
+                </nav>
+            }
+        }
+    </div>
+</section>
+
+@functions {
+    Dictionary<string, string> RouteData(ImmobilienListViewModel m, int page)
+    {
+        var d = new Dictionary<string, string> { ["page"] = page.ToString(), ["sort"] = m.Filter.Sort };
+        if (m.Filter.Art is { } a) d["art"] = ((int)a).ToString();
+        if (m.Filter.Status is { } s) d["status"] = ((int)s).ToString();
+        if (!string.IsNullOrWhiteSpace(m.Filter.Q)) d["q"] = m.Filter.Q;
+        if (m.Filter.PreisMax is { } pm) d["preisMax"] = pm.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        return d;
+    }
+}
