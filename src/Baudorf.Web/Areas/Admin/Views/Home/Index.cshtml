@@ -1,0 +1,24 @@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="bd-stats">
+    <div class="bd-stat">
+        <span class="bd-stat__num">@Model.VeroeffentlichteObjekte</span>
+        <span class="bd-stat__label">Veröffentlichte Objekte</span>
+        <span class="bd-stat__sub">von @Model.ObjekteGesamt gesamt</span>
+    </div>
+    <div class="bd-stat">
+        <span class="bd-stat__num">@Model.NeueLeads</span>
+        <span class="bd-stat__label">Neue Leads</span>
+        <span class="bd-stat__sub">von @Model.LeadsGesamt gesamt</span>
+    </div>
+    <div class="bd-stat">
+        <span class="bd-stat__num">@Model.OffeneBewerbungen</span>
+        <span class="bd-stat__label">Offene Bewerbungen</span>
+        <span class="bd-stat__sub">Tippgeber + Karriere</span>
+    </div>
+</div>
+
+<p class="bd-muted">Willkommen im Baudorf-Verwaltungsbereich. Module folgen schrittweise (Immobilien-CRUD zuerst).</p>

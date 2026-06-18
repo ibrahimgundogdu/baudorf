@@ -1,0 +1,1617 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- system font: Helvetica -->
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);-webkit-font-smoothing:antialiased;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif}
+  ::selection{background:var(--accent);color:var(--ink)}
+  @keyframes bdReveal{from{opacity:0;transform:translateY(34px)}to{opacity:1;transform:none}}
+  @keyframes bdRevealUp{from{opacity:0;transform:translateY(60px)}to{opacity:1;transform:none}}
+  @keyframes bdHero{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+  @keyframes bdFloat{0%,100%{transform:translateY(-50%) translateY(0)}50%{transform:translateY(-50%) translateY(-16px)}}
+  @keyframes bdScroll{0%{opacity:0;transform:translateY(-5px)}45%{opacity:1}100%{opacity:0;transform:translateY(11px)}}
+  @keyframes bdLine{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  [data-rev]{animation:bdReveal both;animation-timeline:view();animation-range:entry 4% cover 26%}
+  @media (prefers-reduced-motion: reduce){*{animation:none!important}[data-rev]{opacity:1!important;transform:none!important}}
+  @media (max-width:940px){[data-desk]{display:none!important}[data-mob]{display:inline-flex!important}[data-split]{flex-direction:column!important}[data-split-r]{flex-direction:column-reverse!important}[data-c3]{grid-template-columns:1fr 1fr!important}[data-c2]{grid-template-columns:1fr!important}[data-c4]{grid-template-columns:1fr 1fr!important}}
+  @media (max-width:640px){[data-c3],[data-c4]{grid-template-columns:1fr!important}[data-pad]{padding-left:22px!important;padding-right:22px!important}}
+  @media (max-width:860px){[data-mosaic]{grid-template-columns:1fr 1fr!important}}
+  @media (max-width:520px){[data-mosaic]{grid-template-columns:1fr!important}}
+  .bd-slide{transform:translateY(-101%);transition:transform .55s cubic-bezier(.22,1,.36,1)}
+  .bd-card:hover .bd-slide{transform:translateY(0)}
+  .bd-card:hover{box-shadow:0 32px 60px -28px rgba(18,16,14,.5)}
+  body{--bg:#F5F2EC;--surface:#FDFCFA;--band:#ECE6DA;--ink:#181614;--muted:#5C5550;--accent:#C4A46B;--accent-dk:#96773A;--accent-lt:#D9BF8E;--line:#EDE8DF;--line2:#DCD5C8;--on-accent:#181614;}
+  [data-pal="gold"]{--bg:#F5F2EC;--surface:#FDFCFA;--band:#ECE6DA;--ink:#181614;--muted:#5C5550;--accent:#C4A46B;--accent-dk:#96773A;--accent-lt:#D9BF8E;--line:#EDE8DF;--line2:#DCD5C8;--on-accent:#181614;}
+  [data-pal="blau"]{--bg:#F5F7FA;--surface:#FFFFFF;--band:#E7ECF2;--ink:#0E1F33;--muted:#5C6B7A;--accent:#2D6AA8;--accent-dk:#21527F;--accent-lt:#7FB0E0;--line:#DCE2EA;--line2:#C7D0DA;--on-accent:#FFFFFF;}
+  [data-pal="gruen"]{--bg:#F3F5F0;--surface:#FCFCFA;--band:#E6EAE0;--ink:#14241C;--muted:#5F665A;--accent:#2F6B4F;--accent-dk:#24503C;--accent-lt:#6FB089;--line:#DCDFD5;--line2:#C9CEBE;--on-accent:#FFFFFF;}
+  [data-pal="schiefer"]{--bg:#F4F5F6;--surface:#FFFFFF;--band:#E6E9EB;--ink:#1C2126;--muted:#5E666E;--accent:#0F8A7E;--accent-dk:#0B675E;--accent-lt:#52C2B5;--line:#E0E3E6;--line2:#CDD2D6;--on-accent:#FFFFFF;}
+</style>
+</helmet>
+
+<div data-pal="{{ palKey }}" style="--bd-gold: var(--accent, var(--accent)); background:var(--bg);color:var(--ink);font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;overflow-x:hidden">
+
+<!-- ============ NAV ============ -->
+<sc-if value="{{ isPublic }}" hint-placeholder-val="{{ true }}">
+<nav style="position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(250,249,246,0.6);backdrop-filter:blur(30px) saturate(185%);-webkit-backdrop-filter:blur(30px) saturate(185%);border-bottom:1px solid rgba(255,255,255,0.4);box-shadow:0 1px 24px -12px rgba(18,16,14,.18);padding:{{ navPad }};transition:padding .45s cubic-bezier(.22,1,.36,1)">
+  <div style="position:relative;margin:0 auto;padding:0 clamp(20px,4vw,56px);display:flex;align-items:center;justify-content:space-between;gap:24px">
+    <div style="display:flex;align-items:center">
+      <div onClick="{{ goHome }}" style="display:flex;align-items:center;cursor:pointer">
+        <img src="assets/baudorf-logo-mark.png" alt="Baudorf Immobilien GmbH" style="height:40px;width:auto;display:block"/>
+      </div>
+    </div>
+    <a data-desk href="tel:{{ telefon }}" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:8px;text-decoration:none;font:700 13px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.04em;color:var(--accent-dk);white-space:nowrap;transition:.3s" style-hover="color:var(--accent)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <span>{{ telefon }}</span>
+    </a>
+    <div data-desk style="display:flex;align-items:center;gap:26px">
+      <span onClick="{{ goHome }}" style="font:700 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);cursor:pointer;padding:8px 0;border-bottom:1px solid transparent;transition:.3s" style-hover="color:var(--accent);border-bottom-color:var(--accent)">Startseite</span>
+      <span onClick="{{ goList }}" style="font:700 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);cursor:pointer;padding:8px 0;border-bottom:1px solid transparent;transition:.3s" style-hover="color:var(--accent);border-bottom-color:var(--accent)">Immobilien</span>
+      <span onClick="{{ goLeistungen }}" style="font:700 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);cursor:pointer;padding:8px 0;border-bottom:1px solid transparent;transition:.3s" style-hover="color:var(--accent);border-bottom-color:var(--accent)">Leistungen</span>
+      <span onClick="{{ goUeber }}" style="font:700 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);cursor:pointer;padding:8px 0;border-bottom:1px solid transparent;transition:.3s" style-hover="color:var(--accent);border-bottom-color:var(--accent)">Über uns</span>
+      <span onClick="{{ goContact }}" style="font:700 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);cursor:pointer;padding:8px 0;border-bottom:1px solid transparent;transition:.3s" style-hover="color:var(--accent);border-bottom-color:var(--accent)">Kontakt</span>
+      <span onClick="{{ goLogin }}" style="display:inline-flex;align-items:center;gap:7px;font:700 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);cursor:pointer;padding:8px 0;border-bottom:1px solid transparent;transition:.3s" style-hover="color:var(--accent);border-bottom-color:var(--accent)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Login</span>
+      <span onClick="{{ goRegister }}" style="font:700 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--on-accent,var(--ink));background:var(--bd-gold,var(--accent));padding:13px 24px;cursor:pointer;transition:.35s" style-hover="background:var(--accent-dk)">Registrieren</span>
+    </div>
+    <div data-mob onClick="{{ toggleMenu }}" style="display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px">
+      <span style="width:26px;height:1.5px;background:var(--ink);display:block"></span>
+      <span style="width:26px;height:1.5px;background:var(--ink);display:block"></span>
+      <span style="width:18px;height:1.5px;background:var(--accent);display:block"></span>
+    </div>
+  </div>
+</nav>
+
+<sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;inset:0;z-index:95;background:var(--bg);display:flex;flex-direction:column;padding:30px clamp(22px,6vw,48px)">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:60px">
+    <img src="assets/baudorf-logo-mark.png" alt="Baudorf" style="height:34px"/>
+    <span onClick="{{ toggleMenu }}" style="font:300 34px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink);cursor:pointer">&times;</span>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <span onClick="{{ goHome }}" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:38px;color:var(--ink);cursor:pointer;padding:10px 0;border-bottom:1px solid rgba(24,22,20,.12)">Startseite</span>
+    <span onClick="{{ goList }}" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:38px;color:var(--ink);cursor:pointer;padding:10px 0;border-bottom:1px solid rgba(24,22,20,.12)">Immobilien</span>
+    <span onClick="{{ goLeistungen }}" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:38px;color:var(--ink);cursor:pointer;padding:10px 0;border-bottom:1px solid rgba(24,22,20,.12)">Leistungen</span>
+    <span onClick="{{ goUeber }}" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:38px;color:var(--ink);cursor:pointer;padding:10px 0;border-bottom:1px solid rgba(24,22,20,.12)">Über uns</span>
+    <span onClick="{{ goContact }}" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:38px;color:var(--ink);cursor:pointer;padding:10px 0;border-bottom:1px solid rgba(24,22,20,.12)">Kontakt</span>
+  </div>
+  <div style="margin-top:40px;display:flex;gap:14px;flex-wrap:wrap">
+    <span onClick="{{ goLogin }}" style="display:inline-flex;align-items:center;gap:9px;font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);border:1px solid var(--line2);padding:16px 28px;cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Login</span>
+    <span onClick="{{ goRegister }}" style="font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--on-accent,var(--ink));background:var(--bd-gold,var(--accent));padding:16px 30px;cursor:pointer">Registrieren</span>
+  </div>
+</div>
+</sc-if>
+</sc-if>
+
+<!-- ============ HOME ============ -->
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+<div data-screen-label="Startseite">
+
+  <!-- HERO -->
+  <section style="position:relative;min-height:100vh;display:flex;align-items:flex-end;overflow:hidden;background:var(--ink)">
+    <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2400&q=80" alt="Architektonisch anspruchsvolles Objekt in NRW" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:{{ op0 }};transition:opacity 1.3s ease"/>
+    <img src="https://images.unsplash.com/photo-1508450859948-4e04fabaa4ea?auto=format&fit=crop&w=2400&q=80" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:{{ op1 }};transition:opacity 1.3s ease"/>
+    <img src="https://images.unsplash.com/photo-1460472178825-e5240623afd5?auto=format&fit=crop&w=2400&q=80" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:{{ op2 }};transition:opacity 1.3s ease"/>
+    <img src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=2400&q=80" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:{{ op3 }};transition:opacity 1.3s ease"/>
+    <div style="position:absolute;inset:0;z-index:1;background:linear-gradient(95deg,rgba(18,16,14,.9) 0%,rgba(18,16,14,.6) 46%,rgba(18,16,14,.22) 100%);pointer-events:none"></div>
+    <div style="position:absolute;inset:0;z-index:1;background:linear-gradient(0deg,rgba(18,16,14,.72) 0%,transparent 42%);pointer-events:none"></div>
+    <img src="assets/baudorf-emblem-cream.png" alt="" style="position:absolute;right:-2%;top:42%;transform:translateY(-50%);width:min(540px,46vw);opacity:.06;z-index:1;animation:bdFloat 9s ease-in-out infinite;pointer-events:none"/>
+    <div style="position:relative;z-index:2;max-width:1560px;margin:0 auto;padding:0 clamp(22px,5vw,48px) clamp(72px,9vw,112px);width:100%">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:30px">
+        <span style="width:34px;height:1px;background:var(--bd-gold,var(--accent))"></span>
+        <span style="font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.34em;text-transform:uppercase;color:var(--accent-lt)">Off-Market-Immobilien · NRW · seit 1994</span>
+      </div>
+      <h1 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:400;letter-spacing:-.025em;line-height:.98;font-size:clamp(48px,8.4vw,112px);color:var(--surface);max-width:15ch">Diskret. <em style="font-style:italic;color:var(--bd-gold,var(--accent))">Exklusiv.</em> Direkt.</h1>
+      <p style="max-width:540px;margin:30px 0 0;font:300 clamp(16px,1.3vw,19px)/1.7 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(245,242,236,.82)">Wir vermitteln Wohn-, Gewerbe- und Kapitalanlage­objekte abseits des öffentlichen Marktes — vertraulich, fundiert und auf Augenhöhe mit Family Offices und institutionellen Investoren.</p>
+      <div data-split style="display:flex;gap:16px;margin-top:42px">
+        <span onClick="{{ goList }}" style="display:inline-flex;align-items:center;gap:12px;background:var(--bd-gold,var(--accent));color:var(--on-accent,var(--ink));padding:18px 34px;cursor:pointer;font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;transition:.4s cubic-bezier(.22,1,.36,1)" style-hover="background:var(--accent-dk);transform:translateY(-2px)">Objekte anfragen <span style="font-size:15px">&rarr;</span></span>
+        <span onClick="{{ goUeber }}" style="display:inline-flex;align-items:center;gap:12px;background:transparent;color:var(--bg);border:1px solid rgba(245,242,236,.34);padding:18px 34px;cursor:pointer;font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;transition:.4s" style-hover="border-color:var(--accent);color:var(--accent)">Über uns</span>
+      </div>
+    </div>
+    <div style="position:absolute;bottom:32px;left:clamp(22px,5vw,56px);z-index:3;display:flex;gap:10px;align-items:center">
+      <sc-for list="{{ heroDots }}" as="d" hint-placeholder-count="4">
+        <span onClick="{{ d.on }}" style="width:{{ d.w }};height:3px;background:{{ d.bg }};cursor:pointer;transition:width .45s ease,background .45s ease"></span>
+      </sc-for>
+    </div>
+    <div style="position:absolute;bottom:30px;right:clamp(22px,5vw,48px);z-index:2;display:flex;flex-direction:column;align-items:center;gap:10px">
+      <span style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.3em;text-transform:uppercase;color:rgba(245,242,236,.6)">Scrollen</span>
+      <span style="width:1px;height:46px;background:linear-gradient(180deg,var(--accent) 0%,rgba(196,164,107,0) 100%)"></span>
+    </div>
+  </section>
+
+  <!-- PHILOSOPHIE -->
+  <section style="background:var(--bg);padding:clamp(90px,12vw,150px) 0">
+    <div data-pad style="max-width:1560px;margin:0 auto;padding:0 clamp(22px,5vw,48px)">
+      <div data-split style="display:flex;gap:clamp(40px,7vw,90px);align-items:center">
+        <div data-rev style="flex:1.1;min-width:0">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px">
+            <span style="width:30px;height:1px;background:var(--bd-gold,var(--accent))"></span>
+            <span style="font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.32em;text-transform:uppercase;color:var(--accent-dk)">Philosophie</span>
+          </div>
+          <h2 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:400;letter-spacing:-.02em;line-height:1.08;font-size:clamp(34px,5vw,60px);color:var(--ink)">Wir vermitteln nicht.<br><em style="font-style:italic;color:var(--bd-gold,var(--accent))">Wir verbinden.</em></h2>
+          <p style="margin:30px 0 0;max-width:560px;font:300 clamp(16px,1.2vw,18px)/1.8 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">Seit 1994 begleiten wir Eigentümer und Investoren bei Transaktionen, die nicht für die Öffentlichkeit bestimmt sind. Was als Architekturbüro begann, ist heute ein spezialisiertes Maklerhaus für die diskrete Vermarktung anspruchsvoller Immobilien in NRW und darüber hinaus.</p>
+          <p style="margin:20px 0 0;max-width:560px;font:300 clamp(16px,1.2vw,18px)/1.8 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">Stille ist kein Mangel an Lautstärke — sie ist eine Haltung. <span style="color:var(--ink);font-weight:500">Still, wirkungsvoll, mit Stil.</span></p>
+        </div>
+        <div data-rev style="flex:0 0 auto;width:min(440px,90vw);position:relative;aspect-ratio:1;overflow:hidden;border-radius:26px">
+          <img src="https://images.unsplash.com/photo-1508450859948-4e04fabaa4ea?auto=format&fit=crop&w=1100&q=80" alt="Großvolumige Architektur" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"/>
+          <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(18,16,14,.62) 0%,transparent 52%)"></div>
+          <div style="position:absolute;left:28px;right:28px;bottom:26px">
+            <p style="margin:0;font-style:italic;font-weight:300;font-size:clamp(20px,2.4vw,28px);line-height:1.3;color:var(--surface)">„Still, wirkungsvoll,<br>mit Stil."</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEISTUNGEN -->
+  <section id="leistungen" style="background:var(--surface);padding:clamp(90px,12vw,150px) 0;border-top:1px solid var(--line)">
+    <div data-pad style="max-width:1560px;margin:0 auto;padding:0 clamp(22px,5vw,48px)">
+      <div data-rev style="display:flex;justify-content:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap;margin-bottom:56px">
+        <div>
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px">
+            <span style="width:30px;height:1px;background:var(--bd-gold,var(--accent))"></span>
+            <span style="font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.32em;text-transform:uppercase;color:var(--accent-dk)">Leistungen</span>
+          </div>
+          <h2 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:400;letter-spacing:-.02em;line-height:1.05;font-size:clamp(32px,4.5vw,56px);color:var(--ink)">Was wir für Sie tun</h2>
+        </div>
+        <p style="max-width:360px;margin:0;font:300 15px/1.7 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">Fünf Disziplinen, ein Anspruch: die richtige Immobilie für den richtigen Investor — diskret zusammengeführt.</p>
+      </div>
+      <div data-c3 style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line)">
+        <sc-for list="{{ leistungen }}" as="l" hint-placeholder-count="5">
+        <div data-rev onClick="{{ l.open }}" style="background:var(--surface);padding:clamp(30px,3vw,44px);min-height:230px;display:flex;flex-direction:column;transition:.5s cubic-bezier(.22,1,.36,1);cursor:pointer" style-hover="background:#F1ECE2">
+          <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:34px;color:var(--bd-gold,var(--accent));font-style:italic">{{ l.no }}</span>
+          <h3 style="margin:18px 0 12px;font:500 19px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:inherit">{{ l.title }}</h3>
+          <p style="margin:0 0 18px;font:300 14px/1.65 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">{{ l.text }}</p>
+          <span style="margin-top:auto;font:600 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-dk);display:inline-flex;align-items:center;gap:8px">Mehr erfahren &rarr;</span>
+        </div>
+        </sc-for>
+        <div data-rev onClick="{{ goContact }}" style="background:var(--ink);padding:clamp(30px,3vw,44px);min-height:230px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;transition:.5s" style-hover="opacity:.9">
+          <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:26px;line-height:1.2;color:var(--surface);font-style:italic">Sprechen wir über Ihr Vorhaben.</span>
+          <span style="font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-lt);display:inline-flex;align-items:center;gap:10px">Kontakt aufnehmen &rarr;</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OBJEKTE MOSAIK -->
+  <section style="background:var(--bg);padding:clamp(90px,12vw,150px) 0;overflow:hidden">
+    <div data-pad style="max-width:1560px;margin:0 auto;padding:0 clamp(22px,5vw,48px)">
+      <div data-rev style="display:flex;justify-content:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap;margin-bottom:46px">
+        <div>
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px">
+            <span style="width:30px;height:1px;background:var(--bd-gold,var(--accent))"></span>
+            <span style="font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.32em;text-transform:uppercase;color:var(--accent-dk)">Aktuelle Objekte</span>
+          </div>
+          <h2 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:400;letter-spacing:-.02em;line-height:1.05;font-size:clamp(32px,4.5vw,56px);color:var(--ink)">Ausgewählte <em style="font-style:italic;color:var(--bd-gold,var(--accent))">Investments</em></h2>
+        </div>
+        <p style="max-width:340px;margin:0;font:300 15px/1.7 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">Ein Auszug aus unserem Portfolio. Off-Market-Objekte sind sichtbar — ihre Kennzahlen vorgemerkten Investoren vorbehalten.</p>
+      </div>
+    </div>
+    <div data-mosaic style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1560px;margin:0 auto;padding:0 clamp(22px,5vw,48px)">
+      <div onClick="{{ m0.open }}" data-mtile class="bd-card" style="position:relative;aspect-ratio:1;border-radius:22px;overflow:hidden;cursor:pointer;transition:box-shadow .5s ease">
+        <img src="{{ m0.img }}" alt="{{ m0.name }}" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"/>
+        <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(18,16,14,.8) 0%,rgba(18,16,14,.05) 52%,transparent 74%)"></div>
+        <span style="position:absolute;top:18px;left:18px;z-index:1;background:{{ m0.pct }};color:#fff;font:600 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;padding:8px 13px;border-radius:7px">{{ m0.status }}</span>
+        <div style="position:absolute;left:24px;right:24px;bottom:22px;z-index:1">
+          <span style="display:block;font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-lt);margin-bottom:9px">{{ m0.ort }}</span>
+          <h3 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:clamp(19px,1.5vw,25px);line-height:1.18;color:#FDFCFA">{{ m0.name }}</h3>
+        </div>
+        <div class="bd-slide" style="position:absolute;inset:0;z-index:2;background:linear-gradient(180deg,rgba(18,16,14,.95),rgba(18,16,14,.9));display:flex;flex-direction:column;justify-content:space-between;padding:26px 26px 28px">
+          <div>
+            <span style="display:inline-block;background:{{ m0.pct }};color:#fff;font:600 9px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;padding:7px 11px;border-radius:6px;margin-bottom:18px">{{ m0.status }}</span>
+            <span style="display:block;font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-lt);margin-bottom:10px">{{ m0.ort }}</span>
+            <h3 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:clamp(20px,1.7vw,26px);line-height:1.18;color:#FDFCFA">{{ m0.name }}</h3>
+          </div>
+          <div>
+            <div style="display:flex;gap:18px;flex-wrap:wrap;padding:15px 0;border-top:1px solid rgba(255,255,255,.16);border-bottom:1px solid rgba(255,255,255,.16);margin-bottom:16px">
+              <span style="font:300 12px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(245,242,236,.6)">Wfl. <span style="color:#FDFCFA">{{ m0.wfl }}</span></span>
+              <span style="font:300 12px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(245,242,236,.6)">GF <span style="color:#FDFCFA">{{ m0.gf }}</span></span>
+              <span style="font:300 12px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(245,242,236,.6)">BJ <span style="color:#FDFCFA">{{ m0.bj }}</span></span>
+            </div>
+            <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px">
+              <sc-if value="{{ m0.notOff }}" hint-placeholder-val="{{ true }}">
+                <div><span style="display:block;font:500 9px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-lt);margin-bottom:5px">Faktor</span><span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:23px;color:var(--accent)">{{ m0.faktor }}</span></div>
+              </sc-if>
+              <sc-if value="{{ m0.offmarket }}" hint-placeholder-val="{{ false }}">
+                <span style="max-width:160px;display:inline-flex;align-items:center;gap:7px;font:600 9px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-lt)">&#128274; Für vorgemerkte Investoren</span>
+              </sc-if>
+              <span style="flex:0 0 auto;font:600 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#FDFCFA;display:inline-flex;align-items:center;gap:7px">Details &rarr;</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div onClick="{{ m1.open }}" data-mtile class="bd-card" style="position:relative;aspect-ratio:1;border-radius:22px;overflow:hidden;cursor:pointer;transition:box-shadow .5s ease">
+        <img src="{{ m1.img }}" alt="{{ m1.name }}" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"/>
+        <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(18,16,14,.8) 0%,rgba(18,16,14,.05) 52%,transparent 74%)"></div>
+        <span style="position:absolute;top:18px;left:18px;z-index:1;background:{{ m1.pct }};color:#fff;font:600 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;padding:8px 13px;border-radius:7px">{{ m1.status }}</span>
+        <div style="position:absolute;left:24px;right:24px;bottom:22px;z-index:1">
+          <span style="display:block;font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-lt);margin-bottom:9px">{{ m1.ort }}</span>
+          <h3 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:clamp(19px,1.5vw,25px);line-height:1.18;color:#FDFCFA">{{ m1.name }}</h3>
+        </div>
+        <div class="bd-slide" style="position:absolute;inset:0;z-index:2;background:linear-gradient(180deg,rgba(18,16,14,.95),rgba(18,16,14,.9));display:flex;flex-direction:column;justify-content:space-between;padding:26px 26px 28px">
+          <div>
+            <span style="display:inline-block;background:{{ m1.pct }};color:#fff;font:600 9px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;padding:7px 11px;border-radius:6px;margin-bottom:18px">{{ m1.status }}</span>
+            <span style="display:block;font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-lt);margin-bottom:10px">{{ m1.ort }}</span>
+            <h3 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:clamp(20px,1.7vw,26px);line-height:1.18;color:#FDFCFA">{{ m1.name }}</h3>
+          </div>
+          <div>
+            <div style="display:flex;gap:18px;flex-wrap:wrap;padding:15px 0;border-top:1px solid rgba(255,255,255,.16);border-bottom:1px solid rgba(255,255,255,.16);margin-bottom:16px">
+              <span style="font:300 12px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(245,242,236,.6)">Wfl. <span style="color:#FDFCFA">{{ m1.wfl }}</span></span>
+              <span style="font:300 12px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(245,242,236,.6)">GF <span style="color:#FDFCFA">{{ m1.gf }}</span></span>
+              <span style="font:300 12px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(245,242,236,.6)">BJ <span style="color:#FDFCFA">{{ m1.bj }}</span></span>
+            </div>
+            <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px">
+              <sc-if value="{{ m1.notOff }}" hint-placeholder-val="{{ true }}">
+                <div><span style="display:block;font:500 9px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-lt);margin-bottom:5px">Faktor</span><span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:23px;color:var(--accent)">{{ m1.faktor }}</span></div>
+              </sc-if>
+              <sc-if value="{{ m1.offmarket }}" hint-placeholder-val="{{ false }}">
+                <span style="max-width:160px;display:inline-flex;align-items:center;gap:7px;font:600 9px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-lt)">&#128274; Für vorgemerkte Investoren</span>
+              </sc-if>
+              <span style="flex:0 0 auto;font:600 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#FDFCFA;display:inline-flex;align-items:center;gap:7px">Details &rarr;</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div onClick="{{ m2.open }}" data-mtile class="bd-card" style="position:relative;aspect-ratio:1;border-radius:22px;overflow:hidden;cursor:pointer;transition:box-shadow .5s ease">
+        <img src="{{ m2.img }}" alt="{{ m2.name }}" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"/>
+        <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(18,16,14,.8) 0%,rgba(18,16,14,.05) 52%,transparent 74%)"></div>
+        <span style="position:absolute;top:18px;left:18px;z-index:1;background:{{ m2.pct }};color:#fff;font:600 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;padding:8px 13px;border-radius:7px">{{ m2.status }}</span>
+        <div style="position:absolute;left:24px;right:24px;bottom:22px;z-index:1">
+          <span style="display:block;font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-lt);margin-bottom:9px">{{ m2.ort }}</span>
+          <h3 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:clamp(19px,1.5vw,25px);line-height:1.18;color:#FDFCFA">{{ m2.name }}</h3>
+        </div>
+        <div class="bd-slide" style="position:absolute;inset:0;z-index:2;background:linear-gradient(180deg,rgba(18,16,14,.95),rgba(18,16,14,.9));display:flex;flex-direction:column;justify-content:space-between;padding:26px 26px 28px">
+          <div>
+            <span style="display:inline-block;background:{{ m2.pct }};color:#fff;font:600 9px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;padding:7px 11px;border-radius:6px;margin-bottom:18px">{{ m2.status }}</span>
+            <span style="display:block;font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-lt);margin-bottom:10px">{{ m2.ort }}</span>
+            <h3 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:clamp(20px,1.7vw,26px);line-height:1.18;color:#FDFCFA">{{ m2.name }}</h3>
+          </div>
+          <div>
+            <div style="display:flex;gap:18px;flex-wrap:wrap;padding:15px 0;border-top:1px solid rgba(255,255,255,.16);border-bottom:1px solid rgba(255,255,255,.16);margin-bottom:16px">
+              <span style="font:300 12px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(245,242,236,.6)">Wfl. <span style="color:#FDFCFA">{{ m2.wfl }}</span></span>
+              <span style="font:300 12px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(245,242,236,.6)">GF <span style="color:#FDFCFA">{{ m2.gf }}</span></span>
+              <span style="font:300 12px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(245,242,236,.6)">BJ <span style="color:#FDFCFA">{{ m2.bj }}</span></span>
+            </div>
+            <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px">
+              <sc-if value="{{ m2.notOff }}" hint-placeholder-val="{{ true }}">
+                <div><span style="display:block;font:500 9px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-lt);margin-bottom:5px">Faktor</span><span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:23px;color:var(--accent)">{{ m2.faktor }}</span></div>
+              </sc-if>
+              <sc-if value="{{ m2.offmarket }}" hint-placeholder-val="{{ false }}">
+                <span style="max-width:160px;display:inline-flex;align-items:center;gap:7px;font:600 9px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-lt)">&#128274; Für vorgemerkte Investoren</span>
+              </sc-if>
+              <span style="flex:0 0 auto;font:600 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#FDFCFA;display:inline-flex;align-items:center;gap:7px">Details &rarr;</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div onClick="{{ m3.open }}" data-mtile class="bd-card" style="position:relative;aspect-ratio:1;border-radius:22px;overflow:hidden;cursor:pointer;transition:box-shadow .5s ease">
+        <img src="{{ m3.img }}" alt="{{ m3.name }}" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"/>
+        <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(18,16,14,.8) 0%,rgba(18,16,14,.05) 52%,transparent 74%)"></div>
+        <span style="position:absolute;top:18px;left:18px;z-index:1;background:{{ m3.pct }};color:#fff;font:600 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;padding:8px 13px;border-radius:7px">{{ m3.status }}</span>
+        <div style="position:absolute;left:24px;right:24px;bottom:22px;z-index:1">
+          <span style="display:block;font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-lt);margin-bottom:9px">{{ m3.ort }}</span>
+          <h3 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:clamp(19px,1.5vw,25px);line-height:1.18;color:#FDFCFA">{{ m3.name }}</h3>
+        </div>
+        <div class="bd-slide" style="position:absolute;inset:0;z-index:2;background:linear-gradient(180deg,rgba(18,16,14,.95),rgba(18,16,14,.9));display:flex;flex-direction:column;justify-content:space-between;padding:26px 26px 28px">
+          <div>
+            <span style="display:inline-block;background:{{ m3.pct }};color:#fff;font:600 9px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;padding:7px 11px;border-radius:6px;margin-bottom:18px">{{ m3.status }}</span>
+            <span style="display:block;font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-lt);margin-bottom:10px">{{ m3.ort }}</span>
+            <h3 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:clamp(20px,1.7vw,26px);line-height:1.18;color:#FDFCFA">{{ m3.name }}</h3>
+          </div>
+          <div>
+            <div style="display:flex;gap:18px;flex-wrap:wrap;padding:15px 0;border-top:1px solid rgba(255,255,255,.16);border-bottom:1px solid rgba(255,255,255,.16);margin-bottom:16px">
+              <span style="font:300 12px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(245,242,236,.6)">Wfl. <span style="color:#FDFCFA">{{ m3.wfl }}</span></span>
+              <span style="font:300 12px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(245,242,236,.6)">GF <span style="color:#FDFCFA">{{ m3.gf }}</span></span>
+              <span style="font:300 12px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(245,242,236,.6)">BJ <span style="color:#FDFCFA">{{ m3.bj }}</span></span>
+            </div>
+            <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px">
+              <sc-if value="{{ m3.notOff }}" hint-placeholder-val="{{ true }}">
+                <div><span style="display:block;font:500 9px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-lt);margin-bottom:5px">Faktor</span><span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:23px;color:var(--accent)">{{ m3.faktor }}</span></div>
+              </sc-if>
+              <sc-if value="{{ m3.offmarket }}" hint-placeholder-val="{{ false }}">
+                <span style="max-width:160px;display:inline-flex;align-items:center;gap:7px;font:600 9px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-lt)">&#128274; Für vorgemerkte Investoren</span>
+              </sc-if>
+              <span style="flex:0 0 auto;font:600 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#FDFCFA;display:inline-flex;align-items:center;gap:7px">Details &rarr;</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div onClick="{{ m4.open }}" data-mtile class="bd-card" style="position:relative;aspect-ratio:1;border-radius:22px;overflow:hidden;cursor:pointer;transition:box-shadow .5s ease">
+        <img src="{{ m4.img }}" alt="{{ m4.name }}" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"/>
+        <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(18,16,14,.8) 0%,rgba(18,16,14,.05) 52%,transparent 74%)"></div>
+        <span style="position:absolute;top:18px;left:18px;z-index:1;background:{{ m4.pct }};color:#fff;font:600 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;padding:8px 13px;border-radius:7px">{{ m4.status }}</span>
+        <div style="position:absolute;left:24px;right:24px;bottom:22px;z-index:1">
+          <span style="display:block;font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-lt);margin-bottom:9px">{{ m4.ort }}</span>
+          <h3 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:clamp(19px,1.5vw,25px);line-height:1.18;color:#FDFCFA">{{ m4.name }}</h3>
+        </div>
+        <div class="bd-slide" style="position:absolute;inset:0;z-index:2;background:linear-gradient(180deg,rgba(18,16,14,.95),rgba(18,16,14,.9));display:flex;flex-direction:column;justify-content:space-between;padding:26px 26px 28px">
+          <div>
+            <span style="display:inline-block;background:{{ m4.pct }};color:#fff;font:600 9px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;padding:7px 11px;border-radius:6px;margin-bottom:18px">{{ m4.status }}</span>
+            <span style="display:block;font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-lt);margin-bottom:10px">{{ m4.ort }}</span>
+            <h3 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:clamp(20px,1.7vw,26px);line-height:1.18;color:#FDFCFA">{{ m4.name }}</h3>
+          </div>
+          <div>
+            <div style="display:flex;gap:18px;flex-wrap:wrap;padding:15px 0;border-top:1px solid rgba(255,255,255,.16);border-bottom:1px solid rgba(255,255,255,.16);margin-bottom:16px">
+              <span style="font:300 12px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(245,242,236,.6)">Wfl. <span style="color:#FDFCFA">{{ m4.wfl }}</span></span>
+              <span style="font:300 12px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(245,242,236,.6)">GF <span style="color:#FDFCFA">{{ m4.gf }}</span></span>
+              <span style="font:300 12px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(245,242,236,.6)">BJ <span style="color:#FDFCFA">{{ m4.bj }}</span></span>
+            </div>
+            <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px">
+              <sc-if value="{{ m4.notOff }}" hint-placeholder-val="{{ true }}">
+                <div><span style="display:block;font:500 9px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-lt);margin-bottom:5px">Faktor</span><span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:23px;color:var(--accent)">{{ m4.faktor }}</span></div>
+              </sc-if>
+              <sc-if value="{{ m4.offmarket }}" hint-placeholder-val="{{ false }}">
+                <span style="max-width:160px;display:inline-flex;align-items:center;gap:7px;font:600 9px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-lt)">&#128274; Für vorgemerkte Investoren</span>
+              </sc-if>
+              <span style="flex:0 0 auto;font:600 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#FDFCFA;display:inline-flex;align-items:center;gap:7px">Details &rarr;</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div onClick="{{ m5.open }}" data-mtile class="bd-card" style="position:relative;aspect-ratio:1;border-radius:22px;overflow:hidden;cursor:pointer;transition:box-shadow .5s ease">
+        <img src="{{ m5.img }}" alt="{{ m5.name }}" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"/>
+        <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(18,16,14,.8) 0%,rgba(18,16,14,.05) 52%,transparent 74%)"></div>
+        <span style="position:absolute;top:18px;left:18px;z-index:1;background:{{ m5.pct }};color:#fff;font:600 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;padding:8px 13px;border-radius:7px">{{ m5.status }}</span>
+        <div style="position:absolute;left:24px;right:24px;bottom:22px;z-index:1">
+          <span style="display:block;font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-lt);margin-bottom:9px">{{ m5.ort }}</span>
+          <h3 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:clamp(19px,1.5vw,25px);line-height:1.18;color:#FDFCFA">{{ m5.name }}</h3>
+        </div>
+        <div class="bd-slide" style="position:absolute;inset:0;z-index:2;background:linear-gradient(180deg,rgba(18,16,14,.95),rgba(18,16,14,.9));display:flex;flex-direction:column;justify-content:space-between;padding:26px 26px 28px">
+          <div>
+            <span style="display:inline-block;background:{{ m5.pct }};color:#fff;font:600 9px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;padding:7px 11px;border-radius:6px;margin-bottom:18px">{{ m5.status }}</span>
+            <span style="display:block;font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-lt);margin-bottom:10px">{{ m5.ort }}</span>
+            <h3 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:clamp(20px,1.7vw,26px);line-height:1.18;color:#FDFCFA">{{ m5.name }}</h3>
+          </div>
+          <div>
+            <div style="display:flex;gap:18px;flex-wrap:wrap;padding:15px 0;border-top:1px solid rgba(255,255,255,.16);border-bottom:1px solid rgba(255,255,255,.16);margin-bottom:16px">
+              <span style="font:300 12px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(245,242,236,.6)">Wfl. <span style="color:#FDFCFA">{{ m5.wfl }}</span></span>
+              <span style="font:300 12px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(245,242,236,.6)">GF <span style="color:#FDFCFA">{{ m5.gf }}</span></span>
+              <span style="font:300 12px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(245,242,236,.6)">BJ <span style="color:#FDFCFA">{{ m5.bj }}</span></span>
+            </div>
+            <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px">
+              <sc-if value="{{ m5.notOff }}" hint-placeholder-val="{{ true }}">
+                <div><span style="display:block;font:500 9px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-lt);margin-bottom:5px">Faktor</span><span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:23px;color:var(--accent)">{{ m5.faktor }}</span></div>
+              </sc-if>
+              <sc-if value="{{ m5.offmarket }}" hint-placeholder-val="{{ false }}">
+                <span style="max-width:160px;display:inline-flex;align-items:center;gap:7px;font:600 9px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-lt)">&#128274; Für vorgemerkte Investoren</span>
+              </sc-if>
+              <span style="flex:0 0 auto;font:600 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#FDFCFA;display:inline-flex;align-items:center;gap:7px">Details &rarr;</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div data-pad style="max-width:1560px;margin:0 auto;padding:40px clamp(22px,5vw,48px) 0">
+      <span onClick="{{ goList }}" style="display:inline-flex;align-items:center;gap:12px;font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-dk);cursor:pointer;border-bottom:1px solid rgba(150,119,58,.4);padding-bottom:6px;transition:.3s" style-hover="color:var(--accent)">Alle Objekte ansehen &rarr;</span>
+    </div>
+  </section>
+
+  <!-- STATEMENT BAND -->
+  <section style="position:relative;min-height:clamp(380px,46vw,560px);display:flex;align-items:center;justify-content:center;overflow:hidden">
+    <div style="position:absolute;inset:0;z-index:0;background:url('https://images.unsplash.com/photo-1460472178825-e5240623afd5?auto=format&fit=crop&w=2200&q=80') center/cover;background-attachment:fixed"></div>
+    <div style="position:absolute;inset:0;z-index:1;background:linear-gradient(rgba(18,16,14,.68),rgba(18,16,14,.74))"></div>
+    <div data-rev style="position:relative;z-index:2;max-width:880px;text-align:center;padding:60px clamp(22px,5vw,48px)">
+      <div style="display:flex;align-items:center;gap:14px;justify-content:center;margin-bottom:26px">
+        <span style="width:30px;height:1px;background:var(--bd-gold,var(--accent))"></span>
+        <span style="font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.32em;text-transform:uppercase;color:var(--accent-lt)">Off-Market · NRW</span>
+        <span style="width:30px;height:1px;background:var(--bd-gold,var(--accent))"></span>
+      </div>
+      <h2 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:400;letter-spacing:-.02em;line-height:1.22;font-size:clamp(26px,3.6vw,50px);color:var(--surface)">Die besten Objekte werden nie inseriert.<br><em style="font-style:italic;color:var(--bd-gold,var(--accent))">Sie werden vertraut.</em></h2>
+      <p style="margin:26px auto 0;max-width:520px;font:300 clamp(15px,1.2vw,18px)/1.7 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(245,242,236,.8)">Über 480 Mio. € begleitetes Transaktionsvolumen — abseits des öffentlichen Marktes, auf Augenhöhe mit professionellen Investoren.</p>
+      <span onClick="{{ goContact }}" style="margin-top:36px;display:inline-flex;align-items:center;gap:12px;background:var(--bd-gold,var(--accent));color:var(--on-accent,var(--ink));padding:17px 34px;cursor:pointer;font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;transition:.4s" style-hover="background:var(--accent-lt);transform:translateY(-2px)">Off-Market-Zugang anfragen &rarr;</span>
+    </div>
+  </section>
+
+  <!-- VORGEHEN -->
+  <section id="vorgehen" style="background:var(--bg);padding:clamp(90px,12vw,150px) 0">
+    <div data-pad style="max-width:1560px;margin:0 auto;padding:0 clamp(22px,5vw,48px)">
+      <div data-rev style="margin-bottom:60px;max-width:680px">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px">
+          <span style="width:30px;height:1px;background:var(--bd-gold,var(--accent))"></span>
+          <span style="font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.32em;text-transform:uppercase;color:var(--accent-dk)">Unser Vorgehen</span>
+        </div>
+        <h2 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:400;letter-spacing:-.02em;line-height:1.05;font-size:clamp(32px,4.5vw,56px);color:var(--ink)">Vom ersten Gespräch <em style="font-style:italic;color:var(--bd-gold,var(--accent))">bis zum Notar</em></h2>
+      </div>
+      <div style="position:relative">
+        <div style="position:absolute;left:0;right:0;top:33px;height:1px;background:var(--line2)"></div>
+        <div style="position:absolute;left:0;right:0;top:33px;height:1px;background:var(--bd-gold,var(--accent));transform-origin:left;animation:bdLine both;animation-timeline:view();animation-range:cover 8% cover 66%"></div>
+        <div data-c4 style="display:grid;grid-template-columns:repeat(4,1fr);gap:30px;position:relative">
+          <sc-for list="{{ vorgehen }}" as="v" hint-placeholder-count="4">
+          <div data-rev>
+            <div style="width:66px;height:66px;border-radius:50%;background:var(--bg);border:1px solid var(--bd-gold,var(--accent));display:flex;align-items:center;justify-content:center;margin-bottom:26px">
+              <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-style:italic;font-size:24px;color:var(--bd-gold,var(--accent))">{{ v.no }}</span>
+            </div>
+            <h3 style="margin:0 0 12px;font:500 18px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink)">{{ v.title }}</h3>
+            <p style="margin:0;font:300 14px/1.65 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">{{ v.text }}</p>
+          </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- KLIENTEL -->
+  <section style="background:var(--band);padding:clamp(90px,12vw,150px) 0;position:relative;overflow:hidden">
+    <img src="assets/baudorf-emblem-gold.png" alt="" style="position:absolute;left:-3%;top:50%;width:min(440px,40vw);opacity:.05;pointer-events:none;animation:bdFloat 11s ease-in-out infinite"/>
+    <div data-pad style="max-width:1560px;margin:0 auto;padding:0 clamp(22px,5vw,48px);position:relative;z-index:1">
+      <div data-split style="display:flex;gap:clamp(40px,8vw,100px);align-items:center">
+        <div data-rev style="flex:0 0 auto;max-width:380px">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px">
+            <span style="width:30px;height:1px;background:var(--bd-gold,var(--accent))"></span>
+            <span style="font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.32em;text-transform:uppercase;color:var(--accent-dk)">Unsere Klientel</span>
+          </div>
+          <h2 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:400;letter-spacing:-.02em;line-height:1.08;font-size:clamp(30px,4vw,50px);color:var(--ink)">Mit wem wir <em style="font-style:italic;color:var(--bd-gold,var(--accent))">arbeiten</em></h2>
+          <p style="margin:26px 0 0;font:300 15px/1.75 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(24,22,20,.7)">Unsere Mandanten erwarten Substanz statt Show. Wir bewegen uns dort, wo Vertraulichkeit zählt und Entscheidungen mit Bedacht getroffen werden.</p>
+        </div>
+        <div data-rev style="flex:1;width:100%">
+          <sc-for list="{{ klientel }}" as="k" hint-placeholder-count="5">
+          <div style="display:flex;align-items:center;gap:24px;padding:26px 0;border-bottom:1px solid rgba(24,22,20,.1);transition:.4s" style-hover="padding-left:12px">
+            <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-style:italic;font-size:18px;color:var(--bd-gold,var(--accent));min-width:30px">0{{ $index }}</span>
+            <span style="font:400 clamp(20px,2.4vw,30px)/1.2 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink)">{{ k }}</span>
+          </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- UEBER / TEAM -->
+  <section id="ueber" style="background:var(--surface);padding:clamp(90px,12vw,150px) 0">
+    <div data-pad style="max-width:1560px;margin:0 auto;padding:0 clamp(22px,5vw,48px)">
+      <div data-split-r style="display:flex;gap:clamp(40px,7vw,90px);align-items:center">
+        <div data-rev style="flex:1">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px">
+            <span style="width:30px;height:1px;background:var(--bd-gold,var(--accent))"></span>
+            <span style="font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.32em;text-transform:uppercase;color:var(--accent-dk)">Über uns</span>
+          </div>
+          <h2 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:400;letter-spacing:-.02em;line-height:1.05;font-size:clamp(32px,4.5vw,56px);color:var(--ink)">Andrea Krüger</h2>
+          <p style="margin:14px 0 0;font:500 13px/1.5 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.06em;color:var(--accent-dk);text-transform:uppercase">Geschäftsführerin · Immobilienmaklerin · Dipl.-Ing. Architektin</p>
+          <p style="margin:28px 0 0;max-width:560px;font:300 clamp(16px,1.2vw,18px)/1.75 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">1994 als Architekturbüro gegründet, 2018 in die Baudorf Immobilien GmbH überführt: Aus dem geschulten Blick für Substanz und Gestaltung wurde ein Maklerhaus, das Immobilien nicht nur vermittelt, sondern versteht.</p>
+          <p style="margin:20px 0 0;max-width:560px;font:300 clamp(16px,1.2vw,18px)/1.75 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">Als Architektin liest Andrea Krüger Gebäude — als Maklerin liest sie Menschen. Diese Verbindung macht den Unterschied, wenn es um diskrete, anspruchsvolle Transaktionen geht.</p>
+          <div style="display:flex;gap:50px;margin-top:40px;flex-wrap:wrap">
+            <div><span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:42px;color:var(--bd-gold,var(--accent))">1994</span><span style="display:block;font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:6px">Gegründet</span></div>
+            <div><span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:42px;color:var(--bd-gold,var(--accent))">Velbert</span><span style="display:block;font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:6px">Sitz · NRW</span></div>
+          </div>
+        </div>
+        <div data-rev style="flex:0 0 auto;width:min(420px,90vw)">
+          <div style="position:relative;width:100%;aspect-ratio:1;overflow:hidden;border-radius:26px">
+            <img src="assets/andrea.jpg" alt="Andrea Krüger" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block"/>
+            <div style="position:absolute;left:0;right:0;bottom:0;height:42%;background:linear-gradient(0deg,rgba(18,16,14,.55),transparent)"></div>
+            <div style="position:absolute;left:26px;bottom:24px">
+              <div style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:20px;color:var(--surface)">Andrea Krüger</div>
+              <div style="font:500 11px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-lt);margin-top:5px">Geschäftsführerin</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <sc-if value="{{ showAyla }}" hint-placeholder-val="{{ true }}">
+      <div data-rev data-split style="margin-top:60px;display:flex;align-items:center;gap:36px;background:var(--bg);border:1px solid var(--line);padding:clamp(24px,3vw,40px)">
+        <img src="assets/ayla.jpg" alt="Ayla" style="flex:0 0 auto;width:130px;height:130px;border-radius:50%;object-fit:cover;display:block"/>
+        <div style="flex:1">
+          <span style="font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-dk)">Immobilien-Spürnase</span>
+          <h3 style="margin:12px 0 10px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:clamp(26px,3vw,36px);color:var(--ink)">Ayla</h3>
+          <p style="margin:0;max-width:620px;font:300 15px/1.7 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">Unsere Bürohündin begleitet jeden Termin mit untrüglichem Gespür — für gute Lagen, ehrliche Menschen und den passenden Moment für eine Pause. Sie gehört einfach dazu.</p>
+        </div>
+      </div>
+      </sc-if>
+    </div>
+  </section>
+
+  <!-- TRUST / ZAHLEN -->
+  <section id="bd-stats" style="background:var(--band);padding:clamp(80px,10vw,130px) 0">
+    <div data-pad style="max-width:1560px;margin:0 auto;padding:0 clamp(22px,5vw,48px)">
+      <div data-c4 style="display:grid;grid-template-columns:repeat(4,1fr);gap:40px 30px">
+        <div data-rev>
+          <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:clamp(48px,6vw,76px);line-height:1;color:var(--ink)">{{ counts.a }}</span>
+          <span style="display:block;width:30px;height:1px;background:var(--bd-gold,var(--accent));margin:18px 0"></span>
+          <span style="font:400 14px/1.5 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(24,22,20,.62)">Jahre Erfahrung — seit 1994 am Markt</span>
+        </div>
+        <div data-rev>
+          <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:clamp(48px,6vw,76px);line-height:1;color:var(--ink)">{{ counts.b }}<span style="font-size:.5em;color:var(--bd-gold,var(--accent))"> Mio. €</span></span>
+          <span style="display:block;width:30px;height:1px;background:var(--bd-gold,var(--accent));margin:18px 0"></span>
+          <span style="font:400 14px/1.5 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(24,22,20,.62)">Transaktionsvolumen begleitet</span>
+        </div>
+        <div data-rev>
+          <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:clamp(48px,6vw,76px);line-height:1;color:var(--ink)">{{ counts.c }}<span style="font-size:.5em;color:var(--bd-gold,var(--accent))"> %</span></span>
+          <span style="display:block;width:30px;height:1px;background:var(--bd-gold,var(--accent));margin:18px 0"></span>
+          <span style="font:400 14px/1.5 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(24,22,20,.62)">Diskretion — Off-Market als Kernsegment</span>
+        </div>
+        <div data-rev>
+          <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:clamp(48px,6vw,76px);line-height:1;color:var(--ink)">{{ counts.d }}<span style="font-size:.5em;color:var(--bd-gold,var(--accent))"> h</span></span>
+          <span style="display:block;width:30px;height:1px;background:var(--bd-gold,var(--accent));margin:18px 0"></span>
+          <span style="font:400 14px/1.5 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(24,22,20,.62)">Reaktionszeit auf Anfragen i. d. R.</span>
+        </div>
+      </div>
+
+      <div data-rev style="margin-top:clamp(60px,8vw,100px);border-top:1px solid rgba(24,22,20,.12);padding-top:clamp(40px,5vw,64px)">
+        <div data-split style="display:flex;gap:50px;align-items:flex-start;justify-content:space-between">
+          <div style="flex:1;max-width:820px">
+            <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:60px;color:var(--bd-gold,var(--accent));line-height:0;display:block;height:30px">&ldquo;</span>
+            <p style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:400;font-size:clamp(24px,3vw,38px);line-height:1.35;color:var(--ink)">{{ testi.quote }}</p>
+            <p style="margin:28px 0 0;font:500 13px/1.5 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.04em;color:var(--accent-dk)">{{ testi.who }} · {{ testi.city }}</p>
+          </div>
+          <div style="display:flex;gap:12px;flex:0 0 auto">
+            <span onClick="{{ testiPrev }}" style="width:50px;height:50px;border:1px solid rgba(24,22,20,.22);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink);transition:.3s" style-hover="border-color:var(--accent);color:var(--accent)">&larr;</span>
+            <span onClick="{{ testiNext }}" style="width:50px;height:50px;border:1px solid rgba(24,22,20,.22);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink);transition:.3s" style-hover="border-color:var(--accent);color:var(--accent)">&rarr;</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIPPGEBER + KARRIERE -->
+  <section style="background:var(--bg);padding:clamp(80px,10vw,130px) 0">
+    <div data-pad style="max-width:1560px;margin:0 auto;padding:0 clamp(22px,5vw,48px)">
+      <div data-c2 style="display:grid;grid-template-columns:1.2fr 1fr;gap:1px;background:var(--line2);border:1px solid var(--line2)">
+        <div data-rev style="background:var(--surface);padding:clamp(34px,4vw,56px);display:flex;flex-direction:column;justify-content:space-between;min-height:280px">
+          <div>
+            <span style="font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.3em;text-transform:uppercase;color:var(--accent-dk)">Tippgeber</span>
+            <h3 style="margin:20px 0 16px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:clamp(28px,3.4vw,42px);line-height:1.1;color:var(--ink)">Empfehlen Sie uns — und <em style="font-style:italic;color:var(--bd-gold,var(--accent))">profitieren Sie.</em></h3>
+            <p style="margin:0;max-width:460px;font:300 15px/1.7 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">Sie kennen einen Eigentümer mit Verkaufsabsicht? Vermitteln Sie den Kontakt — bei erfolgreichem Abschluss honorieren wir Ihren Hinweis.</p>
+          </div>
+          <span onClick="{{ goContact }}" style="margin-top:30px;align-self:flex-start;display:inline-flex;align-items:center;gap:12px;background:var(--bd-gold,var(--accent));color:var(--on-accent,var(--ink));padding:16px 30px;cursor:pointer;font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;transition:.35s" style-hover="background:var(--accent-dk);transform:translateY(-2px)">Tipp einreichen &rarr;</span>
+        </div>
+        <div data-rev style="background:var(--ink);padding:clamp(34px,4vw,56px);display:flex;flex-direction:column;justify-content:space-between;min-height:280px">
+          <div>
+            <span style="font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.3em;text-transform:uppercase;color:var(--accent-lt)">Karriere</span>
+            <h3 style="margin:20px 0 16px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:clamp(28px,3.4vw,42px);line-height:1.1;color:var(--surface)">Werden Sie Teil von Baudorf.</h3>
+            <p style="margin:0;max-width:440px;font:300 15px/1.7 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(255,255,255,.72)">Wir suchen Menschen mit Gespür für Immobilien und Diskretion. Initiativbewerbungen sind jederzeit willkommen.</p>
+          </div>
+          <span onClick="{{ goContact }}" style="margin-top:30px;align-self:flex-start;display:inline-flex;align-items:center;gap:12px;background:transparent;color:var(--surface);border:1px solid rgba(255,255,255,.32);padding:16px 30px;cursor:pointer;font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;transition:.35s" style-hover="border-color:var(--accent);color:var(--accent)">Initiativ bewerben &rarr;</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSIGHTS -->
+  <section style="background:var(--surface);padding:clamp(90px,12vw,150px) 0;border-top:1px solid var(--line)">
+    <div data-pad style="max-width:1560px;margin:0 auto;padding:0 clamp(22px,5vw,48px)">
+      <div data-rev style="display:flex;justify-content:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap;margin-bottom:50px">
+        <div>
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px">
+            <span style="width:30px;height:1px;background:var(--bd-gold,var(--accent))"></span>
+            <span style="font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.32em;text-transform:uppercase;color:var(--accent-dk)">Markt &amp; Insights</span>
+          </div>
+          <h2 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:400;letter-spacing:-.02em;line-height:1.05;font-size:clamp(32px,4.5vw,56px);color:var(--ink)">Expertenwissen für <em style="font-style:italic;color:var(--bd-gold,var(--accent))">kluge Investoren</em></h2>
+        </div>
+        <span style="font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-dk);cursor:pointer;border-bottom:1px solid rgba(150,119,58,.4);padding-bottom:6px">Alle Beiträge &rarr;</span>
+      </div>
+      <div data-c3 style="display:grid;grid-template-columns:repeat(3,1fr);gap:34px">
+        <sc-for list="{{ insights }}" as="a" hint-placeholder-count="0">
+        <div data-rev onClick="{{ a.open }}" style="cursor:pointer;transition:.4s">
+          <div data-mtile style="position:relative;aspect-ratio:1;border-radius:18px;overflow:hidden;margin-bottom:22px;--z:scale(1)" style-hover="--z:scale(1.06)"><img src="{{ a.img }}" alt="{{ a.title }}" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:var(--z,scale(1));transition:transform .85s cubic-bezier(.22,1,.36,1)"/></div>
+          <div style="border-top:1px solid var(--ink);padding-top:22px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+            <span style="font:600 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--bd-gold,var(--accent))">{{ a.cat }}</span>
+            <span style="font:400 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#9a948d">{{ a.read }}</span>
+          </div>
+          <h3 style="margin:0 0 26px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:clamp(22px,2.4vw,28px);line-height:1.22;color:var(--ink)">{{ a.title }}</h3>
+          <span style="font:400 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#9a948d">{{ a.date }}</span>
+          </div>
+        </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- KONTAKT CTA -->
+  <section style="position:relative;min-height:clamp(420px,48vw,600px);display:flex;align-items:center;overflow:hidden">
+    <img src="https://images.unsplash.com/photo-1497366412874-3415097a27e7?auto=format&fit=crop&w=2000&q=80" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0"/>
+    <div style="position:absolute;inset:0;z-index:1;background:linear-gradient(100deg,rgba(18,16,14,.9) 0%,rgba(18,16,14,.6) 50%,rgba(18,16,14,.3) 100%)"></div>
+    <div data-pad style="position:relative;z-index:2;max-width:1560px;margin:0 auto;padding:clamp(60px,8vw,90px) clamp(22px,5vw,48px);width:100%">
+      <div data-rev style="max-width:560px">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px">
+          <span style="width:30px;height:1px;background:var(--bd-gold,var(--accent))"></span>
+          <span style="font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.32em;text-transform:uppercase;color:var(--accent-lt)">Kontakt</span>
+        </div>
+        <h2 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:400;letter-spacing:-.025em;line-height:1.04;font-size:clamp(34px,5vw,64px);color:var(--surface)">Sprechen wir — <em style="font-style:italic;color:var(--bd-gold,var(--accent))">diskret.</em></h2>
+        <p style="margin:24px 0 0;max-width:480px;font:300 clamp(16px,1.2vw,18px)/1.7 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(245,242,236,.82)">Ob Verkauf, Investment oder Bewertung — wir melden uns persönlich und vertraulich, in der Regel innerhalb von 24 Stunden.</p>
+        <div data-split style="display:flex;gap:16px;margin-top:38px">
+          <span onClick="{{ goContact }}" style="display:inline-flex;align-items:center;gap:12px;background:var(--bd-gold,var(--accent));color:var(--on-accent,var(--ink));padding:18px 36px;cursor:pointer;font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;transition:.4s" style-hover="background:var(--accent-lt);transform:translateY(-2px)">Anfrage senden &rarr;</span>
+          <a href="tel:{{ telefon }}" style="display:inline-flex;align-items:center;gap:12px;background:transparent;color:var(--bg);border:1px solid rgba(245,242,236,.34);padding:18px 36px;text-decoration:none;font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;transition:.4s" style-hover="border-color:var(--accent);color:var(--accent)">Anrufen</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+</sc-if>
+
+<!--SCREENS-->
+
+<!-- ============ IMMOBILIEN LIST ============ -->
+<sc-if value="{{ isList }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Immobilien" style="background:var(--bg);padding-top:96px;min-height:100vh">
+  <section style="background:var(--band);padding:clamp(56px,7vw,84px) 0;position:relative;overflow:hidden">
+    <img src="assets/baudorf-emblem-gold.png" alt="" style="position:absolute;right:-2%;top:50%;width:min(420px,40vw);opacity:.06;pointer-events:none"/>
+    <div data-pad style="max-width:1560px;margin:0 auto;padding:0 clamp(22px,5vw,48px);position:relative;z-index:1">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px">
+        <span style="width:30px;height:1px;background:var(--bd-gold,var(--accent))"></span>
+        <span style="font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.32em;text-transform:uppercase;color:var(--accent-dk)">Immobilien</span>
+      </div>
+      <h1 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:400;letter-spacing:-.025em;line-height:1;font-size:clamp(44px,7vw,86px);color:var(--ink)">Das <em style="font-style:italic;color:var(--bd-gold,var(--accent))">Portfolio</em></h1>
+      <p style="margin:24px 0 0;max-width:560px;font:300 clamp(16px,1.2vw,18px)/1.7 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(24,22,20,.72)">Ausgewählte Wohn-, Gewerbe- und Kapitalanlageobjekte. Off-Market-Objekte sind sichtbar, ihre Eckdaten jedoch vorgemerkten Investoren vorbehalten.</p>
+    </div>
+  </section>
+
+  <div data-pad style="max-width:1560px;margin:0 auto;padding:0 clamp(22px,5vw,48px)">
+    <!-- filter bar -->
+    <div style="margin:34px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,2.4vw,30px);display:flex;flex-wrap:wrap;gap:24px 44px;justify-content:space-between;align-items:center;box-shadow:0 18px 44px -32px rgba(24,22,20,.4)">
+      <div style="display:flex;flex-direction:column;gap:18px;flex:1;min-width:280px">
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+          <span style="font:600 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-dk);width:74px;flex:0 0 auto">Status</span>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--bg);border-radius:999px;padding:5px">
+            <sc-for list="{{ statusChips }}" as="c" hint-placeholder-count="5">
+              <sc-if value="{{ c.active }}" hint-placeholder-val="{{ false }}"><span onClick="{{ c.on }}" style="font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.02em;color:var(--on-accent,var(--ink));background:var(--bd-gold,var(--accent));border-radius:999px;padding:10px 18px;cursor:pointer;transition:.3s;box-shadow:0 4px 12px -4px rgba(24,22,20,.35);white-space:nowrap">{{ c.label }}</span></sc-if>
+              <sc-if value="{{ c.activeNot }}" hint-placeholder-val="{{ true }}"><span onClick="{{ c.on }}" style="font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.02em;color:var(--muted);background:transparent;border-radius:999px;padding:10px 18px;cursor:pointer;transition:.3s;white-space:nowrap" style-hover="background:var(--surface);color:var(--ink)">{{ c.label }}</span></sc-if>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+          <span style="font:600 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-dk);width:74px;flex:0 0 auto">Objektart</span>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--bg);border-radius:999px;padding:5px">
+            <sc-for list="{{ artChips }}" as="c" hint-placeholder-count="5">
+              <sc-if value="{{ c.active }}" hint-placeholder-val="{{ false }}"><span onClick="{{ c.on }}" style="font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.02em;color:var(--on-accent,var(--ink));background:var(--bd-gold,var(--accent));border-radius:999px;padding:10px 18px;cursor:pointer;transition:.3s;box-shadow:0 4px 12px -4px rgba(24,22,20,.35);white-space:nowrap">{{ c.label }}</span></sc-if>
+              <sc-if value="{{ c.activeNot }}" hint-placeholder-val="{{ true }}"><span onClick="{{ c.on }}" style="font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.02em;color:var(--muted);background:transparent;border-radius:999px;padding:10px 18px;cursor:pointer;transition:.3s;white-space:nowrap" style-hover="background:var(--surface);color:var(--ink)">{{ c.label }}</span></sc-if>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:11px;flex:0 0 auto">
+        <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:400;font-size:34px;line-height:1;color:var(--bd-gold,var(--accent))">{{ filteredCount }}</span>
+        <span style="font:400 13px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">von {{ totalCount }}<br>Objekten</span>
+      </div>
+    </div>
+
+    <!-- grid -->
+    <div data-c3 style="display:grid;grid-template-columns:repeat(3,1fr);gap:34px;padding:46px 0 clamp(70px,9vw,110px)">
+      <sc-for list="{{ filtered }}" as="o" hint-placeholder-count="0">
+      <div style="background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;transition:.5s cubic-bezier(.22,1,.36,1)" style-hover="transform:translateY(-6px);border-color:var(--accent-dk);box-shadow:0 24px 50px -28px rgba(24,22,20,.4)">
+        <div onClick="{{ o.open }}" style="position:relative;aspect-ratio:1;overflow:hidden;cursor:pointer">
+          <img src="{{ o.img }}" alt="{{ o.name }}" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"/>
+          <span style="position:absolute;top:14px;left:14px;z-index:2;background:{{ o.pct }};color:#fff;font:600 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;padding:8px 13px">{{ o.status }}</span>
+          <span style="position:absolute;top:14px;right:14px;z-index:2;background:rgba(253,252,250,.92);color:var(--muted);font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;padding:8px 12px">{{ o.art }}</span>
+        </div>
+        <div style="padding:24px 26px 28px;display:flex;flex-direction:column;flex:1">
+          <span style="font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--accent-dk)">{{ o.ort }}</span>
+          <h3 onClick="{{ o.open }}" style="margin:13px 0 18px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:25px;line-height:1.12;color:var(--ink);cursor:pointer">{{ o.name }}</h3>
+          <div style="display:flex;gap:16px;flex-wrap:wrap;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:18px">
+            <span style="font:300 13px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8a847d">Wfl. <span style="color:var(--ink)">{{ o.wfl }}</span></span>
+            <span style="font:300 13px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8a847d">GF <span style="color:var(--ink)">{{ o.gf }}</span></span>
+            <span style="font:300 13px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8a847d">BJ <span style="color:var(--ink)">{{ o.bj }}</span></span>
+          </div>
+          <div style="margin-top:auto;display:flex;align-items:flex-end;justify-content:space-between;gap:12px">
+            <sc-if value="{{ o.notOff }}" hint-placeholder-val="{{ true }}">
+              <div><span style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-dk);display:block;margin-bottom:6px">Faktor</span><span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:24px;color:var(--bd-gold,var(--accent))">{{ o.faktor }}</span></div>
+              <div style="text-align:right"><span style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-dk);display:block;margin-bottom:6px">Kaufpreis</span><span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:21px;color:var(--ink)">{{ o.preis }}</span></div>
+            </sc-if>
+            <sc-if value="{{ o.offmarket }}" hint-placeholder-val="{{ false }}">
+              <div><span style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-dk);display:block;margin-bottom:6px">Eckdaten</span><span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:22px;color:#8a847d;filter:blur(6px);user-select:none">{{ o.faktor }} · {{ o.preis }}</span></div>
+              <span onClick="{{ goRegister }}" style="font:600 10px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--on-accent,var(--ink));background:var(--bd-gold,var(--accent));padding:11px 15px;cursor:pointer;transition:.3s;text-align:center" style-hover="background:var(--accent-dk)">Freischalten</span>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ OBJEKT DETAIL ============ -->
+<sc-if value="{{ isDetail }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Objekt-Detail" style="background:var(--bg);padding-top:96px;min-height:100vh">
+  <div data-pad style="max-width:1560px;margin:0 auto;padding:30px clamp(22px,5vw,48px) 0">
+    <span onClick="{{ goList }}" style="font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-dk);cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:.3s" style-hover="color:var(--ink)">&larr; Zurück zum Portfolio</span>
+  </div>
+
+  <!-- gallery -->
+  <div data-pad style="max-width:1560px;margin:0 auto;padding:26px clamp(22px,5vw,48px) 0">
+    <div style="position:relative;aspect-ratio:16/9;width:100%;background:var(--band);overflow:hidden;border-radius:24px">
+      <img src="{{ detailMain }}" alt="{{ detail.name }}" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"/>
+      <span style="position:absolute;top:20px;left:20px;z-index:2;background:{{ detail.pct }};color:#fff;font:600 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;padding:10px 16px">{{ detail.status }}</span>
+      <span onClick="{{ galleryPrev }}" style="position:absolute;left:22px;top:50%;transform:translateY(-50%);z-index:3;width:56px;height:56px;background:rgba(18,16,14,.42);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--surface);font-size:20px;transition:.3s" style-hover="background:var(--bd-gold,var(--accent));color:var(--on-accent,var(--ink))">&larr;</span>
+      <span onClick="{{ galleryNext }}" style="position:absolute;right:22px;top:50%;transform:translateY(-50%);z-index:3;width:56px;height:56px;background:rgba(18,16,14,.42);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--surface);font-size:20px;transition:.3s" style-hover="background:var(--bd-gold,var(--accent));color:var(--on-accent,var(--ink))">&rarr;</span>
+      <span style="position:absolute;right:22px;bottom:22px;z-index:3;background:rgba(18,16,14,.55);backdrop-filter:blur(6px);color:var(--surface);font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;padding:10px 15px">{{ galleryIndex }} / {{ galleryCount }}</span>
+    </div>
+    <div data-c4 style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:16px 0 0">
+      <sc-for list="{{ galleryArr }}" as="g" hint-placeholder-count="4">
+        <div onClick="{{ g.on }}" style="position:relative;aspect-ratio:1;border-radius:14px;background:var(--band);overflow:hidden;cursor:pointer;transition:box-shadow .35s ease,transform .35s ease;box-shadow:{{ g.ring }}" style-hover="transform:translateY(-2px)">
+          <img src="{{ g.url }}" alt="" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"/>
+          <sc-if value="{{ g.notActive }}" hint-placeholder-val="{{ true }}"><div style="position:absolute;inset:0;background:rgba(245,242,236,.28);transition:.3s" style-hover="background:transparent"></div></sc-if>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div data-pad style="max-width:1560px;margin:0 auto;padding:clamp(40px,5vw,64px) clamp(22px,5vw,48px) clamp(70px,9vw,110px)">
+    <div data-split style="display:flex;gap:clamp(36px,5vw,72px);align-items:flex-start">
+      <!-- main -->
+      <div style="flex:1;min-width:0">
+        <span style="font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-dk)">{{ detail.art }} · {{ detail.ort }}</span>
+        <h1 style="margin:18px 0 0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:400;letter-spacing:-.02em;line-height:1.04;font-size:clamp(34px,5vw,60px);color:var(--ink)">{{ detail.name }}</h1>
+
+        <p style="margin:30px 0 0;max-width:680px;font:300 clamp(16px,1.2vw,18px)/1.8 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">{{ detail.kurz }}</p>
+
+        <!-- künye -->
+        <h2 style="margin:48px 0 0;font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--ink)">Objektdaten</h2>
+        <div style="margin-top:22px;border-top:1px solid var(--line2)">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 50px">
+            <div style="display:flex;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--line2)"><span style="font:300 14px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8a847d">Objektart</span><span style="font:500 14px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink)">{{ detail.art }}</span></div>
+            <div style="display:flex;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--line2)"><span style="font:300 14px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8a847d">Standort</span><span style="font:500 14px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink)">{{ detail.ort }}</span></div>
+            <div style="display:flex;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--line2)"><span style="font:300 14px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8a847d">Wohnfläche</span><span style="font:500 14px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink)">{{ detail.wfl }}</span></div>
+            <div style="display:flex;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--line2)"><span style="font:300 14px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8a847d">Grundstück / GF</span><span style="font:500 14px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink)">{{ detail.gf }}</span></div>
+            <div style="display:flex;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--line2)"><span style="font:300 14px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8a847d">Baujahr</span><span style="font:500 14px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink)">{{ detail.bj }}</span></div>
+            <div style="display:flex;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--line2)"><span style="font:300 14px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8a847d">Einheiten</span><span style="font:500 14px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink)">{{ detail.einheiten }}</span></div>
+            <div style="display:flex;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--line2)"><span style="font:300 14px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8a847d">Energie / Standard</span><span style="font:500 14px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink)">{{ detail.energie }}</span></div>
+            <div style="display:flex;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--line2)"><span style="font:300 14px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8a847d">Zustand</span><span style="font:500 14px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink)">{{ detail.zustand }}</span></div>
+          </div>
+        </div>
+
+        <!-- lage -->
+        <h2 style="margin:48px 0 0;font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--ink)">Lage</h2>
+        <p style="margin:14px 0 0;max-width:560px;font:300 14px/1.7 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">Aus Diskretionsgründen zeigen wir nur die ungefähre Region. Die exakte Adresse erhalten vorgemerkte Investoren nach Freigabe.</p>
+        <div style="margin-top:22px;height:340px;background:linear-gradient(135deg,#e9e6df,#dfe4dd);position:relative;overflow:hidden;border-radius:18px;box-shadow:0 18px 44px -32px rgba(24,22,20,.5)">
+          <div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(120,110,90,.10) 0 1px,transparent 1px 52px),repeating-linear-gradient(90deg,rgba(120,110,90,.10) 0 1px,transparent 1px 52px)"></div>
+          <div style="position:absolute;left:-8%;top:62%;width:130%;height:14px;background:rgba(127,176,224,.35);transform:rotate(-7deg)"></div>
+          <div style="position:absolute;left:12%;top:-10%;width:9px;height:130%;background:rgba(150,119,58,.16);transform:rotate(12deg)"></div>
+          <div style="position:absolute;left:58%;top:-20%;width:7px;height:150%;background:rgba(150,119,58,.14);transform:rotate(-18deg)"></div>
+          <div style="position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(196,164,107,.22),rgba(196,164,107,0) 70%);border:1px solid rgba(196,164,107,.5)"></div>
+          <div style="position:absolute;left:50%;top:48%;transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center">
+            <span style="width:38px;height:38px;border-radius:50% 50% 50% 0;background:var(--bd-gold,var(--accent));transform:rotate(-45deg);box-shadow:0 8px 18px -6px rgba(24,22,20,.5);display:flex;align-items:center;justify-content:center"><span style="width:13px;height:13px;border-radius:50%;background:#fff;transform:rotate(45deg)"></span></span>
+          </div>
+          <div style="position:absolute;left:24px;top:24px;background:rgba(253,252,250,.94);backdrop-filter:blur(6px);border-radius:12px;padding:14px 18px;box-shadow:0 10px 26px -14px rgba(24,22,20,.45)">
+            <span style="display:block;font:600 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-dk);margin-bottom:7px">Region</span>
+            <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:20px;color:var(--ink)">{{ detail.ort }}</span>
+          </div>
+          <span style="position:absolute;right:22px;bottom:20px;display:inline-flex;align-items:center;gap:8px;background:rgba(18,16,14,.55);backdrop-filter:blur(6px);color:#FDFCFA;font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.06em;padding:9px 14px;border-radius:999px">&#128274; Genaue Adresse nach Freigabe</span>
+        </div>
+      </div>
+
+      <!-- sidebar -->
+      <aside style="flex:0 0 auto;width:min(380px,100%);position:sticky;top:120px">
+        <div style="background:var(--surface);border:1px solid var(--line2);padding:clamp(28px,3vw,40px)">
+          <span style="font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-dk)">Investment</span>
+          <div style="display:flex;gap:30px;margin:24px 0 26px;flex-wrap:wrap">
+            <div><span style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#8a847d;display:block;margin-bottom:8px">Faktor</span><span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:40px;line-height:1;color:var(--bd-gold,var(--accent))">{{ detail.faktor }}</span></div>
+            <div><span style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#8a847d;display:block;margin-bottom:8px">Brutto-Rendite</span><span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:40px;line-height:1;color:var(--ink)">{{ detail.rendite }}</span></div>
+          </div>
+          <div style="padding:22px 0;border-top:1px solid rgba(24,22,20,.12);border-bottom:1px solid rgba(24,22,20,.12)">
+            <span style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#8a847d;display:block;margin-bottom:8px">Kaufpreis</span>
+            <sc-if value="{{ detail.notOff }}" hint-placeholder-val="{{ true }}"><span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:32px;color:var(--ink)">{{ detail.preis }}</span></sc-if>
+            <sc-if value="{{ detail.offmarket }}" hint-placeholder-val="{{ false }}"><span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:24px;color:#8a847d;filter:blur(8px);user-select:none">{{ detail.preis }}</span></sc-if>
+          </div>
+          <sc-if value="{{ detail.offmarket }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:20px 0 0;font:300 13px/1.6 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(24,22,20,.6)">Dieses Off-Market-Objekt ist vorgemerkten Investoren vorbehalten. Nach Registrierung und Freigabe erhalten Sie alle Unterlagen.</p>
+            <span onClick="{{ goRegister }}" style="margin-top:22px;display:flex;align-items:center;justify-content:center;gap:10px;background:var(--bd-gold,var(--accent));color:var(--on-accent,var(--ink));padding:17px;cursor:pointer;font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;transition:.35s" style-hover="background:var(--accent-dk)">Jetzt registrieren</span>
+          </sc-if>
+          <sc-if value="{{ detail.notOff }}" hint-placeholder-val="{{ true }}">
+            <span onClick="{{ goContact }}" style="margin-top:24px;display:flex;align-items:center;justify-content:center;gap:10px;background:var(--bd-gold,var(--accent));color:var(--on-accent,var(--ink));padding:17px;cursor:pointer;font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;transition:.35s" style-hover="background:var(--accent-dk)">Vertraulich anfragen</span>
+          </sc-if>
+          <a href="tel:{{ telefon }}" style="margin-top:12px;display:flex;align-items:center;justify-content:center;gap:10px;background:transparent;border:1px solid rgba(24,22,20,.24);color:var(--ink);padding:16px;text-decoration:none;font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;transition:.35s" style-hover="border-color:var(--accent);color:var(--accent)">Andrea Krüger anrufen</a>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--line);border-top:none;padding:24px clamp(28px,3vw,40px);display:flex;align-items:center;gap:14px">
+          <span style="width:9px;height:9px;border-radius:50%;background:#3E6B4F;flex:0 0 auto"></span>
+          <span style="font:300 13px/1.5 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">Diskrete Bearbeitung — Reaktion i. d. R. innerhalb von 24 Stunden.</span>
+        </div>
+      </aside>
+    </div>
+
+    <!-- similar -->
+    <sc-if value="{{ hasSimilar }}" hint-placeholder-val="{{ true }}">
+    <div style="margin-top:clamp(56px,7vw,90px);border-top:1px solid var(--line2);padding-top:48px">
+      <h2 style="margin:0 0 30px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:clamp(26px,3vw,38px);color:var(--ink)">Ähnliche <em style="font-style:italic;color:var(--bd-gold,var(--accent))">Objekte</em></h2>
+      <div data-c3 style="display:grid;grid-template-columns:repeat(3,1fr);gap:30px">
+        <sc-for list="{{ similar }}" as="o" hint-placeholder-count="0">
+        <div onClick="{{ o.open }}" style="background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;cursor:pointer;transition:.4s" style-hover="transform:translateY(-5px);border-color:var(--accent-dk)">
+          <div style="position:relative;aspect-ratio:1;overflow:hidden">
+            <img src="{{ o.img }}" alt="{{ o.name }}" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"/>
+            <span style="position:absolute;top:12px;left:12px;z-index:2;background:{{ o.pct }};color:#fff;font:600 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;padding:7px 11px">{{ o.status }}</span>
+          </div>
+          <div style="padding:20px 22px 24px">
+            <span style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-dk)">{{ o.ort }}</span>
+            <h3 style="margin:11px 0 0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:21px;line-height:1.15;color:var(--ink)">{{ o.name }}</h3>
+          </div>
+        </div>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ ARTIKEL / INSIGHT DETAIL ============ -->
+<sc-if value="{{ isArticle }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Artikel" style="background:var(--bg);min-height:100vh">
+  <!-- hero -->
+  <section style="position:relative;min-height:clamp(440px,52vw,640px);display:flex;align-items:flex-end;overflow:hidden;background:var(--ink)">
+    <img src="{{ article.hero }}" alt="{{ article.title }}" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.9"/>
+    <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(18,16,14,.92) 0%,rgba(18,16,14,.45) 50%,rgba(18,16,14,.55) 100%)"></div>
+    <div data-pad style="position:relative;z-index:1;max-width:980px;margin:0 auto;padding:0 clamp(22px,5vw,48px) clamp(48px,6vw,72px);width:100%">
+      <span onClick="{{ goHome }}" style="display:inline-flex;align-items:center;gap:8px;font:600 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:rgba(245,242,236,.7);cursor:pointer;margin-bottom:26px;transition:.3s" style-hover="color:var(--accent)">&larr; Markt &amp; Insights</span>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:22px">
+        <span style="font:600 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);background:var(--accent);padding:8px 14px">{{ article.cat }}</span>
+        <span style="font:400 13px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(245,242,236,.7)">{{ article.date }} · {{ article.read }} Lesezeit</span>
+      </div>
+      <h1 style="margin:0;max-width:18ch;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:400;letter-spacing:-.025em;line-height:1.08;font-size:clamp(32px,4.6vw,62px);color:#FDFCFA">{{ article.title }}</h1>
+    </div>
+  </section>
+
+  <!-- body -->
+  <section style="padding:clamp(48px,6vw,80px) 0 clamp(70px,9vw,110px)">
+    <div data-pad style="max-width:760px;margin:0 auto;padding:0 clamp(22px,5vw,48px)">
+      <p style="margin:0 0 40px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:300;font-style:italic;font-size:clamp(20px,2.1vw,26px);line-height:1.5;color:var(--ink);padding-bottom:36px;border-bottom:1px solid var(--line2)">{{ article.lead }}</p>
+      <div style="display:flex;flex-direction:column;gap:26px">
+        <sc-for list="{{ article.body }}" as="par" hint-placeholder-count="0">
+          <p style="margin:0;font:300 clamp(16px,1.25vw,18px)/1.85 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#4a443e">{{ par }}</p>
+        </sc-for>
+      </div>
+      <!-- author -->
+      <div style="margin-top:48px;padding-top:32px;border-top:1px solid var(--line2);display:flex;align-items:center;gap:18px">
+        <img src="assets/andrea.jpg" alt="{{ article.author }}" style="width:58px;height:58px;border-radius:50%;object-fit:cover;object-position:center top"/>
+        <div>
+          <span style="display:block;font:500 15px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink)">{{ article.author }}</span>
+          <span style="font:300 13px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">{{ article.authorRole }} · Baudorf Immobilien GmbH</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- related -->
+  <section style="background:var(--band);padding:clamp(60px,8vw,100px) 0">
+    <div data-pad style="max-width:1560px;margin:0 auto;padding:0 clamp(22px,5vw,48px)">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:40px">
+        <span style="width:30px;height:1px;background:var(--bd-gold,var(--accent))"></span>
+        <span style="font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.3em;text-transform:uppercase;color:var(--accent-dk)">Weitere Beiträge</span>
+      </div>
+      <div data-c2 style="display:grid;grid-template-columns:1fr 1fr;gap:30px">
+        <sc-for list="{{ relatedArticles }}" as="a" hint-placeholder-count="0">
+          <div onClick="{{ a.open }}" style="display:flex;gap:22px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;cursor:pointer;transition:.4s" style-hover="transform:translateY(-4px);box-shadow:0 22px 46px -28px rgba(24,22,20,.45)">
+            <div style="flex:0 0 auto;width:clamp(120px,14vw,170px);aspect-ratio:1;overflow:hidden"><img src="{{ a.img }}" alt="{{ a.title }}" loading="lazy" style="width:100%;height:100%;object-fit:cover"/></div>
+            <div style="padding:18px 24px 18px 0;min-width:0">
+              <span style="font:600 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--bd-gold,var(--accent))">{{ a.cat }}</span>
+              <h3 style="margin:12px 0 10px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:clamp(18px,1.6vw,22px);line-height:1.25;color:var(--ink)">{{ a.title }}</h3>
+              <span style="font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#9a948d">{{ a.date }} · {{ a.read }}</span>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+</div>
+</sc-if>
+
+<!-- ============ LEISTUNG / SERVICE DETAIL ============ -->
+<sc-if value="{{ isService }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Leistung" style="background:var(--bg);padding-top:96px;min-height:100vh">
+  <!-- header band -->
+  <section style="background:var(--ink);padding:clamp(48px,6vw,80px) 0;position:relative;overflow:hidden">
+    <img src="assets/baudorf-emblem-cream.png" alt="" style="position:absolute;right:-2%;top:50%;transform:translateY(-50%);width:min(380px,36vw);opacity:.06;pointer-events:none"/>
+    <div data-pad style="max-width:1560px;margin:0 auto;padding:0 clamp(22px,5vw,48px);position:relative;z-index:1">
+      <span onClick="{{ goLeistungen }}" style="display:inline-flex;align-items:center;gap:8px;font:600 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:rgba(245,242,236,.65);cursor:pointer;margin-bottom:26px;transition:.3s" style-hover="color:var(--accent)">&larr; Alle Leistungen</span>
+      <div style="display:flex;align-items:baseline;gap:20px">
+        <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-style:italic;font-size:clamp(28px,3.4vw,46px);color:var(--accent)">{{ service.no }}</span>
+        <h1 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:400;letter-spacing:-.02em;line-height:1.04;font-size:clamp(34px,5vw,62px);color:#FDFCFA">{{ service.title }}</h1>
+      </div>
+      <p style="margin:22px 0 0;max-width:620px;font:300 clamp(16px,1.3vw,20px)/1.6 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(245,242,236,.8)">{{ service.lead }}</p>
+    </div>
+  </section>
+
+  <div data-pad style="max-width:1560px;margin:0 auto;padding:clamp(48px,6vw,80px) clamp(22px,5vw,48px) clamp(70px,9vw,110px)">
+    <div data-split style="display:flex;gap:clamp(36px,5vw,72px);align-items:flex-start">
+      <!-- service nav -->
+      <aside style="flex:0 0 auto;width:min(300px,100%);position:sticky;top:120px">
+        <span style="display:block;font:600 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-dk);margin-bottom:18px">Leistungen</span>
+        <div style="display:flex;flex-direction:column;gap:2px">
+          <sc-for list="{{ serviceNav }}" as="s" hint-placeholder-count="5">
+            <sc-if value="{{ s.current }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:12px;padding:15px 18px;background:var(--surface);border-left:2px solid var(--accent);font:500 14px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink)"><span style="font-style:italic;color:var(--accent)">{{ s.no }}</span>{{ s.title }}</span></sc-if>
+            <sc-if value="{{ s.notCurrent }}" hint-placeholder-val="{{ true }}"><span onClick="{{ s.jump }}" style="display:flex;align-items:center;gap:12px;padding:15px 18px;border-left:2px solid transparent;font:400 14px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted);cursor:pointer;transition:.3s" style-hover="color:var(--ink);background:var(--surface)"><span style="font-style:italic;color:var(--accent-dk)">{{ s.no }}</span>{{ s.title }}</span></sc-if>
+          </sc-for>
+        </div>
+      </aside>
+
+      <!-- service content -->
+      <div style="flex:1;min-width:0">
+        <div style="aspect-ratio:16/9;width:100%;border-radius:22px;overflow:hidden;margin-bottom:clamp(32px,4vw,48px)"><img src="{{ service.img }}" alt="{{ service.title }}" loading="lazy" style="width:100%;height:100%;object-fit:cover"/></div>
+        <p style="margin:0 0 38px;max-width:680px;font:300 clamp(16px,1.25vw,18px)/1.85 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#4a443e">{{ service.intro }}</p>
+        <div style="display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden">
+          <sc-for list="{{ service.bullets }}" as="b" hint-placeholder-count="3">
+            <div style="background:var(--surface);padding:clamp(22px,2.4vw,30px);display:flex;gap:22px;align-items:flex-start">
+              <span style="flex:0 0 auto;width:40px;height:40px;border-radius:50%;border:1px solid var(--accent);display:flex;align-items:center;justify-content:center;color:var(--accent)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <div>
+                <h3 style="margin:0 0 8px;font:500 18px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink)">{{ b.t }}</h3>
+                <p style="margin:0;font:300 14px/1.7 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">{{ b.d }}</p>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <!-- cta -->
+        <div style="margin-top:clamp(36px,4vw,52px);background:var(--ink);border-radius:20px;padding:clamp(32px,4vw,48px);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px">
+          <div style="max-width:480px">
+            <h3 style="margin:0 0 10px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:400;font-size:clamp(22px,2.6vw,30px);line-height:1.2;color:#FDFCFA">{{ service.closing }}</h3>
+            <p style="margin:0;font:300 14px/1.6 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(245,242,236,.6)">Wir melden uns persönlich und vertraulich — in der Regel innerhalb von 24 Stunden.</p>
+          </div>
+          <div style="display:flex;gap:14px;flex-wrap:wrap">
+            <span onClick="{{ goContact }}" style="display:inline-flex;align-items:center;gap:10px;background:var(--bd-gold,var(--accent));color:var(--on-accent,var(--ink));padding:17px 30px;cursor:pointer;font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;transition:.4s" style-hover="background:var(--accent-dk)">Kontakt aufnehmen &rarr;</span>
+            <a href="tel:{{ telefon }}" style="display:inline-flex;align-items:center;gap:10px;background:transparent;border:1px solid rgba(245,242,236,.3);color:#F5F2EC;padding:17px 30px;text-decoration:none;font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;transition:.3s" style-hover="border-color:var(--accent);color:var(--accent)">Anrufen</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ KONTAKT ============ -->
+<sc-if value="{{ isContact }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Kontakt" style="background:var(--bg);padding-top:96px;min-height:100vh">
+  <div data-pad style="max-width:1560px;margin:0 auto;padding:clamp(48px,6vw,80px) clamp(22px,5vw,48px) clamp(70px,9vw,110px)">
+    <div data-split style="display:flex;gap:clamp(40px,6vw,80px);align-items:flex-start">
+
+      <!-- left intro + form -->
+      <div style="flex:1.3;min-width:0">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px">
+          <span style="width:30px;height:1px;background:var(--bd-gold,var(--accent))"></span>
+          <span style="font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.32em;text-transform:uppercase;color:var(--accent-dk)">Kontakt</span>
+        </div>
+        <h1 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:400;letter-spacing:-.025em;line-height:1;font-size:clamp(40px,6vw,76px);color:var(--ink)">Sprechen wir — <em style="font-style:italic;color:var(--bd-gold,var(--accent))">diskret.</em></h1>
+        <p style="margin:24px 0 0;max-width:520px;font:300 clamp(16px,1.2vw,18px)/1.75 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(24,22,20,.72)">Ob Verkauf, Investment, Bewertung oder Tipp — schildern Sie uns Ihr Anliegen. Wir melden uns persönlich und vertraulich.</p>
+
+        <sc-if value="{{ formSent }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:46px;background:var(--surface);border:1px solid var(--line2);padding:clamp(34px,4vw,52px);max-width:600px">
+            <div style="width:58px;height:58px;border-radius:50%;border:1px solid var(--bd-gold,var(--accent));display:flex;align-items:center;justify-content:center;color:var(--bd-gold,var(--accent));font-size:24px;margin-bottom:26px">&#10003;</div>
+            <h2 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:clamp(26px,3vw,36px);color:var(--ink)">Vielen Dank.</h2>
+            <p style="margin:18px 0 0;font:300 16px/1.75 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(24,22,20,.72)">Wir melden uns persönlich und diskret — in der Regel innerhalb von 24 Stunden.</p>
+            <span onClick="{{ resetForm }}" style="margin-top:28px;display:inline-flex;align-items:center;gap:10px;font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--bd-gold,var(--accent));cursor:pointer;border-bottom:1px solid rgba(196,164,107,.4);padding-bottom:6px">Neue Nachricht senden</span>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ formOpen }}" hint-placeholder-val="{{ true }}">
+        <form onSubmit="{{ sendForm }}" style="margin-top:46px;max-width:640px">
+          <div data-c4 style="display:grid;grid-template-columns:1fr 1fr;gap:22px">
+            <label style="display:flex;flex-direction:column;gap:9px"><span style="font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-dk)">Vorname *</span><input required style="background:transparent;border:none;border-bottom:1px solid rgba(24,22,20,.22);padding:12px 0;color:var(--ink);font:300 16px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;outline:none" style-focus="border-bottom-color:var(--accent)"/></label>
+            <label style="display:flex;flex-direction:column;gap:9px"><span style="font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-dk)">Nachname *</span><input required style="background:transparent;border:none;border-bottom:1px solid rgba(24,22,20,.22);padding:12px 0;color:var(--ink);font:300 16px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;outline:none" style-focus="border-bottom-color:var(--accent)"/></label>
+            <label style="display:flex;flex-direction:column;gap:9px"><span style="font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-dk)">E-Mail *</span><input required type="email" style="background:transparent;border:none;border-bottom:1px solid rgba(24,22,20,.22);padding:12px 0;color:var(--ink);font:300 16px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;outline:none" style-focus="border-bottom-color:var(--accent)"/></label>
+            <label style="display:flex;flex-direction:column;gap:9px"><span style="font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-dk)">Telefon</span><input style="background:transparent;border:none;border-bottom:1px solid rgba(24,22,20,.22);padding:12px 0;color:var(--ink);font:300 16px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;outline:none" style-focus="border-bottom-color:var(--accent)"/></label>
+          </div>
+          <label style="display:flex;flex-direction:column;gap:9px;margin-top:22px"><span style="font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-dk)">Ich interessiere mich als</span>
+            <select style="background:var(--surface);border:none;border-bottom:1px solid rgba(24,22,20,.22);padding:12px 0;color:var(--ink);font:300 16px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;outline:none;cursor:pointer">
+              <option>Käufer – Privatinvestor</option><option>Käufer – Family Office</option><option>Käufer – Institutioneller Investor</option><option>Verkäufer – Bestandshalter</option><option>Verkäufer – Projektentwickler</option><option>Immobilienbewertung</option><option>Kaufbegleitung</option><option>Tippgeber</option><option>Karriere</option><option>Sonstiges</option>
+            </select>
+          </label>
+          <label style="display:flex;flex-direction:column;gap:9px;margin-top:22px"><span style="font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-dk)">Ihr Anliegen</span><textarea rows="4" style="background:transparent;border:1px solid rgba(24,22,20,.22);padding:14px;color:var(--ink);font:300 16px/1.6 'Helvetica Neue',Helvetica,Arial,sans-serif;outline:none;resize:vertical" style-focus="border-color:var(--accent)"></textarea></label>
+          <label style="display:flex;align-items:flex-start;gap:12px;margin-top:24px;cursor:pointer"><input type="checkbox" required style="margin-top:3px;accent-color:var(--accent);width:16px;height:16px"/><span style="font:300 13px/1.6 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(24,22,20,.62)">Ich habe die <span style="color:var(--accent-dk)">Datenschutzerklärung</span> gelesen und stimme der Verarbeitung meiner Daten zur Bearbeitung meiner Anfrage zu. *</span></label>
+          <button type="submit" style="margin-top:30px;display:inline-flex;align-items:center;gap:12px;background:var(--bd-gold,var(--accent));color:var(--on-accent,var(--ink));padding:18px 38px;border:none;cursor:pointer;font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;transition:.4s" style-hover="background:var(--accent-dk);transform:translateY(-2px)">Anfrage senden &rarr;</button>
+        </form>
+        </sc-if>
+      </div>
+
+      <!-- right künye -->
+      <aside style="flex:0 0 auto;width:min(360px,100%)">
+        <div style="background:var(--surface);border:1px solid var(--line2);padding:clamp(30px,3vw,42px)">
+          <img src="assets/baudorf-logo-mark.png" alt="Baudorf Immobilien GmbH" style="height:38px;margin-bottom:28px"/>
+          <div style="display:flex;flex-direction:column;gap:24px">
+            <div><span style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--accent-dk);display:block;margin-bottom:9px">Adresse</span><span style="font:300 15px/1.6 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink)">Auf der Egge 68<br>42555 Velbert</span></div>
+            <div><span style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--accent-dk);display:block;margin-bottom:9px">Telefon</span><a href="tel:{{ telefon }}" style="font:300 15px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink);text-decoration:none;transition:.3s" style-hover="color:var(--accent)">{{ telefon }}</a></div>
+            <div><span style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--accent-dk);display:block;margin-bottom:9px">E-Mail</span><a href="mailto:{{ email }}" style="font:300 15px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink);text-decoration:none;transition:.3s" style-hover="color:var(--accent)">{{ email }}</a></div>
+            <div><span style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--accent-dk);display:block;margin-bottom:9px">Sprechzeiten</span><span style="font:300 15px/1.6 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink)">Mo–Fr · 09:00–18:00 Uhr</span></div>
+          </div>
+          <div style="display:flex;gap:12px;margin-top:30px">
+            <a href="tel:{{ telefon }}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--bd-gold,var(--accent));color:var(--on-accent,var(--ink));padding:14px;text-decoration:none;font:600 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;transition:.3s" style-hover="background:var(--accent-dk)">Anrufen</a>
+            <a href="https://wa.me/491778387898" target="_blank" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:transparent;border:1px solid rgba(24,22,20,.24);color:var(--ink);padding:14px;text-decoration:none;font:600 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;transition:.3s" style-hover="border-color:var(--accent);color:var(--accent)">WhatsApp</a>
+          </div>
+          <p style="margin:24px 0 0;font:300 12px/1.6 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(24,22,20,.5)">Alle Anfragen werden streng vertraulich behandelt. Diskretion ist für uns selbstverständlich.</p>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ LOGIN ============ -->
+<sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Login" data-split style="min-height:100vh;display:flex;align-items:stretch;background:var(--bg)">
+  <div data-desk style="flex:1;position:relative;overflow:hidden;min-height:100vh">
+    <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1600&q=80" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"/>
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,16,14,.5),rgba(18,16,14,.82))"></div>
+    <img src="assets/baudorf-emblem-cream.png" alt="" style="position:absolute;right:-3%;top:46%;transform:translateY(-50%);width:min(420px,40%);opacity:.08"/>
+    <div style="position:absolute;left:clamp(34px,4vw,64px);bottom:clamp(40px,6vw,72px);right:clamp(34px,4vw,64px)">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px">
+        <span style="width:30px;height:1px;background:var(--accent)"></span>
+        <span style="font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.32em;text-transform:uppercase;color:var(--accent-lt)">Investoren-Bereich</span>
+      </div>
+      <h2 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:400;letter-spacing:-.02em;line-height:1.1;font-size:clamp(30px,3vw,46px);color:#FDFCFA">Zugang zu unseren<br><em style="font-style:italic;color:var(--accent)">Off-Market-Objekten.</em></h2>
+      <p style="margin:22px 0 0;max-width:420px;font:300 15px/1.7 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(255,255,255,.72)">Vorgemerkte Investoren sehen nach Anmeldung sämtliche Kennzahlen, Unterlagen und vertraulichen Objekte.</p>
+    </div>
+  </div>
+  <div style="flex:0 0 auto;width:min(560px,100%);display:flex;align-items:center;justify-content:center;padding:120px clamp(24px,4vw,64px) 60px">
+    <div style="width:100%;max-width:400px">
+      <img onClick="{{ goHome }}" src="assets/baudorf-logo-mark.png" alt="Baudorf Immobilien GmbH" style="height:42px;margin-bottom:40px;cursor:pointer"/>
+      <h1 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:400;letter-spacing:-.02em;line-height:1.05;font-size:clamp(30px,3.4vw,42px);color:var(--ink)">Willkommen zurück</h1>
+      <p style="margin:14px 0 0;font:300 15px/1.6 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">Melden Sie sich an, um fortzufahren.</p>
+      <form onSubmit="{{ goList }}" style="margin-top:38px">
+        <label style="display:flex;flex-direction:column;gap:9px;margin-bottom:24px"><span style="font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-dk)">E-Mail</span><input required type="email" placeholder="ihre@email.de" style="background:transparent;border:none;border-bottom:1px solid rgba(120,110,100,.4);padding:13px 0;color:var(--ink);font:300 16px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;outline:none" style-focus="border-bottom-color:var(--accent)"/></label>
+        <label style="display:flex;flex-direction:column;gap:9px"><span style="font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-dk)">Passwort</span><input required type="password" placeholder="••••••••" style="background:transparent;border:none;border-bottom:1px solid rgba(120,110,100,.4);padding:13px 0;color:var(--ink);font:300 16px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;outline:none" style-focus="border-bottom-color:var(--accent)"/></label>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:22px">
+          <label style="display:flex;align-items:center;gap:9px;cursor:pointer"><input type="checkbox" style="accent-color:var(--accent);width:15px;height:15px"/><span style="font:300 13px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">Angemeldet bleiben</span></label>
+          <span style="font:400 13px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--accent-dk);cursor:pointer;transition:.3s" style-hover="color:var(--accent)">Passwort vergessen?</span>
+        </div>
+        <button type="submit" style="margin-top:32px;width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:var(--bd-gold,var(--accent));color:var(--on-accent,var(--ink));padding:18px;border:none;cursor:pointer;font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;transition:.4s" style-hover="background:var(--accent-dk)">Anmelden &rarr;</button>
+      </form>
+      <div style="margin-top:34px;padding-top:26px;border-top:1px solid var(--line2);text-align:center">
+        <span style="font:300 14px/1.6 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">Noch keinen Zugang? </span>
+        <span onClick="{{ goRegister }}" style="font:600 14px/1.6 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--accent-dk);cursor:pointer;transition:.3s" style-hover="color:var(--accent)">Jetzt registrieren &rarr;</span>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ REGISTRIERUNG ============ -->
+<sc-if value="{{ isRegister }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Registrierung" data-split style="min-height:100vh;display:flex;align-items:stretch;background:var(--bg)">
+  <div data-desk style="flex:1;position:relative;overflow:hidden;min-height:100vh">
+    <img src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=1600&q=80" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"/>
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,16,14,.5),rgba(18,16,14,.82))"></div>
+    <img src="assets/baudorf-emblem-cream.png" alt="" style="position:absolute;right:-3%;top:46%;transform:translateY(-50%);width:min(420px,40%);opacity:.08"/>
+    <div style="position:absolute;left:clamp(34px,4vw,64px);bottom:clamp(40px,6vw,72px);right:clamp(34px,4vw,64px)">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px">
+        <span style="width:30px;height:1px;background:var(--accent)"></span>
+        <span style="font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.32em;text-transform:uppercase;color:var(--accent-lt)">Vorgemerkte Investoren</span>
+      </div>
+      <h2 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:400;letter-spacing:-.02em;line-height:1.1;font-size:clamp(30px,3vw,46px);color:#FDFCFA">Diskretion<br><em style="font-style:italic;color:var(--accent)">durch Vormerkung.</em></h2>
+      <div style="margin-top:30px;display:flex;flex-direction:column;gap:16px;max-width:420px">
+        <div style="display:flex;align-items:flex-start;gap:13px"><span style="flex:0 0 auto;width:26px;height:26px;border:1px solid var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-style:italic;font-size:13px;color:var(--accent-lt)">1</span><span style="font:300 14px/1.5 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(255,255,255,.78)">Antrag stellen — wir prüfen Ihr Investitionsprofil.</span></div>
+        <div style="display:flex;align-items:flex-start;gap:13px"><span style="flex:0 0 auto;width:26px;height:26px;border:1px solid var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-style:italic;font-size:13px;color:var(--accent-lt)">2</span><span style="font:300 14px/1.5 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(255,255,255,.78)">Persönliche Freischaltung durch Andrea Krüger.</span></div>
+        <div style="display:flex;align-items:flex-start;gap:13px"><span style="flex:0 0 auto;width:26px;height:26px;border:1px solid var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-style:italic;font-size:13px;color:var(--accent-lt)">3</span><span style="font:300 14px/1.5 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(255,255,255,.78)">Voller Zugang zu Off-Market-Objekten &amp; Kennzahlen.</span></div>
+      </div>
+    </div>
+  </div>
+  <div style="flex:0 0 auto;width:min(620px,100%);display:flex;align-items:center;justify-content:center;padding:120px clamp(24px,4vw,64px) 60px">
+    <div style="width:100%;max-width:460px">
+      <img onClick="{{ goHome }}" src="assets/baudorf-logo-mark.png" alt="Baudorf Immobilien GmbH" style="height:42px;margin-bottom:38px;cursor:pointer"/>
+
+      <sc-if value="{{ regSent }}" hint-placeholder-val="{{ false }}">
+        <div style="width:64px;height:64px;border-radius:50%;border:1px solid var(--accent);display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:26px;margin-bottom:28px">&#10003;</div>
+        <h1 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:400;letter-spacing:-.02em;line-height:1.06;font-size:clamp(28px,3.2vw,40px);color:var(--ink)">Antrag erhalten.</h1>
+        <p style="margin:18px 0 0;font:300 16px/1.7 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">Vielen Dank für Ihr Interesse. Wir prüfen Ihren Antrag persönlich und schalten Ihren Zugang nach erfolgreicher Vormerkung frei — in der Regel innerhalb von 24 Stunden. Sie erhalten eine Bestätigung per E-Mail.</p>
+        <div style="display:flex;gap:14px;margin-top:34px;flex-wrap:wrap">
+          <span onClick="{{ goHome }}" style="display:inline-flex;align-items:center;gap:10px;background:var(--bd-gold,var(--accent));color:var(--on-accent,var(--ink));padding:16px 28px;cursor:pointer;font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;transition:.4s" style-hover="background:var(--accent-dk)">Zur Startseite</span>
+          <span onClick="{{ goLogin }}" style="display:inline-flex;align-items:center;gap:10px;background:transparent;border:1px solid var(--line2);color:var(--ink);padding:16px 28px;cursor:pointer;font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;transition:.3s" style-hover="border-color:var(--accent);color:var(--accent)">Zur Anmeldung</span>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ regOpen }}" hint-placeholder-val="{{ true }}">
+        <h1 style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:400;letter-spacing:-.02em;line-height:1.04;font-size:clamp(28px,3.2vw,40px);color:var(--ink)">Investoren-Zugang beantragen</h1>
+        <p style="margin:14px 0 0;font:300 15px/1.6 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">Der Zugang ist vorgemerkten Investoren vorbehalten und wird nach persönlicher Prüfung freigeschaltet.</p>
+        <form onSubmit="{{ sendReg }}" style="margin-top:34px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px">
+            <label style="display:flex;flex-direction:column;gap:9px"><span style="font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-dk)">Vorname *</span><input required style="background:transparent;border:none;border-bottom:1px solid rgba(120,110,100,.4);padding:12px 0;color:var(--ink);font:300 16px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;outline:none" style-focus="border-bottom-color:var(--accent)"/></label>
+            <label style="display:flex;flex-direction:column;gap:9px"><span style="font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-dk)">Nachname *</span><input required style="background:transparent;border:none;border-bottom:1px solid rgba(120,110,100,.4);padding:12px 0;color:var(--ink);font:300 16px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;outline:none" style-focus="border-bottom-color:var(--accent)"/></label>
+            <label style="display:flex;flex-direction:column;gap:9px"><span style="font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-dk)">E-Mail *</span><input required type="email" style="background:transparent;border:none;border-bottom:1px solid rgba(120,110,100,.4);padding:12px 0;color:var(--ink);font:300 16px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;outline:none" style-focus="border-bottom-color:var(--accent)"/></label>
+            <label style="display:flex;flex-direction:column;gap:9px"><span style="font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-dk)">Telefon</span><input style="background:transparent;border:none;border-bottom:1px solid rgba(120,110,100,.4);padding:12px 0;color:var(--ink);font:300 16px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;outline:none" style-focus="border-bottom-color:var(--accent)"/></label>
+          </div>
+          <label style="display:flex;flex-direction:column;gap:9px;margin-top:22px"><span style="font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-dk)">Investorentyp *</span>
+            <select required style="background:var(--surface);border:none;border-bottom:1px solid rgba(120,110,100,.4);padding:12px 0;color:var(--ink);font:300 16px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;outline:none;cursor:pointer">
+              <option value="">Bitte wählen …</option><option>Family Office</option><option>Institutioneller Investor</option><option>Privatinvestor</option><option>Wohnungsgesellschaft</option><option>Bauträger / Projektentwickler</option><option>Sonstiges</option>
+            </select>
+          </label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:22px">
+            <label style="display:flex;flex-direction:column;gap:9px"><span style="font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-dk)">Passwort *</span><input required type="password" placeholder="••••••••" style="background:transparent;border:none;border-bottom:1px solid rgba(120,110,100,.4);padding:12px 0;color:var(--ink);font:300 16px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;outline:none" style-focus="border-bottom-color:var(--accent)"/></label>
+            <label style="display:flex;flex-direction:column;gap:9px"><span style="font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-dk)">Passwort wdh. *</span><input required type="password" placeholder="••••••••" style="background:transparent;border:none;border-bottom:1px solid rgba(120,110,100,.4);padding:12px 0;color:var(--ink);font:300 16px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;outline:none" style-focus="border-bottom-color:var(--accent)"/></label>
+          </div>
+          <label style="display:flex;align-items:flex-start;gap:12px;margin-top:26px;cursor:pointer"><input type="checkbox" required style="margin-top:3px;accent-color:var(--accent);width:16px;height:16px"/><span style="font:300 13px/1.6 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">Ich habe die <span style="color:var(--accent-dk)">Datenschutzerklärung</span> gelesen und stimme der Verarbeitung meiner Daten zu. *</span></label>
+          <button type="submit" style="margin-top:30px;width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:var(--bd-gold,var(--accent));color:var(--on-accent,var(--ink));padding:18px;border:none;cursor:pointer;font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;transition:.4s" style-hover="background:var(--accent-dk)">Zugang beantragen &rarr;</button>
+        </form>
+        <div style="margin-top:28px;padding-top:24px;border-top:1px solid var(--line2);text-align:center">
+          <span style="font:300 14px/1.6 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">Bereits vorgemerkt? </span>
+          <span onClick="{{ goLogin }}" style="font:600 14px/1.6 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--accent-dk);cursor:pointer;transition:.3s" style-hover="color:var(--accent)">Anmelden &rarr;</span>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ FOOTER ============ -->
+<sc-if value="{{ showFooter }}" hint-placeholder-val="{{ true }}">
+<footer style="background:var(--band);padding:clamp(60px,8vw,90px) 0 40px;border-top:1px solid var(--line2)">
+  <div data-pad style="max-width:1560px;margin:0 auto;padding:0 clamp(22px,5vw,48px)">
+    <div data-c4 style="display:grid;grid-template-columns:1.6fr 1fr 1fr 1.2fr;gap:44px 30px;padding-bottom:54px;border-bottom:1px solid rgba(24,22,20,.1)">
+      <div>
+        <img src="assets/baudorf-logo-mark.png" alt="Baudorf Immobilien GmbH" style="height:40px;margin-bottom:24px"/>
+        <p style="margin:0;max-width:280px;font:300 14px/1.7 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(24,22,20,.6)">Off-Market-Immobilien aus Velbert. Diskrete Vermarktung anspruchsvoller Wohn-, Gewerbe- und Kapitalanlageobjekte — seit 1994.</p>
+        <p style="margin:24px 0 0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-style:italic;font-size:20px;color:var(--bd-gold,var(--accent))">Still, wirkungsvoll, mit Stil.</p>
+      </div>
+      <div>
+        <span style="font:600 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-dk);display:block;margin-bottom:22px">Immobilien</span>
+        <div style="display:flex;flex-direction:column;gap:13px">
+          <span onClick="{{ goList }}" style="font:300 14px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(24,22,20,.7);cursor:pointer;transition:.3s" style-hover="color:var(--accent)">Off-Market</span>
+          <span onClick="{{ goList }}" style="font:300 14px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(24,22,20,.7);cursor:pointer;transition:.3s" style-hover="color:var(--accent)">Kapitalanlagen</span>
+          <span onClick="{{ goList }}" style="font:300 14px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(24,22,20,.7);cursor:pointer;transition:.3s" style-hover="color:var(--accent)">Gewerbe</span>
+          <span onClick="{{ goList }}" style="font:300 14px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(24,22,20,.7);cursor:pointer;transition:.3s" style-hover="color:var(--accent)">Wohnimmobilien</span>
+          <span onClick="{{ goList }}" style="font:300 14px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(24,22,20,.7);cursor:pointer;transition:.3s" style-hover="color:var(--accent)">Auslandsimmobilien</span>
+        </div>
+      </div>
+      <div>
+        <span style="font:600 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-dk);display:block;margin-bottom:22px">Unternehmen</span>
+        <div style="display:flex;flex-direction:column;gap:13px">
+          <span onClick="{{ goUeber }}" style="font:300 14px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(24,22,20,.7);cursor:pointer;transition:.3s" style-hover="color:var(--accent)">Über uns</span>
+          <span onClick="{{ goLeistungen }}" style="font:300 14px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(24,22,20,.7);cursor:pointer;transition:.3s" style-hover="color:var(--accent)">Leistungen</span>
+          <span onClick="{{ goContact }}" style="font:300 14px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(24,22,20,.7);cursor:pointer;transition:.3s" style-hover="color:var(--accent)">Karriere</span>
+          <span onClick="{{ goContact }}" style="font:300 14px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(24,22,20,.7);cursor:pointer;transition:.3s" style-hover="color:var(--accent)">Tippgeber</span>
+          <span onClick="{{ goAdmin }}" style="font:300 14px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(24,22,20,.7);cursor:pointer;transition:.3s" style-hover="color:var(--accent)">Admin-Login</span>
+        </div>
+      </div>
+      <div>
+        <span style="font:600 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-dk);display:block;margin-bottom:22px">Kontakt</span>
+        <div style="display:flex;flex-direction:column;gap:13px;font:300 14px/1.6 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(24,22,20,.7)">
+          <span>Auf der Egge 68<br>42555 Velbert</span>
+          <a href="tel:{{ telefon }}" style="color:rgba(24,22,20,.7);text-decoration:none;transition:.3s" style-hover="color:var(--accent)">{{ telefon }}</a>
+          <a href="mailto:{{ email }}" style="color:rgba(24,22,20,.7);text-decoration:none;transition:.3s" style-hover="color:var(--accent)">{{ email }}</a>
+          <span style="color:rgba(24,22,20,.5)">Mo–Fr · 09:00–18:00 Uhr</span>
+        </div>
+      </div>
+    </div>
+    <div data-split style="display:flex;justify-content:space-between;align-items:center;gap:18px;padding-top:26px">
+      <span style="font:300 12px/1.5 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(24,22,20,.4)">© 2026 Baudorf Immobilien GmbH · Velbert</span>
+      <div style="display:flex;gap:26px">
+        <span style="font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(24,22,20,.5);cursor:pointer;transition:.3s" style-hover="color:var(--accent)">Impressum</span>
+        <span style="font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(24,22,20,.5);cursor:pointer;transition:.3s" style-hover="color:var(--accent)">Datenschutz</span>
+        <span style="font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(24,22,20,.5);cursor:pointer;transition:.3s" style-hover="color:var(--accent)">AGB</span>
+      </div>
+    </div>
+  </div>
+</footer>
+</sc-if>
+
+<!--ADMIN-->
+<sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Admin" style="background:var(--bg);min-height:100vh;display:flex;flex-direction:column">
+  <!-- admin topbar -->
+  <header style="background:var(--surface);border-bottom:1px solid var(--line2);padding:16px clamp(20px,3vw,32px);display:flex;align-items:center;justify-content:space-between;gap:20px;position:sticky;top:0;z-index:20">
+    <div style="display:flex;align-items:center;gap:16px">
+      <img src="assets/baudorf-logo-mark.png" alt="Baudorf" style="height:30px"/>
+      <span style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--accent-dk);border-left:1px solid rgba(24,22,20,.18);padding-left:16px">Verwaltung</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:20px">
+      <span onClick="{{ goHome }}" style="font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.06em;color:rgba(24,22,20,.7);cursor:pointer;transition:.3s" style-hover="color:var(--accent)">Website ansehen &nearr;</span>
+      <span style="width:38px;height:38px;border-radius:50%;background:var(--band);border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font:600 13px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--accent-dk)">AK</span>
+    </div>
+  </header>
+
+  <div data-split style="flex:1;display:flex;align-items:stretch">
+    <!-- sidebar -->
+    <nav style="flex:0 0 auto;width:240px;background:var(--band);padding:30px 16px;display:flex;flex-direction:column;gap:5px">
+      <sc-for list="{{ adminTabs }}" as="t" hint-placeholder-count="5">
+        <sc-if value="{{ t.active }}" hint-placeholder-val="{{ false }}"><span onClick="{{ t.on }}" style="font:500 13px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.04em;color:var(--on-accent,var(--ink));background:var(--bd-gold,var(--accent));padding:13px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between">{{ t.label }}<span style="font-size:11px">&rarr;</span></span></sc-if>
+        <sc-if value="{{ t.activeNot }}" hint-placeholder-val="{{ true }}"><span onClick="{{ t.on }}" style="font:400 13px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.04em;color:rgba(24,22,20,.7);padding:13px 16px;cursor:pointer;transition:.3s" style-hover="color:var(--ink);background:#E2DAC9">{{ t.label }}</span></sc-if>
+      </sc-for>
+      <div style="margin-top:auto;padding:16px;border-top:1px solid rgba(24,22,20,.1)">
+        <span style="font:300 12px/1.6 'Helvetica Neue',Helvetica,Arial,sans-serif;color:rgba(24,22,20,.45)">Angemeldet als<br><span style="color:var(--accent-dk);font-weight:500">Andrea Krüger</span></span>
+      </div>
+    </nav>
+
+    <!-- content -->
+    <main style="flex:1;min-width:0;padding:clamp(26px,3.5vw,46px)">
+
+      <!-- DASHBOARD -->
+      <sc-if value="{{ admDash }}" hint-placeholder-val="{{ true }}">
+        <h1 style="margin:0 0 6px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:clamp(30px,3.5vw,44px);color:var(--ink)">Dashboard</h1>
+        <p style="margin:0 0 32px;font:300 15px/1.5 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">Übersicht · Stand 15. Juni 2026</p>
+        <div data-c4 style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line2);border:1px solid var(--line2);margin-bottom:38px">
+          <div style="background:var(--surface);padding:28px"><span style="font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-dk)">Neue Leads</span><div style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:46px;line-height:1.1;color:var(--ink);margin-top:12px">7</div><span style="font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#3E6B4F">+3 diese Woche</span></div>
+          <div style="background:var(--surface);padding:28px"><span style="font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-dk)">Objekte online</span><div style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:46px;line-height:1.1;color:var(--ink);margin-top:12px">12</div><span style="font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">4 Off-Market</span></div>
+          <div style="background:var(--surface);padding:28px"><span style="font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-dk)">Offene Anfragen</span><div style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:46px;line-height:1.1;color:var(--ink);margin-top:12px">3</div><span style="font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--accent-dk)">2 dringend</span></div>
+          <div style="background:var(--surface);padding:28px"><span style="font:500 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-dk)">Registrierungen</span><div style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:46px;line-height:1.1;color:var(--ink);margin-top:12px">5</div><span style="font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--accent-dk)">zur Freigabe</span></div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--line)">
+          <div style="padding:22px 28px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center"><span style="font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--ink)">Letzte Leads</span><span onClick="{{ go }}" style="font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--accent-dk);cursor:pointer">Alle anzeigen</span></div>
+          <sc-for list="{{ leads }}" as="l" hint-placeholder-count="5">
+            <div style="padding:18px 28px;border-bottom:1px solid #F0EBE2;display:flex;align-items:center;gap:18px">
+              <div style="flex:1.4;min-width:160px"><span style="font:500 14px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink);display:block">{{ l.name }}</span><span style="font:300 12px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8a847d">{{ l.typ }}</span></div>
+              <span style="flex:1.4;font:300 13px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted);min-width:140px">{{ l.objekt }}</span>
+              <span style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:{{ l.sc }};padding:6px 11px;white-space:nowrap">{{ l.status }}</span>
+              <span style="flex:0 0 auto;font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#9a948d;min-width:110px;text-align:right">{{ l.datum }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- IMMOBILIEN CRUD -->
+      <sc-if value="{{ admImmo }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:18px;flex-wrap:wrap;margin-bottom:30px">
+          <div><h1 style="margin:0 0 6px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:clamp(30px,3.5vw,44px);color:var(--ink)">Immobilien</h1><p style="margin:0;font:300 15px/1.5 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">{{ totalCount }} Objekte · Verwaltung &amp; Veröffentlichung</p></div>
+          <span style="display:inline-flex;align-items:center;gap:10px;background:var(--bd-gold,var(--accent));color:var(--on-accent,var(--ink));padding:14px 24px;cursor:pointer;font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;transition:.3s" style-hover="background:var(--accent-dk)">+ Neues Objekt</span>
+        </div>
+        <!-- upload mock -->
+        <div style="border:1px dashed var(--accent);background:rgba(196,164,107,.06);padding:26px;display:flex;align-items:center;gap:18px;margin-bottom:26px">
+          <span style="width:46px;height:46px;border:1px solid var(--accent);display:flex;align-items:center;justify-content:center;color:var(--accent-dk);font-size:20px">&uarr;</span>
+          <div><span style="font:500 14px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink);display:block">Medien hierher ziehen</span><span style="font:300 13px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8a847d">Bilder &amp; Videos · Reihenfolge per Drag &amp; Drop · Cover auswählen</span></div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--line)">
+          <div style="padding:16px 24px;border-bottom:1px solid var(--line);display:flex;gap:18px;align-items:center;font:600 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-dk)">
+            <span style="flex:2;min-width:160px">Objekt</span><span style="flex:1;min-width:90px">Status</span><span style="flex:0 0 70px">Faktor</span><span style="flex:1;min-width:110px;text-align:right">Aktion</span>
+          </div>
+          <sc-for list="{{ props }}" as="o" hint-placeholder-count="6">
+            <div style="padding:16px 24px;border-bottom:1px solid #F0EBE2;display:flex;gap:18px;align-items:center">
+              <div style="flex:2;min-width:160px;display:flex;align-items:center;gap:14px">
+                <span style="width:44px;height:44px;flex:0 0 auto;background:var(--band);position:relative;overflow:hidden"><img src="{{ o.img }}" alt="" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"/></span>
+                <div style="min-width:0"><span style="font:500 14px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink);display:block">{{ o.name }}</span><span style="font:300 12px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8a847d">{{ o.ort }}</span></div>
+              </div>
+              <span style="flex:1;min-width:90px"><span style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:{{ o.pct }};padding:6px 10px">{{ o.status }}</span></span>
+              <span style="flex:0 0 70px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:20px;color:var(--ink)">{{ o.faktor }}</span>
+              <span style="flex:1;min-width:110px;display:flex;gap:14px;justify-content:flex-end">
+                <span onClick="{{ o.open }}" style="font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--accent-dk);cursor:pointer;transition:.3s" style-hover="color:var(--ink)">Ansehen</span>
+                <span style="font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--accent-dk);cursor:pointer;transition:.3s" style-hover="color:var(--ink)">Bearbeiten</span>
+              </span>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- LEADS -->
+      <sc-if value="{{ admLeads }}" hint-placeholder-val="{{ false }}">
+        <h1 style="margin:0 0 6px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:clamp(30px,3.5vw,44px);color:var(--ink)">Leads / Anfragen</h1>
+        <p style="margin:0 0 30px;font:300 15px/1.5 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">Posteingang · Status verwalten, zuweisen, exportieren</p>
+        <div style="background:var(--surface);border:1px solid var(--line)">
+          <sc-for list="{{ leads }}" as="l" hint-placeholder-count="5">
+            <div style="padding:20px 26px;border-bottom:1px solid #F0EBE2;display:flex;align-items:center;gap:18px">
+              <div style="flex:1.6;min-width:170px"><span style="font:500 15px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink);display:block">{{ l.name }}</span><span style="font:300 12px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8a847d">{{ l.typ }}</span></div>
+              <span style="flex:1.4;font:300 13px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted);min-width:140px">{{ l.objekt }}</span>
+              <span style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:{{ l.sc }};padding:7px 12px;white-space:nowrap">{{ l.status }}</span>
+              <span style="flex:0 0 auto;font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#9a948d;min-width:110px;text-align:right">{{ l.datum }}</span>
+              <span style="flex:0 0 auto;font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--accent-dk);cursor:pointer">Öffnen &rarr;</span>
+            </div>
+          </sc-for>
+          <div style="padding:18px 26px;display:flex;gap:14px"><span style="font:600 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);border:1px solid var(--line2);padding:10px 18px;cursor:pointer">CSV exportieren</span></div>
+        </div>
+      </sc-if>
+
+      <!-- INSIGHTS -->
+      <sc-if value="{{ admInsights }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:18px;flex-wrap:wrap;margin-bottom:30px">
+          <div><h1 style="margin:0 0 6px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:clamp(30px,3.5vw,44px);color:var(--ink)">Insights</h1><p style="margin:0;font:300 15px/1.5 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">Blog &amp; Marktberichte</p></div>
+          <span style="background:var(--bd-gold,var(--accent));color:var(--on-accent,var(--ink));padding:14px 24px;cursor:pointer;font:600 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase">+ Neuer Beitrag</span>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--line)">
+          <sc-for list="{{ insights }}" as="a" hint-placeholder-count="0">
+            <div style="padding:20px 26px;border-bottom:1px solid #F0EBE2;display:flex;align-items:center;gap:18px">
+              <span style="flex:0 0 90px;font:600 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-dk)">{{ a.cat }}</span>
+              <span style="flex:1;font:500 15px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink);min-width:200px">{{ a.title }}</span>
+              <span style="flex:0 0 auto;font:300 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#9a948d">{{ a.date }}</span>
+              <span style="flex:0 0 auto;font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#3E6B4F;background:rgba(62,107,79,.1);padding:6px 11px">Veröffentlicht</span>
+              <span style="flex:0 0 auto;font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--accent-dk);cursor:pointer">Bearbeiten</span>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- NUTZER -->
+      <sc-if value="{{ admNutzer }}" hint-placeholder-val="{{ false }}">
+        <h1 style="margin:0 0 6px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;font-size:clamp(30px,3.5vw,44px);color:var(--ink)">Nutzer</h1>
+        <p style="margin:0 0 30px;font:300 15px/1.5 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted)">Registrierte Investoren · Off-Market-Freigabe verwalten</p>
+        <div style="background:var(--surface);border:1px solid var(--line)">
+          <div style="padding:22px 26px;border-bottom:1px solid #F0EBE2;display:flex;align-items:center;gap:18px">
+            <div style="flex:1.6;min-width:170px"><span style="font:500 15px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink);display:block">Dr. M. Hoffmann</span><span style="font:300 12px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8a847d">Family Office · Düsseldorf</span></div>
+            <span style="flex:1;font:300 13px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted);min-width:120px">Wartet auf Freigabe</span>
+            <span style="background:#3E6B4F;color:#fff;font:600 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;padding:9px 16px;cursor:pointer">Freigeben</span>
+            <span style="border:1px solid var(--line2);color:var(--muted);font:600 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;padding:9px 16px;cursor:pointer">Ablehnen</span>
+          </div>
+          <div style="padding:22px 26px;border-bottom:1px solid #F0EBE2;display:flex;align-items:center;gap:18px">
+            <div style="flex:1.6;min-width:170px"><span style="font:500 15px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink);display:block">Vermögensverwaltung Reuter</span><span style="font:300 12px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8a847d">Institutionell · Köln</span></div>
+            <span style="flex:1;font:300 13px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted);min-width:120px">Freigegeben · 02.06.2026</span>
+            <span style="font:500 10px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#3E6B4F;background:rgba(62,107,79,.1);padding:9px 14px">Aktiv</span>
+            <span style="font:500 12px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--accent-dk);cursor:pointer">Verwalten</span>
+          </div>
+          <div style="padding:22px 26px;display:flex;align-items:center;gap:18px">
+            <div style="flex:1.6;min-width:170px"><span style="font:500 15px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink);display:block">A. Lindqvist</span><span style="font:300 12px/1.3 'Helvetica Neue',Helvetica,Arial,sans-serif;color:#8a847d">Privatinvestor · Hamburg</span></div>
+            <span style="flex:1;font:300 13px/1.4 'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--muted);min-width:120px">Wartet auf Freigabe</span>
+            <span style="background:#3E6B4F;color:#fff;font:600 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;padding:9px 16px;cursor:pointer">Freigeben</span>
+            <span style="border:1px solid var(--line2);color:var(--muted);font:600 11px/1 'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;padding:9px 16px;cursor:pointer">Ablehnen</span>
+          </div>
+        </div>
+      </sc-if>
+
+    </main>
+  </div>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:3400},&quot;palette&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Gold&quot;,&quot;options&quot;:[&quot;Gold&quot;,&quot;Kapital-Blau&quot;,&quot;Wohlstand-Grün&quot;,&quot;Modern-Schiefer&quot;],&quot;tsType&quot;:&quot;string&quot;},&quot;telefon&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;0177 – 838 78 98&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;email&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;andrea.krueger@baudorf.de&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;showAyla&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = {
+    screen: 'home', scrolled: false, menuOpen: false, heroSlide: 0,
+    testi: 0, counts: { a: 0, b: 0, c: 0, d: 0 }, counted: false,
+    statusFilter: 'Alle', artFilter: 'Alle', detailId: 'p1',
+    formSent: false, adminTab: 'dashboard', gallery: 0, regSent: false,
+    articleId: 'a1', serviceId: 'l1'
+  };
+
+  go = (screen, detailId) => {
+    this.setState({ screen, menuOpen: false, formSent: false, regSent: false, gallery: 0, detailId: detailId || this.state.detailId });
+    if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'auto' });
+  };
+  goArticle = (id) => { this.setState({ screen: 'article', articleId: id, menuOpen: false }); if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'auto' }); };
+  goService = (id) => { this.setState({ screen: 'service', serviceId: id, menuOpen: false }); if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'auto' }); };
+  goSection = (id) => {
+    const doScroll = () => { const el = document.getElementById(id); if (el) this.smoothTo(el.getBoundingClientRect().top + window.scrollY - 78); };
+    if (this.state.screen !== 'home') { this.setState({ screen: 'home', menuOpen: false }); setTimeout(doScroll, 90); }
+    else { this.setState({ menuOpen: false }); doScroll(); }
+  };
+
+  componentDidMount() {
+    this._onScroll = () => {
+      const s = window.scrollY > 28; if (s !== this.state.scrolled) this.setState({ scrolled: s });
+      if (!this.state.counted) { const el = document.getElementById('bd-stats'); if (el) { const r = el.getBoundingClientRect(); if (r.top < window.innerHeight * 0.85 && r.bottom > 0) this.runCount(); } }
+    };
+    window.addEventListener('scroll', this._onScroll, { passive: true });
+    setTimeout(this._onScroll, 400);
+    this._heroTimer = setInterval(() => { if (this.state.screen === 'home' && !this.state.menuOpen) this.setState(s => ({ heroSlide: (s.heroSlide + 1) % this.heroImgs.length })); }, 5500);
+  }
+  componentWillUnmount() { window.removeEventListener('scroll', this._onScroll); clearInterval(this._heroTimer); }
+  runCount() {
+    this.setState({ counted: true });
+    const T = { a: 31, b: 480, c: 100, d: 24 }, dur = 1500, t0 = performance.now();
+    const tick = (now) => {
+      const p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+      this.setState({ counts: { a: Math.round(T.a * e), b: Math.round(T.b * e), c: Math.round(T.c * e), d: Math.round(T.d * e) } });
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  tween(get, set, target, dur) {
+    const start = get(), t0 = performance.now(), ease = p => 1 - Math.pow(1 - p, 3);
+    const step = (now) => { const p = Math.min(1, (now - t0) / dur); set(start + (target - start) * ease(p)); if (p < 1) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  }
+  smoothTo = (top) => this.tween(() => window.scrollY, (v) => window.scrollTo(0, v), top, 520);
+  scrollCar = (dir) => {
+    const el = document.getElementById('bd-carousel'); if (!el) return;
+    const amount = dir * Math.min(448, el.clientWidth * 0.85);
+    this.tween(() => el.scrollLeft, (v) => { el.scrollLeft = v; }, el.scrollLeft + amount, 460);
+  };
+
+  testiPrev = () => this.setState(s => ({ testi: (s.testi + this.testimonials.length - 1) % this.testimonials.length }));
+  testiNext = () => this.setState(s => ({ testi: (s.testi + 1) % this.testimonials.length }));
+
+  setStatus = (f) => this.setState({ statusFilter: f });
+  setArt = (f) => this.setState({ artFilter: f });
+  sendForm = (e) => { if (e && e.preventDefault) e.preventDefault(); this.setState({ formSent: true }); this.smoothTo(0); };
+  resetForm = () => this.setState({ formSent: false });
+  sendReg = (e) => { if (e && e.preventDefault) e.preventDefault(); this.setState({ regSent: true }); this.smoothTo(0); };
+  resetReg = () => this.setState({ regSent: false });
+  setGallery = (i) => this.setState({ gallery: i });
+  setAdmin = (t) => this.setState({ adminTab: t });
+
+  properties = [
+    { id: 'p1', slot: 'obj1', name: 'Wohnportfolio · 40 Einheiten', art: 'Wohnimmobilie', ort: 'Rheinschiene · NRW', status: 'Off-Market', neu: true, offmarket: true,
+      wfl: '2.809 m²', gf: '2.940 m²', bj: '2027', einheiten: '40 WE', energie: 'KfW 40 / QNG', zustand: 'Neubau · schlüsselfertig', faktor: '20,7', rendite: '4,1 %', preis: '9.750.000 €',
+      kurz: 'Schlüsselfertiges Neubau-Portfolio mit KfW-40-/QNG-Standard an etablierter Rheinschiene-Lage. Vollständig vermietbar, ESG-konform, langfristig wertstabil.' },
+    { id: 'p2', slot: 'obj2', name: 'Neubau-Senioreneinrichtung · 80 Plätze', art: 'Gewerbeimmobilie', ort: 'Herne · NRW', status: 'Verfügbar', neu: false, offmarket: false,
+      wfl: '—', gf: '7.565 m²', bj: '2023', einheiten: '80 stat. Plätze', energie: 'A+', zustand: 'Erstbezug', faktor: '19,5', rendite: '4,9 %', preis: 'auf Anfrage',
+      kurz: 'Vollstationäre Pflegeeinrichtung mit langfristigem Betreiberpachtvertrag. Demografisch krisensicher, bonitätsstarker Betreiber, indexierte Miete.' },
+    { id: 'p3', slot: 'obj3', name: 'Light-Industrial Campus', art: 'Gewerbeimmobilie', ort: 'Wuppertal · NRW', status: 'Verfügbar', neu: false, offmarket: false,
+      wfl: '—', gf: '4.120 m²', bj: '2019', einheiten: '6 Units', energie: 'B', zustand: 'gepflegt', faktor: '16,8', rendite: '5,6 %', preis: '12.400.000 €',
+      kurz: 'Multi-Tenant Gewerbecampus mit flexiblen Hallen- und Büroflächen. Diversifizierter Mietermix, hohe Drittverwendungsfähigkeit, stabiler Cashflow.' },
+    { id: 'p4', slot: 'obj4', name: 'Wohnanlage Bestand · 28 WE', art: 'Wohnimmobilie', ort: 'Essen · NRW', status: 'Reserviert', neu: false, offmarket: true,
+      wfl: '1.940 m²', gf: '2.310 m²', bj: '1998 · saniert 2021', einheiten: '28 WE', energie: 'C', zustand: 'kernsaniert', faktor: '22,4', rendite: '3,7 %', preis: '8.150.000 €',
+      kurz: 'Kernsanierte Wohnanlage in nachgefragter Innenstadtlage. Geringer Leerstand, Mietsteigerungspotenzial, solide Substanz nach Vollsanierung.' },
+    { id: 'p5', slot: 'obj5', name: 'Projektgrundstück · 6.800 m²', art: 'Grundstück', ort: 'Düsseldorf · NRW', status: 'Off-Market', neu: false, offmarket: true,
+      wfl: '—', gf: 'GFZ 1,8', bj: '—', einheiten: 'Baurecht i. V.', energie: '—', zustand: 'baureif i. V.', faktor: '—', rendite: '—', preis: 'auf Anfrage',
+      kurz: 'Innerstädtisches Entwicklungsgrundstück mit fortgeschrittenem Baurecht für gemischte Nutzung. Hervorragende Anbindung, hohes Wertschöpfungspotenzial.' },
+    { id: 'p6', slot: 'obj6', name: 'Villa am Meer', art: 'Auslandsimmobilie', ort: 'Mallorca · ES', status: 'Verfügbar', neu: false, offmarket: false,
+      wfl: '420 m²', gf: '1.250 m²', bj: '2022', einheiten: '1 Villa', energie: 'A', zustand: 'Neubau', faktor: '—', rendite: '—', preis: '6.900.000 €',
+      kurz: 'Architektenvilla in erster Meereslinie mit Infinity-Pool und privatem Meerzugang. Hochwertige Ausstattung, ganzjährig nutzbar, sehr begehrte Lage.' }
+  ];
+
+  heroImgs = [
+    'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2400&q=80',
+    'https://images.unsplash.com/photo-1508450859948-4e04fabaa4ea?auto=format&fit=crop&w=2400&q=80',
+    'https://images.unsplash.com/photo-1460472178825-e5240623afd5?auto=format&fit=crop&w=2400&q=80',
+    'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=2400&q=80'
+  ];
+
+  IMG = {
+    p1: 'https://images.unsplash.com/photo-1593604340846-4fbe9763a8f3?auto=format&fit=crop&w=1280&q=80',
+    p2: 'https://images.unsplash.com/photo-1571055107559-3e67626fa8be?auto=format&fit=crop&w=1280&q=80',
+    p3: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1280&q=80',
+    p4: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1280&q=80',
+    p5: 'https://images.unsplash.com/photo-1460472178825-e5240623afd5?auto=format&fit=crop&w=1280&q=80',
+    p6: 'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=1280&q=80'
+  };
+  INTERIORS = [
+    'https://images.unsplash.com/photo-1497366412874-3415097a27e7?auto=format&fit=crop&w=900&q=80',
+    'https://images.unsplash.com/photo-1516156008625-3a9d6067fab5?auto=format&fit=crop&w=900&q=80',
+    'https://images.unsplash.com/photo-1460472178825-e5240623afd5?auto=format&fit=crop&w=900&q=80'
+  ];
+  PLACE = [
+    { gc: '1 / 5', gr: '1 / 3' }, { gc: '5 / 7', gr: '1 / 3' },
+    { gc: '1 / 3', gr: '3 / 4' }, { gc: '3 / 5', gr: '3 / 4' }, { gc: '5 / 7', gr: '3 / 4' },
+    { gc: '1 / 7', gr: '4 / 5' }
+  ];
+
+  leistungen = [
+    { id: 'l1', no: '01', title: 'Stille Vermarktung', text: 'Diskreter Verkauf außerhalb öffentlicher Portale — angeboten ausschließlich vorgemerkten, geprüften Investoren.',
+      img: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1600&q=80',
+      lead: 'Verkaufen, ohne dass der Markt es erfährt. Für Eigentümer, die Wert auf absolute Vertraulichkeit legen.',
+      intro: 'Manche Objekte gehören nicht auf ein Portal. Bei der stillen Vermarktung sprechen wir Ihr Objekt gezielt einem ausgewählten Kreis vorgemerkter, geprüfter Investoren an — ohne Inserat, ohne öffentliches Exposé, ohne Aufsehen. So bleibt Ihre Verkaufsabsicht vertraulich und der Wert Ihres Objekts unberührt von öffentlicher Preisdiskussion.',
+      bullets: [
+        { t: 'Kein öffentliches Inserat', d: 'Ihr Objekt erscheint auf keinem Portal und in keiner Anzeige — die Vermarktung erfolgt ausschließlich über unser Investorennetzwerk.' },
+        { t: 'Vorqualifizierte Interessenten', d: 'Unterlagen erhalten nur Investoren, deren Profil und Bonität wir vorab geprüft haben.' },
+        { t: 'Diskrete Besichtigung', d: 'Termine erfolgen vertraulich und nach Vormerkung — ohne Schaufenster-Effekt.' }
+      ],
+      closing: 'Sprechen Sie mit uns über Ihr Objekt — vertraulich und unverbindlich.' },
+    { id: 'l2', no: '02', title: 'Klassische Vermarktung', text: 'Reichweitenstarke Vermarktung mit professioneller Inszenierung, wenn maximale Sichtbarkeit gewünscht ist.',
+      img: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1600&q=80',
+      lead: 'Maximale Sichtbarkeit, professionell inszeniert — wenn Reichweite den besten Preis erzielt.',
+      intro: 'Nicht jedes Objekt verlangt nach Stille. Wo breite Nachfrage den besten Preis erzielt, vermarkten wir Ihr Objekt mit voller Reichweite: professionelle Fotografie, durchdachte Exposés und gezielte Platzierung auf den relevanten Kanälen — stets mit dem ästhetischen Anspruch, der zu Baudorf gehört.',
+      bullets: [
+        { t: 'Professionelle Inszenierung', d: 'Architekturfotografie, Grundrissaufbereitung und ein Exposé, das Ihr Objekt im besten Licht zeigt.' },
+        { t: 'Gezielte Reichweite', d: 'Platzierung auf den passenden Portalen und in unserem Netzwerk — koordiniert und nachverfolgt.' },
+        { t: 'Transparente Steuerung', d: 'Regelmäßige Reportings zu Anfragen, Besichtigungen und Resonanz.' }
+      ],
+      closing: 'Wir beraten Sie, welcher Vermarktungsweg zu Ihrem Objekt passt.' },
+    { id: 'l3', no: '03', title: 'Immobilienbewertung', text: 'Fundierte Wertermittlung auf Basis von Marktdaten, Ertrag und Substanz — belastbar und nachvollziehbar.',
+      img: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1600&q=80',
+      lead: 'Was ist Ihr Objekt wirklich wert? Eine belastbare Antwort auf Basis von Daten, Ertrag und Substanz.',
+      intro: 'Eine fundierte Bewertung ist die Grundlage jeder klugen Entscheidung. Als Architektin liest Andrea Krüger die Substanz eines Gebäudes, als Maklerin den Markt. Diese Verbindung ergibt eine Wertermittlung, die über Multiplikatoren hinausgeht — nachvollziehbar, belastbar und auf Ihr Objekt zugeschnitten.',
+      bullets: [
+        { t: 'Markt- & Ertragsdaten', d: 'Vergleichswerte, Mietniveaus und Faktoren der jeweiligen Lage — sauber hergeleitet.' },
+        { t: 'Substanzbewertung', d: 'Architektonischer Blick auf Bauzustand, Sanierungsbedarf und Potenzial.' },
+        { t: 'Klares Gutachten', d: 'Ein verständliches Wertdokument, das vor Bank, Partner oder Erbengemeinschaft Bestand hat.' }
+      ],
+      closing: 'Lassen Sie Ihr Objekt fundiert bewerten — wir melden uns persönlich.' },
+    { id: 'l4', no: '04', title: 'Kaufbegleitung', text: 'Strukturierte Begleitung vom ersten Exposé bis zur notariellen Beurkundung — souverän und verlässlich.',
+      img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80',
+      lead: 'An Ihrer Seite — vom ersten Exposé bis zum Notartermin und darüber hinaus.',
+      intro: 'Ein Immobilienerwerb ist ein Prozess mit vielen Beteiligten. Wir begleiten Sie strukturiert durch jede Phase: von der Objektprüfung über die Verhandlung bis zur notariellen Beurkundung — und koordinieren Finanzierer, Gutachter und Notar, damit Sie souverän entscheiden können.',
+      bullets: [
+        { t: 'Objektprüfung', d: 'Wir prüfen Unterlagen, Lage und Substanz, bevor Sie sich binden.' },
+        { t: 'Verhandlung', d: 'Wir verhandeln auf Augenhöhe — diskret und in Ihrem Interesse.' },
+        { t: 'Abschluss & Übergabe', d: 'Koordination bis zum Notar und eine geordnete Übergabe.' }
+      ],
+      closing: 'Sie planen einen Erwerb? Wir begleiten Sie von Anfang an.' },
+    { id: 'l5', no: '05', title: 'Dienstleisternetzwerk', text: 'Architekten, Steuerberater, Finanzierer und Notare — ein kuratiertes Netzwerk an Ihrer Seite.',
+      img: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1600&q=80',
+      lead: 'Ein kuratiertes Netzwerk aus Spezialisten — verfügbar, wenn Sie es brauchen.',
+      intro: 'Eine Transaktion ist selten allein mit dem Makler getan. Über drei Jahrzehnte haben wir ein verlässliches Netzwerk aufgebaut: Architekten, Steuerberater, Finanzierungspartner und Notare, die unseren Anspruch an Diskretion und Qualität teilen — und die wir bei Bedarf gezielt für Sie einbinden.',
+      bullets: [
+        { t: 'Architektur & Bau', d: 'Geprüfte Partner für Umbau, Sanierung und Projektentwicklung.' },
+        { t: 'Steuer & Finanzierung', d: 'Spezialisten für steuerliche Strukturierung und passende Finanzierungslösungen.' },
+        { t: 'Recht & Notariat', d: 'Erfahrene Notare und Fachanwälte für eine reibungslose Abwicklung.' }
+      ],
+      closing: 'Profitieren Sie von einem Netzwerk, das über Jahrzehnte gewachsen ist.' }
+  ];
+  vorgehen = [
+    { no: '01', title: 'Immobiliensuche', text: 'Wir verstehen Ihr Investitionsprofil und suchen gezielt — auch jenseits des öffentlichen Marktes.' },
+    { no: '02', title: 'Objektauswahl', text: 'Vorqualifizierte Objekte, geprüft auf Lage, Substanz, Ertrag und Risiko.' },
+    { no: '03', title: 'Diskretes Vertrautmachen', text: 'Vertrauliche Übergabe sämtlicher Unterlagen an vorgemerkte Investoren.' },
+    { no: '04', title: 'Transaktionsprozess', text: 'Strukturierte Begleitung bis zur notariellen Beurkundung — und darüber hinaus.' }
+  ];
+  klientel = ['Family Offices', 'Institutionelle Investoren', 'Wohnungsgesellschaften', 'Bauträger', 'Projektentwickler'];
+  insights = [
+    { id: 'a1', cat: 'Markt', title: 'Off-Market 2026 — warum die besten Objekte nie inseriert werden.', date: '14. Mai 2026', read: '6 Min.',
+      img: 'https://images.unsplash.com/photo-1516156008625-3a9d6067fab5?auto=format&fit=crop&w=720&q=80',
+      hero: 'https://images.unsplash.com/photo-1516156008625-3a9d6067fab5?auto=format&fit=crop&w=2000&q=80',
+      lead: 'Die attraktivsten Investmentobjekte erreichen den offenen Markt nie. Warum das so ist — und wie vorgemerkte Investoren trotzdem Zugang erhalten.',
+      author: 'Andrea Krüger', authorRole: 'Geschäftsführerin',
+      body: [
+        'Wer 2026 ein wirklich gutes Investmentobjekt sucht, wird auf den großen Portalen selten fündig. Die besten Wohnportfolios, Gewerbeobjekte und Grundstücke wechseln den Besitzer, bevor sie je ein Inserat sehen. Der Grund ist einfach: Eigentümer hochwertiger Objekte haben kein Interesse an öffentlicher Aufmerksamkeit — und Käufer mit Kapital ebenso wenig.',
+        'Off-Market bedeutet, dass eine Immobilie ausschließlich einem ausgewählten, vorgeprüften Investorenkreis angeboten wird. Kein Portal, kein Schaufenster, keine Preisdiskussion in der Öffentlichkeit. Für den Verkäufer schützt das den Wert des Objekts und die eigene Diskretion. Für den Käufer bedeutet es Zugang zu Gelegenheiten, die andere nie zu sehen bekommen.',
+        'Der Schlüssel ist die Vormerkung. Wer bei einem spezialisierten Maklerhaus als Investor registriert und freigegeben ist, erhält passende Objekte oft schon, bevor überhaupt über eine Vermarktung nachgedacht wird. Vertrauen, Bonität und ein klares Investitionsprofil sind dabei die Eintrittskarte — nicht die Geschwindigkeit beim Klicken auf ein Inserat.',
+        'Für Family Offices und institutionelle Investoren ist dieser Weg längst Standard. Wer ernsthaft in Bestand investiert, baut Beziehungen zu Häusern auf, die Off-Market-Objekte führen — und sichert sich so einen Informationsvorsprung, der sich unmittelbar in der Rendite niederschlägt.'
+      ] },
+    { id: 'a2', cat: 'Investment', title: 'Faktor & Rendite richtig lesen — ein Leitfaden für Kapitalanleger.', date: '28. April 2026', read: '8 Min.',
+      img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=720&q=80',
+      hero: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=2000&q=80',
+      lead: 'Faktor, Brutto- und Nettorendite werden oft verwechselt. Ein nüchterner Leitfaden, wie Sie Kennzahlen einordnen, bevor Sie investieren.',
+      author: 'Andrea Krüger', authorRole: 'Geschäftsführerin',
+      body: [
+        'Der Faktor — auch Kaufpreis-Multiplikator genannt — ist die meistgenannte Kennzahl im Immobilieninvestment. Er beschreibt, wie viele Jahresnettokaltmieten der Kaufpreis entspricht. Ein Faktor von 20 bedeutet vereinfacht: Der Kaufpreis entspricht dem Zwanzigfachen der Jahresmiete. Niedriger Faktor, höhere laufende Rendite — so weit die Theorie.',
+        'Doch der Faktor allein sagt wenig. Ein günstiger Multiplikator in schlechter Lage mit Sanierungsstau kann teurer werden als ein hoher Faktor für ein neuwertiges, voll vermietetes Objekt in nachgefragter Lage. Entscheidend ist, was hinter der Zahl steht: Mietniveau, Leerstandsrisiko, Instandhaltungsbedarf und Entwicklungspotenzial der Region.',
+        'Die Bruttorendite setzt die Jahresmiete ins Verhältnis zum Kaufpreis — ohne Nebenkosten. Die Nettorendite berücksichtigt zusätzlich Erwerbsnebenkosten, nicht umlagefähige Bewirtschaftungskosten und Instandhaltungsrücklagen. Erst sie zeigt, was am Ende tatsächlich übrig bleibt. Wer nur auf die Bruttozahl schaut, täuscht sich leicht.',
+        'Unser Rat: Lesen Sie jede Kennzahl im Kontext. Ein seriöser Partner legt die Herleitung offen — Mietaufstellung, Zustand, Rücklagen — und rechnet auch das Szenario durch, in dem nicht alles nach Plan läuft. Genau diese Transparenz unterscheidet eine fundierte Investition von einer Wette.'
+      ] },
+    { id: 'a3', cat: 'Neubau', title: 'KfW 40 / QNG — was Neubau-Portfolios heute wirklich wert macht.', date: '09. April 2026', read: '5 Min.',
+      img: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=720&q=80',
+      hero: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=2000&q=80',
+      lead: 'Energiestandard und Nachhaltigkeitszertifizierung entscheiden zunehmend über Wert und Finanzierbarkeit von Neubau-Portfolios.',
+      author: 'Andrea Krüger', authorRole: 'Geschäftsführerin',
+      body: [
+        'Der Energiestandard eines Neubaus ist längst keine technische Randnotiz mehr — er ist ein zentraler Werttreiber. KfW-40-Objekte verbrauchen nur 40 Prozent der Primärenergie eines Referenzgebäudes und qualifizieren sich für zinsgünstige Förderkredite. Das senkt die Finanzierungskosten und erhöht die Attraktivität für institutionelle Käufer mit ESG-Vorgaben.',
+        'Das Qualitätssiegel Nachhaltiges Gebäude (QNG) geht weiter: Es bewertet den gesamten Lebenszyklus — von der Herstellung über den Betrieb bis zum Rückbau. Für Investoren, die unter Nachhaltigkeitskriterien anlegen, ist ein QNG-zertifiziertes Portfolio nicht nur ein Imagegewinn, sondern oft Voraussetzung für die Aufnahme ins Anlageuniversum.',
+        'In der Praxis bedeutet das: Zwei äußerlich vergleichbare Neubau-Portfolios können sich im Wert deutlich unterscheiden, allein aufgrund ihres Energie- und Zertifizierungsstandards. Wer heute kauft, sollte diese Faktoren genauso prüfen wie Lage und Mietniveau — denn sie entscheiden über die Wiederverkäuflichkeit von morgen.'
+      ] }
+  ];
+  testimonials = [
+    { quote: 'Baudorf hat uns ein Portfolio vermittelt, das nie am Markt war. Diskret, präzise, auf Augenhöhe — genau so muss das laufen.', who: 'Family Office', city: 'Düsseldorf' },
+    { quote: 'Die Bewertung war fundiert, die Begleitung bis zum Notartermin tadellos. Hier wird Vertraulichkeit gelebt, nicht nur versprochen.', who: 'Institutioneller Investor', city: 'Köln' },
+    { quote: 'Endlich ein Maklerhaus, das versteht, dass Stille ein Wert ist. Wir kommen mit jedem weiteren Mandat zurück.', who: 'Projektentwickler', city: 'Ruhrgebiet' }
+  ];
+  leads = [
+    { name: 'Dr. M. Hoffmann', typ: 'Käufer · Family Office', objekt: 'Wohnportfolio · 40 Einheiten', status: 'Neu', sc: 'var(--accent)', datum: 'Heute, 09:42' },
+    { name: 'Vermögensverwaltung Reuter', typ: 'Käufer · Institutionell', objekt: 'Light-Industrial Campus', status: 'In Bearbeitung', sc: 'var(--muted)', datum: 'Gestern, 16:20' },
+    { name: 'S. Brandt', typ: 'Verkäufer · Bestandshalter', objekt: 'Immobilienbewertung', status: 'Neu', sc: 'var(--accent)', datum: 'Gestern, 11:08' },
+    { name: 'Königsbau Projekt GmbH', typ: 'Käufer · Bauträger', objekt: 'Projektgrundstück Düsseldorf', status: 'Erledigt', sc: '#3E6B4F', datum: '12. Juni 2026' },
+    { name: 'A. Lindqvist', typ: 'Käufer · Privatinvestor', objekt: 'Villa am Meer · Mallorca', status: 'In Bearbeitung', sc: 'var(--muted)', datum: '11. Juni 2026' }
+  ];
+
+  renderVals() {
+    const st = this.state;
+    const props = this.properties.map(p => ({
+      ...p,
+      open: () => this.go('detail', p.id),
+      notOff: !p.offmarket,
+      img: this.IMG[p.id],
+      pct: ({ 'Off-Market': 'var(--accent)', 'Verfügbar': '#3E6B4F', 'Reserviert': 'var(--accent-dk)', 'Verkauft': '#8a3b3b' })[p.status] || 'var(--muted)'
+    }));
+    const featured = props.slice(0, 6).map((o, i) => ({ ...o, gc: this.PLACE[i].gc, gr: this.PLACE[i].gr }));
+    const filtered = props.filter(p => (st.statusFilter === 'Alle' || p.status === st.statusFilter) && (st.artFilter === 'Alle' || p.art === st.artFilter));
+    const detail = props.find(p => p.id === st.detailId) || props[0];
+    const similar = props.filter(p => p.id !== detail.id && p.art === detail.art).slice(0, 3);
+    const galleryUrls = [detail.img, ...this.INTERIORS];
+    const galleryArr = galleryUrls.map((url, i) => ({ url, active: i === st.gallery, notActive: i !== st.gallery, ring: i === st.gallery ? '0 0 0 2px var(--surface), 0 0 0 4px var(--bd-gold,var(--accent)), 0 10px 22px -10px rgba(24,22,20,.4)' : '0 0 0 1px var(--line)', on: () => this.setGallery(i) }));
+    const detailMain = galleryUrls[st.gallery] || detail.img;
+    const galN = galleryUrls.length;
+    const mkChips = (list, cur, fn) => list.map(f => ({ label: f, active: f === cur, activeNot: f !== cur, on: () => fn(f) }));
+    const adminTabs = [['dashboard', 'Dashboard'], ['immobilien', 'Immobilien'], ['leads', 'Leads / Anfragen'], ['insights', 'Insights'], ['nutzer', 'Nutzer']]
+      .map(([k, l]) => ({ key: k, label: l, active: st.adminTab === k, activeNot: st.adminTab !== k, on: () => this.setAdmin(k) }));
+    const t = this.testimonials[st.testi];
+    const insights = this.insights.map((a, i) => ({ ...a, num: '0' + (i + 1), open: () => this.goArticle(a.id) }));
+    const services = this.leistungen.map(l => ({ ...l, open: () => this.goService(l.id) }));
+    const article = insights.find(a => a.id === st.articleId) || insights[0];
+    const relatedArticles = insights.filter(a => a.id !== article.id);
+    const service = services.find(l => l.id === st.serviceId) || services[0];
+    const serviceNav = services.map(l => ({ ...l, current: l.id === service.id, notCurrent: l.id !== service.id, jump: () => this.goService(l.id) }));
+    return {
+      isPublic: st.screen !== 'admin', isHome: st.screen === 'home', isList: st.screen === 'list',
+      isDetail: st.screen === 'detail', isContact: st.screen === 'contact', isAdmin: st.screen === 'admin',
+      isLogin: st.screen === 'login', isRegister: st.screen === 'register',
+      isArticle: st.screen === 'article', isService: st.screen === 'service',
+      article, relatedArticles, service, serviceNav,
+      scrolled: st.scrolled, menuOpen: st.menuOpen, navPad: st.scrolled ? '13px 0' : '24px 0',
+      go: this.go, goHome: () => this.go('home'), goList: () => this.go('list'), goContact: () => this.go('contact'),
+      goAdmin: () => this.go('admin'), goRegister: () => this.go('register'), goLogin: () => this.go('login'),
+      goLeistungen: () => this.goSection('leistungen'), goUeber: () => this.goSection('ueber'), goVorgehen: () => this.goSection('vorgehen'),
+      toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen })),
+      op0: st.heroSlide === 0 ? 1 : 0, op1: st.heroSlide === 1 ? 1 : 0, op2: st.heroSlide === 2 ? 1 : 0, op3: st.heroSlide === 3 ? 1 : 0,
+      heroDots: this.heroImgs.map((_, i) => ({ on: () => this.setState({ heroSlide: i }), w: i === st.heroSlide ? '36px' : '16px', bg: i === st.heroSlide ? 'var(--accent)' : 'rgba(245,242,236,.45)' })),
+      props, featured, m0: featured[0], m1: featured[1], m2: featured[2], m3: featured[3], m4: featured[4], m5: featured[5],
+      filtered, filteredCount: filtered.length, totalCount: props.length, similar,
+      statusChips: mkChips(['Alle', 'Off-Market', 'Verfügbar', 'Reserviert', 'Verkauft'], st.statusFilter, this.setStatus),
+      artChips: mkChips(['Alle', 'Wohnimmobilie', 'Gewerbeimmobilie', 'Grundstück', 'Auslandsimmobilie'], st.artFilter, this.setArt),
+      leistungen: services, vorgehen: this.vorgehen, klientel: this.klientel, insights,
+      scrollPrev: () => this.scrollCar(-1), scrollNext: () => this.scrollCar(1), counts: st.counts,
+      testi: t, testiPrev: this.testiPrev, testiNext: this.testiNext,
+      detail, galleryArr, detailMain, galleryIndex: st.gallery + 1, galleryCount: galN,
+      galleryPrev: () => this.setState(s => ({ gallery: (s.gallery + galN - 1) % galN })),
+      galleryNext: () => this.setState(s => ({ gallery: (s.gallery + 1) % galN })),
+      similar, hasSimilar: similar.length > 0, sendForm: this.sendForm, formSent: st.formSent, formOpen: !st.formSent, resetForm: this.resetForm,
+      sendReg: this.sendReg, regSent: st.regSent, regOpen: !st.regSent, resetReg: this.resetReg,
+      showFooter: st.screen !== 'admin' && st.screen !== 'login' && st.screen !== 'register',
+      adminTabs, adminTab: st.adminTab, leads: this.leads,
+      admDash: st.adminTab === 'dashboard', admImmo: st.adminTab === 'immobilien', admLeads: st.adminTab === 'leads', admInsights: st.adminTab === 'insights', admNutzer: st.adminTab === 'nutzer',
+      telefon: this.props.telefon ?? '0177 – 838 78 98', email: this.props.email ?? 'andrea.krueger@baudorf.de',
+      showAyla: this.props.showAyla ?? true,
+      palKey: ({ 'Gold': 'gold', 'Kapital-Blau': 'blau', 'Wohlstand-Grün': 'gruen', 'Modern-Schiefer': 'schiefer' }[this.props.palette] || 'gold')
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="de" data-pal="gold">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(ViewData["Title"] != null ? ViewData["Title"] + " · " : "")Baudorf Immobilien — Off-Market in NRW</title>
+    <meta name="description" content="@(ViewData["MetaDescription"] ?? "Baudorf Immobilien GmbH — diskrete, stille Vermarktung von Off-Market-Immobilien in NRW. Still, wirkungsvoll, mit Stil.")" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+
+    <link rel="icon" href="~/favicon.ico" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <noscript><style>[data-reveal]{opacity:1!important;transform:none!important}</style></noscript>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body>
+    <header class="bd-nav" x-data="{ open: false, scrolled: false }"
+            @@scroll.window="scrolled = (window.scrollY > 40)"
+            :class="{ 'is-scrolled': scrolled }">
+        <div class="bd-nav__inner bd-container">
+            <a class="bd-nav__brand" asp-controller="Home" asp-action="Index" aria-label="Baudorf Startseite">
+                <img class="bd-nav__logo bd-nav__logo--ink" src="~/img/brand/baudorf-logo-ink.png" alt="Baudorf Immobilien" />
+                <img class="bd-nav__logo bd-nav__logo--cream" src="~/img/brand/baudorf-logo-cream.png" alt="Baudorf Immobilien" />
+            </a>
+
+            <nav class="bd-nav__links" aria-label="Hauptnavigation">
+                <a asp-controller="Immobilien" asp-action="Index">Immobilien</a>
+                <a asp-controller="Home" asp-action="Index" asp-fragment="leistungen">Leistungen</a>
+                <a asp-controller="Home" asp-action="Index" asp-fragment="ueber-uns">Über uns</a>
+                <a asp-controller="Home" asp-action="Index" asp-fragment="insights">Insights</a>
+                <a asp-controller="Home" asp-action="Index" asp-fragment="kontakt">Kontakt</a>
+            </nav>
+
+            <div class="bd-nav__actions">
+                <a class="bd-nav__account" asp-area="Identity" asp-page="/Account/Login">Mein Konto</a>
+                <a class="bd-btn bd-btn--gold bd-btn--sm" asp-controller="Home" asp-action="Index" asp-fragment="kontakt">Objekte anfragen</a>
+                <button class="bd-nav__burger" @@click="open = true" aria-label="Menü öffnen">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile menu -->
+        <div class="bd-mobile" x-show="open" x-cloak @@keydown.escape.window="open = false">
+            <div class="bd-mobile__head bd-container">
+                <span class="bd-overline">Baudorf</span>
+                <button class="bd-mobile__close" @@click="open = false" aria-label="Menü schließen">&times;</button>
+            </div>
+            <nav class="bd-mobile__links">
+                <a asp-controller="Immobilien" asp-action="Index" @@click="open = false">Immobilien</a>
+                <a asp-controller="Home" asp-action="Index" asp-fragment="leistungen" @@click="open = false">Leistungen</a>
+                <a asp-controller="Home" asp-action="Index" asp-fragment="ueber-uns" @@click="open = false">Über uns</a>
+                <a asp-controller="Home" asp-action="Index" asp-fragment="insights" @@click="open = false">Insights</a>
+                <a asp-controller="Home" asp-action="Index" asp-fragment="kontakt" @@click="open = false">Kontakt</a>
+                <a asp-area="Identity" asp-page="/Account/Login" @@click="open = false">Mein Konto</a>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main">
+        @RenderBody()
+    </main>
+
+    <footer class="bd-footer">
+        <div class="bd-container bd-footer__grid">
+            <div class="bd-footer__brand">
+                <img src="~/img/brand/baudorf-logo-cream.png" alt="Baudorf Immobilien" height="34" />
+                <p>Diskrete, stille Vermarktung von Off-Market-Immobilien in Nordrhein-Westfalen — seit 1994.</p>
+            </div>
+            <div>
+                <h4>Immobilien</h4>
+                <a asp-controller="Immobilien" asp-action="Index">Off-Market</a>
+                <a asp-controller="Immobilien" asp-action="Index">Kapitalanlagen</a>
+                <a asp-controller="Immobilien" asp-action="Index">Gewerbe</a>
+                <a asp-controller="Immobilien" asp-action="Index">Auslandsimmobilien</a>
+            </div>
+            <div>
+                <h4>Unternehmen</h4>
+                <a asp-controller="Home" asp-action="Index" asp-fragment="ueber-uns">Über uns</a>
+                <a asp-controller="Home" asp-action="Index" asp-fragment="leistungen">Leistungen</a>
+                <a asp-controller="Home" asp-action="Index" asp-fragment="tippgeber">Tippgeber</a>
+                <a asp-controller="Home" asp-action="Index" asp-fragment="karriere">Karriere</a>
+            </div>
+            <div>
+                <h4>Kontakt</h4>
+                <p>
+                    Baudorf Immobilien GmbH<br />
+                    Auf der Egge 68<br />
+                    42555 Velbert<br />
+                    <a href="tel:+4901778387898">0177 – 838 78 98</a><br />
+                    <a href="mailto:andrea.krueger@baudorf.de">andrea.krueger@@baudorf.de</a>
+                </p>
+            </div>
+        </div>
+        <div class="bd-container bd-footer__legal">
+            <span>&copy; @DateTime.Now.Year Baudorf Immobilien GmbH · Velbert</span>
+            <nav>
+                <a asp-controller="Legal" asp-action="Impressum">Impressum</a>
+                <a asp-controller="Legal" asp-action="Agb">AGB</a>
+                <a asp-controller="Legal" asp-action="Datenschutz">Datenschutz</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

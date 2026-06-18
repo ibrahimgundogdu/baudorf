@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="de" data-pal="gold">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] · Baudorf Admin</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="bd-admin">
+    <aside class="bd-admin__nav">
+        <a class="bd-admin__brand" asp-area="Admin" asp-controller="Home" asp-action="Index">
+            <img src="~/img/brand/baudorf-logo-cream.png" alt="Baudorf" height="28" />
+        </a>
+        <nav>
+            <a asp-area="Admin" asp-controller="Home" asp-action="Index">Dashboard</a>
+            <a asp-area="Admin" asp-controller="Properties" asp-action="Index">Immobilien</a>
+            <a asp-area="Admin" asp-controller="Leads" asp-action="Index">Leads</a>
+            <a asp-area="Admin" asp-controller="Blog" asp-action="Index">Insights</a>
+            <a asp-area="Admin" asp-controller="Team" asp-action="Index">Team</a>
+            <a asp-area="Admin" asp-controller="Settings" asp-action="Index">Einstellungen</a>
+        </nav>
+        <a class="bd-admin__back" asp-area="" asp-controller="Home" asp-action="Index">← Zur Website</a>
+    </aside>
+    <main class="bd-admin__main">
+        <header class="bd-admin__head">
+            <h1>@ViewData["Title"]</h1>
+            <partial name="_LoginPartial" />
+        </header>
+        <div class="bd-admin__content">
+            @RenderBody()
+        </div>
+    </main>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

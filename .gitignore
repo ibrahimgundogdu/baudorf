@@ -1,0 +1,46 @@
+# .NET
+bin/
+obj/
+out/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+artifacts/
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]uild/
+[Pp]ublish/
+
+# Rider / VS Code
+.idea/
+.vscode/
+
+# EF / SQL
+*.mdf
+*.ldf
+
+# Secrets & local config (NEVER commit connection strings / SMTP / R2 keys)
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Local.json
+secrets.json
+*.env
+.env
+
+# User-uploaded media (kept out of repo)
+src/Baudorf.Web/wwwroot/uploads/*
+!src/Baudorf.Web/wwwroot/uploads/.gitkeep
+
+# Node (only if a tool pipeline is added later)
+node_modules/
+
+# OS
+Thumbs.db
+.DS_Store
+.gstack/
