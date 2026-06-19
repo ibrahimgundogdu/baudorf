@@ -1,0 +1,210 @@
+@model Property
+@{
+    var isEdit = Model.Id > 0;
+    ViewData["Title"] = isEdit ? "Objekt bearbeiten" : "Neues Objekt";
+}
+
+<div class="bd-toolbar">
+    <a class="bd-btn bd-btn--plain bd-btn--xs" asp-action="Index">&larr; Zurück zur Liste</a>
+    @if (isEdit)
+    {
+        <a class="bd-btn bd-btn--plain bd-btn--xs" asp-controller="Immobilien" asp-area="" asp-action="Details" asp-route-slug="@Model.Slug" target="_blank">Auf Website ansehen</a>
+    }
+</div>
+
+<form method="post" asp-action="@(isEdit ? "Edit" : "Create")" asp-route-id="@Model.Id" class="bd-aform">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="bd-validation-summary"></div>
+
+    <fieldset>
+        <legend>Grunddaten</legend>
+        <div class="bd-form-field">
+            <label asp-for="Titel">Titel *</label>
+            <input asp-for="Titel" />
+            <span asp-validation-for="Titel"></span>
+        </div>
+        <div class="bd-grid-2">
+            <div class="bd-form-field">
+                <label asp-for="Slug">Slug (URL)</label>
+                <input asp-for="Slug" placeholder="wird aus Titel erzeugt" />
+                <span asp-validation-for="Slug"></span>
+            </div>
+            <div class="bd-form-field">
+                <label asp-for="Art">Objektart</label>
+                <select asp-for="Art" asp-items="Html.GetEnumSelectList<PropertyKind>()"></select>
+            </div>
+        </div>
+        <div class="bd-grid-3">
+            <div class="bd-form-field">
+                <label asp-for="Status">Status</label>
+                <select asp-for="Status" asp-items="Html.GetEnumSelectList<PropertyStatus>()"></select>
+            </div>
+            <div class="bd-form-field">
+                <label asp-for="Region">Region</label>
+                <input asp-for="Region" placeholder="z. B. Velbert, NRW" />
+            </div>
+            <div class="bd-form-field">
+                <label asp-for="Land">Land</label>
+                <input asp-for="Land" />
+            </div>
+        </div>
+        <div class="bd-form-field">
+            <label asp-for="AdresseIntern">Interne Adresse (nur Admin / Freigegebene)</label>
+            <input asp-for="AdresseIntern" />
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Kennzahlen</legend>
+        <div class="bd-grid-3">
+            <div class="bd-form-field">
+                <label asp-for="Wohnflaeche">Wohnfläche (m²)</label>
+                <input asp-for="Wohnflaeche" type="number" step="0.01" />
+            </div>
+            <div class="bd-form-field">
+                <label asp-for="Grundstuecksflaeche">Grundstück (m²)</label>
+                <input asp-for="Grundstuecksflaeche" type="number" step="0.01" />
+            </div>
+            <div class="bd-form-field">
+                <label asp-for="Baujahr">Baujahr</label>
+                <input asp-for="Baujahr" type="number" />
+            </div>
+        </div>
+        <div class="bd-grid-3">
+            <div class="bd-form-field">
+                <label asp-for="Einheiten">Einheiten</label>
+                <input asp-for="Einheiten" type="number" />
+            </div>
+            <div class="bd-form-field">
+                <label asp-for="Zustand">Zustand</label>
+                <input asp-for="Zustand" />
+            </div>
+            <div class="bd-form-field">
+                <label asp-for="Energieklasse">Energie / Standard</label>
+                <input asp-for="Energieklasse" />
+            </div>
+        </div>
+        <div class="bd-grid-3">
+            <div class="bd-form-field">
+                <label asp-for="Faktor">Faktor</label>
+                <input asp-for="Faktor" type="number" step="0.01" />
+            </div>
+            <div class="bd-form-field">
+                <label asp-for="RenditeProzent">Rendite (%)</label>
+                <input asp-for="RenditeProzent" type="number" step="0.01" />
+            </div>
+            <div class="bd-form-field">
+                <label asp-for="Kaufpreis">Kaufpreis (€) — leer = „auf Anfrage“</label>
+                <input asp-for="Kaufpreis" type="number" step="0.01" />
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Beschreibung &amp; SEO</legend>
+        <div class="bd-form-field">
+            <label asp-for="Beschreibung">Beschreibung</label>
+            <textarea asp-for="Beschreibung" rows="6"></textarea>
+        </div>
+        <div class="bd-grid-2">
+            <div class="bd-form-field">
+                <label asp-for="MetaTitle">Meta-Titel</label>
+                <input asp-for="MetaTitle" />
+            </div>
+            <div class="bd-form-field">
+                <label asp-for="MetaDescription">Meta-Beschreibung</label>
+                <input asp-for="MetaDescription" />
+            </div>
+        </div>
+        <div class="bd-grid-2">
+            <div class="bd-form-field">
+                <label asp-for="Lat">Breitengrad (Lat)</label>
+                <input asp-for="Lat" type="number" step="any" />
+            </div>
+            <div class="bd-form-field">
+                <label asp-for="Lng">Längengrad (Lng)</label>
+                <input asp-for="Lng" type="number" step="any" />
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Sichtbarkeit</legend>
+        <div class="bd-checkline"><input asp-for="IstVeroeffentlicht" /> <label asp-for="IstVeroeffentlicht">Veröffentlicht (auf der Website sichtbar)</label></div>
+        <div class="bd-checkline"><input asp-for="IstOffMarket" /> <label asp-for="IstOffMarket">Off-Market (Details nur für freigegebene Investoren)</label></div>
+        <div class="bd-checkline"><input asp-for="IstFeatured" /> <label asp-for="IstFeatured">Featured (auf der Startseite hervorheben)</label></div>
+    </fieldset>
+
+    <div class="bd-form-actions">
+        <button type="submit" class="bd-btn bd-btn--gold">@(isEdit ? "Änderungen speichern" : "Anlegen & Bilder hinzufügen")</button>
+        <a class="bd-btn bd-btn--plain" asp-action="Index">Abbrechen</a>
+    </div>
+</form>
+
+@if (isEdit)
+{
+    <fieldset class="bd-aform" style="margin-top:2rem;">
+        <legend>Bilder &amp; Medien</legend>
+
+        <form method="post" asp-action="UploadMedia" asp-route-id="@Model.Id" enctype="multipart/form-data" class="bd-dz">
+            @Html.AntiForgeryToken()
+            <p>Bilder hochladen (JPG, PNG, WebP, AVIF — max. 12 MB pro Datei)</p>
+            <input type="file" name="dateien" accept="image/*" multiple required />
+            <div style="margin-top:0.8rem;"><button type="submit" class="bd-btn bd-btn--ink bd-btn--sm">Hochladen</button></div>
+        </form>
+
+        @if (Model.Medien.Count == 0)
+        {
+            <div class="bd-media-empty">Noch keine Bilder. Das erste hochgeladene Bild wird automatisch zum Titelbild.</div>
+        }
+        else
+        {
+            <div class="bd-media-grid">
+                @foreach (var m in Model.Medien.OrderBy(x => x.Reihenfolge))
+                {
+                    <div class="bd-media-tile @(m.IstCover ? "is-cover" : "")">
+                        <img src="@m.Url" alt="@m.Alt" />
+                        <div class="bd-media-tile__bar">
+                            @if (m.IstCover)
+                            {
+                                <span class="bd-media-tile__cover">★ Titelbild</span>
+                            }
+                            else
+                            {
+                                <form method="post" asp-action="SetCover" asp-route-id="@Model.Id">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="mediaId" value="@m.Id" />
+                                    <button class="bd-btn bd-btn--plain bd-btn--xs" type="submit">Als Titel</button>
+                                </form>
+                            }
+                            <form method="post" asp-action="DeleteMedia" asp-route-id="@Model.Id" onsubmit="return confirm('Bild löschen?');">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="mediaId" value="@m.Id" />
+                                <button class="bd-btn bd-btn--danger bd-btn--xs" type="submit">×</button>
+                            </form>
+                        </div>
+                        <div class="bd-media-tile__bar">
+                            <form method="post" asp-action="MoveMedia" asp-route-id="@Model.Id">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="mediaId" value="@m.Id" />
+                                <input type="hidden" name="direction" value="-1" />
+                                <button class="bd-btn bd-btn--plain bd-btn--xs" type="submit" title="nach vorne">←</button>
+                            </form>
+                            <form method="post" asp-action="MoveMedia" asp-route-id="@Model.Id">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="mediaId" value="@m.Id" />
+                                <input type="hidden" name="direction" value="1" />
+                                <button class="bd-btn bd-btn--plain bd-btn--xs" type="submit" title="nach hinten">→</button>
+                            </form>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </fieldset>
+}
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+}

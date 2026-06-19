@@ -1,0 +1,38 @@
+@model Baudorf.Web.Areas.Admin.Controllers.SettingDescriptor[]
+@{
+    ViewData["Title"] = "Einstellungen";
+    var values = (Dictionary<string, string>)ViewBag.Values;
+    string Val(string k) => values.TryGetValue(k, out var v) ? v : "";
+}
+
+<form method="post" asp-action="Save" class="bd-aform">
+    @Html.AntiForgeryToken()
+
+    @foreach (var group in Model.GroupBy(m => m.Group))
+    {
+        <fieldset>
+            <legend>@group.Key</legend>
+            @foreach (var item in group)
+            {
+                var key = item.Key;
+                var label = item.Label;
+                <div class="bd-form-field">
+                    <label>@label</label>
+                    @if (key == "whatsapp.message" || key == "brand.slogan")
+                    {
+                        <textarea name="settings[@key]" rows="2">@Val(key)</textarea>
+                    }
+                    else
+                    {
+                        <input name="settings[@key]" value="@Val(key)" />
+                    }
+                    <span class="bd-muted" style="font-size:0.76rem;">@key</span>
+                </div>
+            }
+        </fieldset>
+    }
+
+    <div class="bd-form-actions">
+        <button type="submit" class="bd-btn bd-btn--gold">Einstellungen speichern</button>
+    </div>
+</form>

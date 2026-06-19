@@ -1,0 +1,71 @@
+@model Lead
+@{
+    ViewData["Title"] = $"Anfrage: {Model.Vorname} {Model.Nachname}";
+}
+
+<div class="bd-toolbar">
+    <a class="bd-btn bd-btn--plain bd-btn--xs" asp-action="Index">&larr; Zurück</a>
+    <form method="post" asp-action="Delete" asp-route-id="@Model.Id" onsubmit="return confirm('Anfrage löschen?');">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="bd-btn bd-btn--danger bd-btn--xs">Löschen</button>
+    </form>
+</div>
+
+<div class="bd-dash-grid">
+    <div class="bd-panel">
+        <h3>Kontakt</h3>
+        <div class="bd-panel__row"><span class="bd-muted">Name</span><span>@Model.Vorname @Model.Nachname</span></div>
+        <div class="bd-panel__row"><span class="bd-muted">E-Mail</span><a href="mailto:@Model.Email">@Model.Email</a></div>
+        <div class="bd-panel__row"><span class="bd-muted">Telefon</span><span>@(Model.Telefon ?? "—")</span></div>
+        <div class="bd-panel__row"><span class="bd-muted">Interesse</span><span>@Model.Interesse.Label()</span></div>
+        <div class="bd-panel__row"><span class="bd-muted">Objekt</span><span>@(Model.Property?.Titel ?? "—")</span></div>
+        <div class="bd-panel__row"><span class="bd-muted">Eingegangen</span><span>@Model.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</span></div>
+        <div class="bd-panel__row"><span class="bd-muted">DSGVO</span><span>@(Model.DsgvoAkzeptiert ? "akzeptiert" : "—")</span></div>
+        <div class="bd-panel__row"><span class="bd-muted">IP</span><span>@(Model.IpAdresse ?? "—")</span></div>
+        <div style="margin-top:1rem;">
+            <strong>Nachricht</strong>
+            <p style="white-space:pre-wrap;color:var(--stone);">@Model.Nachricht</p>
+        </div>
+    </div>
+
+    <div class="bd-panel">
+        <h3>Bearbeitung</h3>
+        <form method="post" asp-action="Update" asp-route-id="@Model.Id" class="bd-aform">
+            @Html.AntiForgeryToken()
+            <div class="bd-form-field">
+                <label>Status</label>
+                <select name="status" asp-items="Html.GetEnumSelectList<LeadStatus>()" value="@Model.Status"></select>
+            </div>
+            <div class="bd-form-field">
+                <label>Zugewiesen an</label>
+                <input name="zugewiesenAn" value="@Model.ZugewiesenAn" />
+            </div>
+            <div class="bd-form-field">
+                <label>Notiz</label>
+                <textarea name="notiz" rows="5">@Model.Notiz</textarea>
+            </div>
+            <button type="submit" class="bd-btn bd-btn--ink bd-btn--sm">Speichern</button>
+        </form>
+
+        <h3 style="margin-top:1.6rem;">Antworten</h3>
+        <form method="post" asp-action="Reply" asp-route-id="@Model.Id" class="bd-aform">
+            @Html.AntiForgeryToken()
+            <div class="bd-form-field">
+                <label>Betreff</label>
+                <input name="betreff" value="Ihre Anfrage bei Baudorf Immobilien" />
+            </div>
+            <div class="bd-form-field">
+                <label>Antwort an @Model.Email</label>
+                <textarea name="antwort" rows="5" placeholder="Sehr geehrte/r …"></textarea>
+            </div>
+            <button type="submit" class="bd-btn bd-btn--gold bd-btn--sm">Antwort senden</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Statuswert vorauswählen
+        document.querySelector('select[name="status"]').value = '@Model.Status';
+    </script>
+}

@@ -1,0 +1,62 @@
+@model TeamMember
+@{
+    var isEdit = Model.Id > 0;
+    ViewData["Title"] = isEdit ? "Mitglied bearbeiten" : "Neues Mitglied";
+}
+
+<div class="bd-toolbar">
+    <a class="bd-btn bd-btn--plain bd-btn--xs" asp-action="Index">&larr; Zurück</a>
+</div>
+
+<form method="post" asp-action="@(isEdit ? "Edit" : "Create")" asp-route-id="@Model.Id" enctype="multipart/form-data" class="bd-aform">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="bd-validation-summary"></div>
+
+    <fieldset>
+        <legend>Angaben</legend>
+        <div class="bd-grid-2">
+            <div class="bd-form-field">
+                <label asp-for="Name">Name *</label>
+                <input asp-for="Name" />
+                <span asp-validation-for="Name"></span>
+            </div>
+            <div class="bd-form-field">
+                <label asp-for="Rolle">Rolle</label>
+                <input asp-for="Rolle" />
+            </div>
+        </div>
+        <div class="bd-form-field">
+            <label asp-for="Bio">Bio</label>
+            <textarea asp-for="Bio" rows="4"></textarea>
+        </div>
+        <div class="bd-grid-2">
+            <div class="bd-form-field">
+                <label asp-for="Reihenfolge">Reihenfolge</label>
+                <input asp-for="Reihenfolge" type="number" />
+            </div>
+            <div class="bd-checkline" style="align-self:end;"><input asp-for="IstSichtbar" /> <label asp-for="IstSichtbar">Sichtbar</label></div>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Foto</legend>
+        @if (!string.IsNullOrWhiteSpace(Model.FotoUrl))
+        {
+            <img class="bd-thumb" style="width:120px;height:auto;" src="@Model.FotoUrl" alt="" />
+        }
+        <div class="bd-form-field">
+            <label>Foto hochladen</label>
+            <input type="file" name="foto" accept="image/*" />
+        </div>
+    </fieldset>
+
+    <div class="bd-form-actions">
+        <button type="submit" class="bd-btn bd-btn--gold">@(isEdit ? "Speichern" : "Anlegen")</button>
+        <a class="bd-btn bd-btn--plain" asp-action="Index">Abbrechen</a>
+    </div>
+</form>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+}

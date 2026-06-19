@@ -1,0 +1,78 @@
+@model UserDetailViewModel
+@{
+    ViewData["Title"] = Model.User.Email;
+}
+
+<div class="bd-toolbar">
+    <a class="bd-btn bd-btn--plain bd-btn--xs" asp-action="Index">&larr; Zurück</a>
+</div>
+
+<div class="bd-dash-grid">
+    <div class="bd-panel">
+        <h3>Profil</h3>
+        <div class="bd-panel__row"><span class="bd-muted">E-Mail</span><span>@Model.User.Email</span></div>
+        <div class="bd-panel__row"><span class="bd-muted">Name</span><span>@(Model.User.AnzeigeName ?? "—")</span></div>
+        <div class="bd-panel__row"><span class="bd-muted">Registriert</span><span>@Model.User.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</span></div>
+        <div class="bd-panel__row"><span class="bd-muted">Off-Market-Freigabe</span>
+            <span>@(Model.User.IstFreigegeben ? $"seit {Model.User.FreigegebenAm?.ToLocalTime():dd.MM.yyyy}" : "nein")</span>
+        </div>
+
+        <div style="margin-top:1rem;">
+            <form method="post" asp-action="SetFreigabe" asp-route-id="@Model.User.Id">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="freigeben" value="@((!Model.User.IstFreigegeben).ToString().ToLower())" />
+                <button type="submit" class="bd-btn @(Model.User.IstFreigegeben ? "bd-btn--danger" : "bd-btn--gold") bd-btn--sm">
+                    @(Model.User.IstFreigegeben ? "Freigabe entziehen" : "Für Off-Market freigeben")
+                </button>
+            </form>
+        </div>
+
+        <h3 style="margin-top:1.6rem;">Rollen</h3>
+        @foreach (var role in Model.AlleRollen)
+        {
+            var hat = Model.Rollen.Contains(role);
+            <form method="post" asp-action="SetRole" asp-route-id="@Model.User.Id" class="bd-checkline">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="rolle" value="@role" />
+                <input type="hidden" name="zuweisen" value="@((!hat).ToString().ToLower())" />
+                <button type="submit" class="bd-btn bd-btn--xs @(hat ? "bd-btn--ink" : "bd-btn--plain")">
+                    @role @(hat ? "✓" : "+")
+                </button>
+            </form>
+        }
+    </div>
+
+    <div class="bd-panel">
+        <h3>Anmelde-Protokoll</h3>
+        @if (Model.Logins.Count == 0)
+        {
+            <div class="bd-empty-row">Keine Anmeldungen protokolliert.</div>
+        }
+        else
+        {
+            @foreach (var l in Model.Logins)
+            {
+                <div class="bd-panel__row">
+                    <span>@l.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</span>
+                    <span class="bd-muted">@(l.IpAdresse ?? "—")</span>
+                </div>
+            }
+        }
+
+        <h3 style="margin-top:1.6rem;">Angesehene Objekte</h3>
+        @if (Model.Aufrufe.Count == 0)
+        {
+            <div class="bd-empty-row">Noch keine Objektaufrufe.</div>
+        }
+        else
+        {
+            @foreach (var v in Model.Aufrufe)
+            {
+                <div class="bd-panel__row">
+                    <span>@(v.Property?.Titel ?? "—")</span>
+                    <span class="bd-muted">@v.CreatedAt.ToLocalTime().ToString("dd.MM. HH:mm")</span>
+                </div>
+            }
+        }
+    </div>
+</div>

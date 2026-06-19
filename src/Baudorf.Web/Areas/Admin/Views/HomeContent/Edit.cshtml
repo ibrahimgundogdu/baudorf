@@ -1,0 +1,79 @@
+@model HomeSection
+@{
+    ViewData["Title"] = $"Abschnitt: {Model.Key}";
+}
+
+<div class="bd-toolbar">
+    <a class="bd-btn bd-btn--plain bd-btn--xs" asp-action="Index">&larr; Zurück</a>
+</div>
+
+<form method="post" asp-action="Edit" asp-route-id="@Model.Id" enctype="multipart/form-data" class="bd-aform">
+    @Html.AntiForgeryToken()
+    <fieldset>
+        <legend>Inhalt (@Model.Key)</legend>
+        <div class="bd-form-field">
+            <label asp-for="Overline">Overline (kleine Überschrift)</label>
+            <input asp-for="Overline" />
+        </div>
+        <div class="bd-form-field">
+            <label asp-for="Titel">Titel (HTML &lt;em&gt; erlaubt für Gold-Kursiv)</label>
+            <input asp-for="Titel" />
+        </div>
+        <div class="bd-form-field">
+            <label asp-for="Text">Text</label>
+            <textarea asp-for="Text" rows="4"></textarea>
+        </div>
+        <div class="bd-grid-2">
+            <div class="bd-form-field"><label asp-for="CtaText">Button 1 — Text</label><input asp-for="CtaText" /></div>
+            <div class="bd-form-field"><label asp-for="CtaUrl">Button 1 — Link</label><input asp-for="CtaUrl" /></div>
+        </div>
+        <div class="bd-grid-2">
+            <div class="bd-form-field"><label asp-for="Cta2Text">Button 2 — Text</label><input asp-for="Cta2Text" /></div>
+            <div class="bd-form-field"><label asp-for="Cta2Url">Button 2 — Link</label><input asp-for="Cta2Url" /></div>
+        </div>
+        <div class="bd-grid-2">
+            <div class="bd-form-field"><label asp-for="Reihenfolge">Reihenfolge</label><input asp-for="Reihenfolge" type="number" /></div>
+            <div class="bd-checkline" style="align-self:end;"><input asp-for="IstSichtbar" /> <label asp-for="IstSichtbar">Sichtbar</label></div>
+        </div>
+        <div class="bd-form-field">
+            <label>Bild (optional)</label>
+            @if (!string.IsNullOrWhiteSpace(Model.BildUrl))
+            {
+                <img class="bd-thumb" style="width:140px;height:auto;display:block;margin-bottom:0.5rem;" src="@Model.BildUrl" alt="" />
+            }
+            <input type="file" name="bild" accept="image/*" />
+        </div>
+    </fieldset>
+    <div class="bd-form-actions">
+        <button type="submit" class="bd-btn bd-btn--gold">Abschnitt speichern</button>
+    </div>
+</form>
+
+<fieldset class="bd-aform" style="margin-top:2rem;">
+    <legend>Listenelemente (@Model.Items.Count)</legend>
+    <p class="bd-muted" style="font-size:0.85rem;">Z. B. Leistungs-Karten, Vorgehens-Schritte, Zahlen (Titel = Zahl), Klientel-Einträge.</p>
+
+    @foreach (var item in Model.Items.OrderBy(i => i.Reihenfolge))
+    {
+        <form method="post" asp-action="UpdateItem" asp-route-id="@Model.Id" class="bd-item-row">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="itemId" value="@item.Id" />
+            <input name="titel" value="@item.Titel" placeholder="Titel / Zahl" />
+            <input name="text" value="@item.Text" placeholder="Text" />
+            <button type="submit" class="bd-btn bd-btn--plain bd-btn--xs">Speichern</button>
+            <span class="bd-item-row__btns">
+                <button formaction="@Url.Action("MoveItem", new { id = Model.Id })" name="direction" value="-1" class="bd-btn bd-btn--plain bd-btn--xs">↑</button>
+                <button formaction="@Url.Action("MoveItem", new { id = Model.Id })" name="direction" value="1" class="bd-btn bd-btn--plain bd-btn--xs">↓</button>
+                <button formaction="@Url.Action("DeleteItem", new { id = Model.Id })" class="bd-btn bd-btn--danger bd-btn--xs" onclick="return confirm('Element löschen?');">×</button>
+            </span>
+        </form>
+    }
+
+    <form method="post" asp-action="AddItem" asp-route-id="@Model.Id" class="bd-item-row bd-item-row--add">
+        @Html.AntiForgeryToken()
+        <input name="titel" placeholder="Neuer Titel / Zahl" />
+        <input name="text" placeholder="Neuer Text" />
+        <button type="submit" class="bd-btn bd-btn--ink bd-btn--xs">+ Hinzufügen</button>
+        <span></span>
+    </form>
+</fieldset>

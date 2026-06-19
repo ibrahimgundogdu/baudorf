@@ -1,0 +1,66 @@
+@model ActivityViewModel
+@{
+    ViewData["Title"] = "Aktivität";
+}
+
+<div x-data="{ tab: 'logins' }">
+    <div class="bd-filter-pills" style="margin-bottom:1.4rem;">
+        <button class="bd-btn bd-btn--xs" :class="tab==='logins' ? 'bd-btn--ink' : 'bd-btn--plain'" @@click="tab='logins'">Anmeldungen (@Model.Logins.Count)</button>
+        <button class="bd-btn bd-btn--xs" :class="tab==='views' ? 'bd-btn--ink' : 'bd-btn--plain'" @@click="tab='views'">Objektaufrufe (@Model.Aufrufe.Count)</button>
+        <button class="bd-btn bd-btn--xs" :class="tab==='wa' ? 'bd-btn--ink' : 'bd-btn--plain'" @@click="tab='wa'">WhatsApp-Klicks (@Model.WhatsApp.Count)</button>
+    </div>
+
+    <div x-show="tab==='logins'">
+        <table class="bd-table bd-table--compact">
+            <thead><tr><th>Zeitpunkt</th><th>E-Mail</th><th>IP</th><th>User-Agent</th></tr></thead>
+            <tbody>
+                @if (Model.Logins.Count == 0) { <tr><td colspan="4" class="bd-empty-row">Keine Anmeldungen.</td></tr> }
+                @foreach (var l in Model.Logins)
+                {
+                    <tr>
+                        <td>@l.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                        <td>@l.Email</td>
+                        <td>@(l.IpAdresse ?? "—")</td>
+                        <td class="bd-muted" style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">@l.UserAgent</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div x-show="tab==='views'" x-cloak>
+        <table class="bd-table bd-table--compact">
+            <thead><tr><th>Zeitpunkt</th><th>Objekt</th><th>Benutzer</th><th>IP</th></tr></thead>
+            <tbody>
+                @if (Model.Aufrufe.Count == 0) { <tr><td colspan="4" class="bd-empty-row">Keine Aufrufe.</td></tr> }
+                @foreach (var v in Model.Aufrufe)
+                {
+                    <tr>
+                        <td>@v.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                        <td>@(v.Property?.Titel ?? "—")</td>
+                        <td>@(v.User?.Email ?? "Gast")</td>
+                        <td>@(v.IpAdresse ?? "—")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div x-show="tab==='wa'" x-cloak>
+        <table class="bd-table bd-table--compact">
+            <thead><tr><th>Zeitpunkt</th><th>Benutzer</th><th>Objekt</th><th>Quelle</th></tr></thead>
+            <tbody>
+                @if (Model.WhatsApp.Count == 0) { <tr><td colspan="4" class="bd-empty-row">Keine WhatsApp-Klicks.</td></tr> }
+                @foreach (var w in Model.WhatsApp)
+                {
+                    <tr>
+                        <td>@w.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                        <td>@(w.User?.Email ?? "Gast")</td>
+                        <td>@(w.Property?.Titel ?? "—")</td>
+                        <td class="bd-muted">@(w.Quelle ?? "—")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

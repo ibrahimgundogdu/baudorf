@@ -36,12 +36,19 @@ public class HomeController(ApplicationDbContext db) : Controller
             .AsNoTracking()
             .ToDictionaryAsync(s => s.Key, s => s.Value ?? string.Empty);
 
+        var sections = await db.HomeSections
+            .AsNoTracking()
+            .Where(s => s.IstSichtbar)
+            .Include(s => s.Items.OrderBy(i => i.Reihenfolge))
+            .ToDictionaryAsync(s => s.Key, s => s);
+
         var vm = new HomeViewModel
         {
             FeaturedObjekte = featured,
             Team = team,
             Insights = insights,
-            Settings = settings
+            Settings = settings,
+            Sections = sections
         };
         return View(vm);
     }

@@ -1,0 +1,46 @@
+@model List<Lead>
+@{
+    ViewData["Title"] = "Anfragen";
+    var aktiv = ViewData["status"] as LeadStatus?;
+}
+
+<div class="bd-toolbar">
+    <div class="bd-filter-pills">
+        <a class="bd-btn @(aktiv == null ? "bd-btn--ink" : "bd-btn--plain") bd-btn--xs" asp-action="Index">Alle</a>
+        <a class="bd-btn @(aktiv == LeadStatus.Neu ? "bd-btn--ink" : "bd-btn--plain") bd-btn--xs" asp-action="Index" asp-route-status="@LeadStatus.Neu">Neu</a>
+        <a class="bd-btn @(aktiv == LeadStatus.InBearbeitung ? "bd-btn--ink" : "bd-btn--plain") bd-btn--xs" asp-action="Index" asp-route-status="@LeadStatus.InBearbeitung">In Bearbeitung</a>
+        <a class="bd-btn @(aktiv == LeadStatus.Erledigt ? "bd-btn--ink" : "bd-btn--plain") bd-btn--xs" asp-action="Index" asp-route-status="@LeadStatus.Erledigt">Erledigt</a>
+    </div>
+</div>
+
+<table class="bd-table">
+    <thead>
+        <tr><th>Datum</th><th>Name</th><th>Interesse</th><th>Objekt</th><th>Status</th><th></th></tr>
+    </thead>
+    <tbody>
+        @if (Model.Count == 0)
+        {
+            <tr><td colspan="6" class="bd-empty-row">Keine Anfragen.</td></tr>
+        }
+        @foreach (var l in Model)
+        {
+            <tr>
+                <td>@l.CreatedAt.ToLocalTime().ToString("dd.MM.yy HH:mm")</td>
+                <td><strong>@l.Vorname @l.Nachname</strong><br /><span class="bd-muted">@l.Email</span></td>
+                <td>@l.Interesse.Label()</td>
+                <td>@(l.Property?.Titel ?? "—")</td>
+                <td>
+                    @switch (l.Status)
+                    {
+                        case LeadStatus.Neu: <span class="bd-pill bd-pill--gold">Neu</span> break;
+                        case LeadStatus.InBearbeitung: <span class="bd-pill bd-pill--warn">In Bearbeitung</span> break;
+                        default: <span class="bd-pill bd-pill--ok">Erledigt</span> break;
+                    }
+                </td>
+                <td class="bd-table__actions">
+                    <a class="bd-btn bd-btn--ink bd-btn--xs" asp-action="Details" asp-route-id="@l.Id">Öffnen</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

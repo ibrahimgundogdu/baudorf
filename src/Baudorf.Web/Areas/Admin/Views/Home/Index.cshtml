@@ -11,14 +11,82 @@
     </div>
     <div class="bd-stat">
         <span class="bd-stat__num">@Model.NeueLeads</span>
-        <span class="bd-stat__label">Neue Leads</span>
+        <span class="bd-stat__label">Neue Anfragen</span>
         <span class="bd-stat__sub">von @Model.LeadsGesamt gesamt</span>
     </div>
     <div class="bd-stat">
-        <span class="bd-stat__num">@Model.OffeneBewerbungen</span>
-        <span class="bd-stat__label">Offene Bewerbungen</span>
-        <span class="bd-stat__sub">Tippgeber + Karriere</span>
+        <span class="bd-stat__num">@Model.Benutzer</span>
+        <span class="bd-stat__label">Benutzer</span>
+        <span class="bd-stat__sub">@Model.WartendeFreigaben warten auf Freigabe</span>
+    </div>
+    <div class="bd-stat">
+        <span class="bd-stat__num">@Model.WhatsAppKlicks</span>
+        <span class="bd-stat__label">WhatsApp-Klicks</span>
+        <span class="bd-stat__sub">@Model.OffeneBewerbungen offene Bewerbungen</span>
     </div>
 </div>
 
-<p class="bd-muted">Willkommen im Baudorf-Verwaltungsbereich. Module folgen schrittweise (Immobilien-CRUD zuerst).</p>
+<div class="bd-dash-grid">
+    <div class="bd-panel">
+        <h3>Letzte Anfragen</h3>
+        @if (Model.LetzteLeads.Count == 0)
+        {
+            <div class="bd-empty-row">Noch keine Anfragen.</div>
+        }
+        else
+        {
+            @foreach (var l in Model.LetzteLeads)
+            {
+                <div class="bd-panel__row">
+                    <a asp-controller="Leads" asp-action="Details" asp-route-id="@l.Id">@l.Vorname @l.Nachname</a>
+                    <span class="bd-muted">@l.CreatedAt.ToLocalTime().ToString("dd.MM. HH:mm")</span>
+                </div>
+            }
+        }
+    </div>
+
+    <div class="bd-panel">
+        <h3>Letzte Anmeldungen</h3>
+        @if (Model.LetzteLogins.Count == 0)
+        {
+            <div class="bd-empty-row">Noch keine Anmeldungen protokolliert.</div>
+        }
+        else
+        {
+            @foreach (var e in Model.LetzteLogins)
+            {
+                <div class="bd-panel__row">
+                    <span>@e.Email</span>
+                    <span class="bd-muted">@e.CreatedAt.ToLocalTime().ToString("dd.MM. HH:mm")</span>
+                </div>
+            }
+        }
+    </div>
+
+    <div class="bd-panel">
+        <h3>Zuletzt angesehene Objekte</h3>
+        @if (Model.LetzteAufrufe.Count == 0)
+        {
+            <div class="bd-empty-row">Noch keine Aufrufe protokolliert.</div>
+        }
+        else
+        {
+            @foreach (var v in Model.LetzteAufrufe)
+            {
+                <div class="bd-panel__row">
+                    <span>@(v.Property?.Titel ?? "—")</span>
+                    <span class="bd-muted">@(v.User?.Email ?? "Gast") · @v.CreatedAt.ToLocalTime().ToString("dd.MM. HH:mm")</span>
+                </div>
+            }
+        }
+    </div>
+
+    <div class="bd-panel">
+        <h3>Schnellzugriff</h3>
+        <div class="bd-panel__row"><a asp-controller="Properties" asp-action="Create">+ Neues Objekt anlegen</a></div>
+        <div class="bd-panel__row"><a asp-controller="Blog" asp-action="Create">+ Neuer Beitrag</a></div>
+        <div class="bd-panel__row"><a asp-controller="Users" asp-action="Index">Benutzer freigeben</a></div>
+        <div class="bd-panel__row"><a asp-controller="HomeContent" asp-action="Index">Startseite bearbeiten</a></div>
+        <div class="bd-panel__row"><a asp-controller="Settings" asp-action="Index">Einstellungen &amp; WhatsApp</a></div>
+    </div>
+</div>

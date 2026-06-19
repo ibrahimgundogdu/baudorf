@@ -1,0 +1,78 @@
+@model BlogPost
+@{
+    var isEdit = Model.Id > 0;
+    ViewData["Title"] = isEdit ? "Beitrag bearbeiten" : "Neuer Beitrag";
+}
+
+<div class="bd-toolbar">
+    <a class="bd-btn bd-btn--plain bd-btn--xs" asp-action="Index">&larr; Zurück</a>
+</div>
+
+<form method="post" asp-action="@(isEdit ? "Edit" : "Create")" asp-route-id="@Model.Id" enctype="multipart/form-data" class="bd-aform">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="bd-validation-summary"></div>
+
+    <fieldset>
+        <legend>Inhalt</legend>
+        <div class="bd-form-field">
+            <label asp-for="Titel">Titel *</label>
+            <input asp-for="Titel" />
+            <span asp-validation-for="Titel"></span>
+        </div>
+        <div class="bd-grid-2">
+            <div class="bd-form-field">
+                <label asp-for="Slug">Slug (URL)</label>
+                <input asp-for="Slug" placeholder="wird aus Titel erzeugt" />
+                <span asp-validation-for="Slug"></span>
+            </div>
+            <div class="bd-form-field">
+                <label asp-for="Kategorie">Kategorie</label>
+                <input asp-for="Kategorie" />
+            </div>
+        </div>
+        <div class="bd-form-field">
+            <label asp-for="Excerpt">Kurzbeschreibung (Excerpt)</label>
+            <textarea asp-for="Excerpt" rows="2"></textarea>
+        </div>
+        <div class="bd-form-field">
+            <label asp-for="Body">Text</label>
+            <textarea asp-for="Body" rows="12"></textarea>
+        </div>
+        <div class="bd-form-field">
+            <label asp-for="Tags">Tags (kommagetrennt)</label>
+            <input asp-for="Tags" />
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Titelbild</legend>
+        @if (!string.IsNullOrWhiteSpace(Model.CoverUrl))
+        {
+            <img class="bd-thumb" style="width:160px;height:auto;" src="@Model.CoverUrl" alt="" />
+        }
+        <div class="bd-form-field">
+            <label>Bild hochladen (ersetzt vorhandenes)</label>
+            <input type="file" name="cover" accept="image/*" />
+            <span asp-validation-for="CoverUrl"></span>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>SEO &amp; Veröffentlichung</legend>
+        <div class="bd-grid-2">
+            <div class="bd-form-field"><label asp-for="MetaTitle">Meta-Titel</label><input asp-for="MetaTitle" /></div>
+            <div class="bd-form-field"><label asp-for="MetaDescription">Meta-Beschreibung</label><input asp-for="MetaDescription" /></div>
+        </div>
+        <div class="bd-checkline"><input asp-for="IstVeroeffentlicht" /> <label asp-for="IstVeroeffentlicht">Veröffentlicht</label></div>
+    </fieldset>
+
+    <div class="bd-form-actions">
+        <button type="submit" class="bd-btn bd-btn--gold">@(isEdit ? "Speichern" : "Anlegen")</button>
+        <a class="bd-btn bd-btn--plain" asp-action="Index">Abbrechen</a>
+    </div>
+</form>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -27,6 +27,27 @@ builder.Services
     .AddDefaultTokenProviders()
     .AddDefaultUI();
 
+// Login-Protokoll: bei jeder Anmeldung einen LoginEvent speichern.
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Identity/Account/Login";
+    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+    options.Events.OnSignedIn = async ctx =>
+    {
+        var sp = ctx.HttpContext.RequestServices;
+        var dbx = sp.GetRequiredService<ApplicationDbContext>();
+        var userId = ctx.Principal?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        dbx.LoginEvents.Add(new LoginEvent
+        {
+            UserId = userId,
+            Email = ctx.Principal?.Identity?.Name,
+            IpAdresse = ctx.HttpContext.Connection.RemoteIpAddress?.ToString(),
+            UserAgent = ctx.HttpContext.Request.Headers.UserAgent.ToString()
+        });
+        await dbx.SaveChangesAsync();
+    };
+});
+
 // --- Anwendungsdienste ---
 builder.Services.AddScoped<IStorageService, LocalStorageService>();
 builder.Services.AddScoped<IEmailService, LoggingEmailService>();

@@ -49,6 +49,7 @@ public static class DbSeeder
         await SeedTeamAsync(db);
         await SeedSettingsAsync(db);
         await SeedPropertiesAsync(db);
+        await SeedHomeSectionsAsync(db);
 
         await db.SaveChangesAsync();
     }
@@ -79,10 +80,13 @@ public static class DbSeeder
 
     private static async Task SeedSettingsAsync(ApplicationDbContext db)
     {
-        if (await db.SiteSettings.AnyAsync()) return;
-
-        void Set(string key, string value, string? desc = null) =>
-            db.SiteSettings.Add(new SiteSetting { Key = key, Value = value, Beschreibung = desc });
+        // Idempotent pro Key: fehlende Einstellungen werden ergänzt, vorhandene bleiben.
+        var vorhanden = await db.SiteSettings.Select(s => s.Key).ToListAsync();
+        void Set(string key, string value, string? desc = null)
+        {
+            if (!vorhanden.Contains(key))
+                db.SiteSettings.Add(new SiteSetting { Key = key, Value = value, Beschreibung = desc });
+        }
 
         Set("contact.company", "Baudorf Immobilien GmbH");
         Set("contact.street", "Auf der Egge 68");
@@ -92,6 +96,9 @@ public static class DbSeeder
         Set("contact.hours", "Mo–Fr 09:00–18:00");
         Set("brand.slogan", "Still, wirkungsvoll, mit Stil.");
         Set("brand.claim", "Diskret. Exklusiv. Direkt.");
+        Set("whatsapp.number", "4901778387898", "WhatsApp-Nummer im internationalen Format ohne + und Leerzeichen.");
+        Set("whatsapp.enabled", "true", "Schwebenden WhatsApp-Button anzeigen (true/false).");
+        Set("whatsapp.message", "Hallo Baudorf, ich interessiere mich für Ihre Immobilien.", "Vorausgefüllte WhatsApp-Nachricht.");
     }
 
     private static async Task SeedPropertiesAsync(ApplicationDbContext db)
@@ -232,5 +239,70 @@ public static class DbSeeder
         var neue = saat.Where(s => !vorhanden.Contains(s.Slug)).ToList();
         if (neue.Count > 0)
             db.Properties.AddRange(neue);
+    }
+
+    private static async Task SeedHomeSectionsAsync(ApplicationDbContext db)
+    {
+        // Idempotent pro Key: bestehende (admin-bearbeitete) Abschnitte bleiben unberührt.
+        var vorhanden = await db.HomeSections.Select(s => s.Key).ToListAsync();
+
+        HomeSection Sec(string key, int ord, string? overline, string? titel, string? text,
+            string? cta = null, string? ctaUrl = null, string? cta2 = null, string? cta2Url = null,
+            params (string? t, string? x)[] items)
+        {
+            var s = new HomeSection
+            {
+                Key = key, Reihenfolge = ord, Overline = overline, Titel = titel, Text = text,
+                CtaText = cta, CtaUrl = ctaUrl, Cta2Text = cta2, Cta2Url = cta2Url, IstSichtbar = true
+            };
+            for (var i = 0; i < items.Length; i++)
+                s.Items.Add(new HomeSectionItem { Titel = items[i].t, Text = items[i].x, Reihenfolge = i });
+            return s;
+        }
+
+        var alle = new[]
+        {
+            Sec("hero", 1, "Off-Market-Immobilien · NRW · seit 1994",
+                "Diskret. <em>Exklusiv.</em> Direkt.",
+                "Die besten Objekte werden nie inseriert — sie werden vertraut. Wir verbinden außergewöhnliche Immobilien mit den richtigen Investoren. Still, wirkungsvoll, mit Stil.",
+                "Objekte anfragen", "/Kontakt", "Über uns", "/#ueber-uns"),
+            Sec("philosophie", 2, "Philosophie",
+                "Wir vermitteln nicht. <em>Wir verbinden.</em>",
+                "Stille ist kein Mangel an Lautstärke — sie ist eine Haltung. Diskretion, Verbindlichkeit und ein feines Gespür für besondere Objekte sind die Grundlage jeder Zusammenarbeit. Wir bewegen Werte, ohne Aufsehen zu erregen."),
+            Sec("leistungen", 3, "Leistungen", "Was wir für Sie tun",
+                "Fünf Disziplinen, ein Anspruch: die richtige Immobilie für den richtigen Investor — diskret zusammengeführt.",
+                null, null, null, null,
+                ("Stille Vermarktung", "Diskret, ohne Inserat — die Immobilie wird vertraut, nicht ausgeschrieben."),
+                ("Klassische Vermarktung", "Wenn Reichweite zählt: professionell aufbereitet und zielgerichtet platziert."),
+                ("Immobilienbewertung", "Fundierte Markt- und Ertragswertanalyse als Basis Ihrer Entscheidung."),
+                ("Kaufbegleitung", "Von der Prüfung bis zum Notar — an Ihrer Seite, Schritt für Schritt."),
+                ("Dienstleisternetzwerk", "Architekten, Gutachter, Finanzierer — kuratiert und verlässlich.")),
+            Sec("vorgehen", 5, "Unser Vorgehen", "Vom ersten Gespräch bis zum Notar", null,
+                null, null, null, null,
+                ("Immobiliensuche", "Wir verstehen Ihr Profil und finden, was zu Ihnen passt."),
+                ("Objektauswahl", "Kuratierte Vorauswahl — nur Relevantes, vertraulich aufbereitet."),
+                ("Diskretes Vertrautmachen", "Persönliche Begleitung, ohne Öffentlichkeit, in Ihrem Tempo."),
+                ("Transaktionsprozess", "Strukturiert bis zum Notartermin — verbindlich und sicher.")),
+            Sec("klientel", 6, "Unsere Klientel", "Mit wem wir arbeiten", null,
+                null, null, null, null,
+                ("Family Offices", null), ("Institutionelle Investoren", null),
+                ("Wohnungsgesellschaften", null), ("Bauträger", null), ("Projektentwickler", null)),
+            Sec("ueber-uns", 7, "Über uns", "Menschen hinter Baudorf", null),
+            Sec("zahlen", 8, null, null, null, null, null, null, null,
+                ("1994", "Jahre Erfahrung — seit 1994 am Markt"),
+                ("Still", "Unsere Methode der Vermarktung"),
+                ("NRW", "Unser Fokusmarkt"),
+                ("24 h", "Reaktionszeit auf Anfragen i. d. R.")),
+            Sec("tippgeber", 9, "Tippgeber", "Empfehlen Sie uns — und <em>profitieren Sie.</em>",
+                "Kennen Sie eine Immobilie oder einen Eigentümer? Reichen Sie Ihren Tipp diskret ein.",
+                "Tipp einreichen", "/Kontakt"),
+            Sec("kontakt", 10, "Kontakt", "Sprechen wir über Ihr <em>Vorhaben.</em>",
+                "Alle Anfragen werden streng vertraulich behandelt. Wir melden uns persönlich und diskret — in der Regel innerhalb von 24 Stunden.",
+                "Kontaktformular öffnen", "/Kontakt")
+        };
+
+        var neue = alle.Where(s => !vorhanden.Contains(s.Key)).ToList();
+        if (neue.Count > 0)
+            db.HomeSections.AddRange(neue);
     }
 }

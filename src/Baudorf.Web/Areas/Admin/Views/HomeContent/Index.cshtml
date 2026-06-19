@@ -1,0 +1,37 @@
+@model List<HomeSection>
+@{
+    ViewData["Title"] = "Startseite";
+}
+
+<div class="bd-toolbar">
+    <h2>Abschnitte der Startseite</h2>
+    <a class="bd-btn bd-btn--plain bd-btn--xs" asp-controller="Home" asp-area="" asp-action="Index" target="_blank">Startseite ansehen</a>
+</div>
+
+<p class="bd-muted" style="margin-bottom:1.2rem;">Inhalte, Überschriften, Texte und Listenelemente jedes Abschnitts sind hier bearbeitbar. Die Abschnitte „Objekte“ und „Team“ ziehen ihre Inhalte aus den jeweiligen Modulen.</p>
+
+<table class="bd-table">
+    <thead><tr><th>#</th><th>Abschnitt</th><th>Titel</th><th>Elemente</th><th>Sichtbar</th><th></th></tr></thead>
+    <tbody>
+        @foreach (var s in Model)
+        {
+            <tr>
+                <td>@s.Reihenfolge</td>
+                <td><strong>@s.Key</strong><br /><span class="bd-muted">@s.Overline</span></td>
+                <td>@Html.Raw(s.Titel)</td>
+                <td>@(s.Items.Count > 0 ? $"{s.Items.Count}" : "—")</td>
+                <td>
+                    <form method="post" asp-action="ToggleVisible" asp-route-id="@s.Id" style="display:inline;">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="bd-btn bd-btn--xs @(s.IstSichtbar ? "bd-btn--plain" : "bd-btn--ink")">
+                            @(s.IstSichtbar ? "Sichtbar" : "Versteckt")
+                        </button>
+                    </form>
+                </td>
+                <td class="bd-table__actions">
+                    <a class="bd-btn bd-btn--ink bd-btn--xs" asp-action="Edit" asp-route-id="@s.Id">Bearbeiten</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

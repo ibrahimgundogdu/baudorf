@@ -1,0 +1,75 @@
+@model List<Property>
+@{
+    ViewData["Title"] = "Immobilien";
+}
+
+<div class="bd-toolbar">
+    <form method="get" class="bd-inline-search">
+        <input type="text" name="q" value="@ViewData["q"]" placeholder="Suchen…" />
+        <button class="bd-btn bd-btn--plain bd-btn--xs" type="submit">Suchen</button>
+    </form>
+    <a class="bd-btn bd-btn--gold bd-btn--sm" asp-action="Create">+ Neues Objekt</a>
+</div>
+
+<table class="bd-table">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Titel</th>
+            <th>Art</th>
+            <th>Status</th>
+            <th>Sichtbarkeit</th>
+            <th>Preis</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Count == 0)
+        {
+            <tr><td colspan="7" class="bd-empty-row">Noch keine Objekte. Legen Sie das erste an.</td></tr>
+        }
+        @foreach (var p in Model)
+        {
+            var cover = p.CoverUrl();
+            <tr>
+                <td>
+                    @if (cover != null)
+                    {
+                        <img class="bd-thumb" src="@cover" alt="" />
+                    }
+                    else
+                    {
+                        <img class="bd-thumb" src="~/img/brand/baudorf-emblem-ink.png" alt="" />
+                    }
+                </td>
+                <td>
+                    <strong>@p.Titel</strong><br />
+                    <span class="bd-muted">@(string.IsNullOrWhiteSpace(p.Region) ? p.Land : p.Region)</span>
+                </td>
+                <td>@p.Art.Label()</td>
+                <td>@p.Status.Label()</td>
+                <td>
+                    @if (p.IstVeroeffentlicht)
+                    {
+                        <span class="bd-pill bd-pill--ok">Veröffentlicht</span>
+                    }
+                    else
+                    {
+                        <span class="bd-pill bd-pill--muted">Entwurf</span>
+                    }
+                    @if (p.IstOffMarket) { <span class="bd-pill bd-pill--dark">Off-Market</span> }
+                    @if (p.IstFeatured) { <span class="bd-pill bd-pill--gold">Featured</span> }
+                </td>
+                <td>@p.PreisText()</td>
+                <td class="bd-table__actions">
+                    <a class="bd-btn bd-btn--plain bd-btn--xs" asp-controller="Immobilien" asp-area="" asp-action="Details" asp-route-slug="@p.Slug" target="_blank">Ansehen</a>
+                    <a class="bd-btn bd-btn--ink bd-btn--xs" asp-action="Edit" asp-route-id="@p.Id">Bearbeiten</a>
+                    <form method="post" asp-action="Delete" asp-route-id="@p.Id" onsubmit="return confirm('Objekt wirklich löschen?');">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="bd-btn bd-btn--danger bd-btn--xs">Löschen</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

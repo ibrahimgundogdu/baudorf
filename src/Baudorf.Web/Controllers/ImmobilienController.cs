@@ -85,6 +85,15 @@ public class ImmobilienController(ApplicationDbContext db, UserManager<Applicati
 
         var gesperrt = objekt.IstOffMarket && !istFreigegeben;
 
+        // Objekt-Aufruf protokollieren (für Admin-Aktivität).
+        db.PropertyViews.Add(new PropertyView
+        {
+            PropertyId = objekt.Id,
+            UserId = istAngemeldet ? userMgr.GetUserId(User) : null,
+            IpAdresse = HttpContext.Connection.RemoteIpAddress?.ToString()
+        });
+        await db.SaveChangesAsync();
+
         var aehnliche = await db.Properties
             .AsNoTracking()
             .Where(p => p.IstVeroeffentlicht && p.Id != objekt.Id && p.Art == objekt.Art)

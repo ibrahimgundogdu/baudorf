@@ -514,3 +514,90 @@ h1, h2, h3 {
   .bd-admin__nav { flex-direction: row; flex-wrap: wrap; align-items: center; }
   .bd-admin__back { margin: 0; }
 }
+
+/* ---- Admin: Flash, Tabellen, Formulare, Buttons ---- */
+.bd-flash { padding: 0.9rem 1.2rem; border-radius: 4px; margin-bottom: 1.5rem; font-size: 0.92rem; }
+.bd-flash--ok { background: #e7f3ec; border: 1px solid #bcdcc6; color: #225c39; }
+.bd-flash--err { background: #fbeceb; border: 1px solid #e3b9b4; color: #9b2c2c; }
+
+.bd-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.bd-toolbar h2 { margin: 0; font-size: 1.3rem; }
+
+.bd-table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--line); border-radius: 5px; overflow: hidden; }
+.bd-table th, .bd-table td { text-align: left; padding: 0.8rem 1rem; border-bottom: 1px solid var(--line); font-size: 0.9rem; vertical-align: middle; }
+.bd-table th { background: var(--linen); font-weight: 600; font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--stone); }
+.bd-table tr:last-child td { border-bottom: none; }
+.bd-table tr:hover td { background: var(--parch); }
+.bd-table__actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
+.bd-table .bd-thumb { width: 56px; height: 42px; object-fit: cover; border-radius: 3px; border: 1px solid var(--line); }
+.bd-table--compact td, .bd-table--compact th { padding: 0.55rem 0.8rem; }
+
+.bd-pill { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.74rem; font-weight: 500; }
+.bd-pill--ok { background: #e7f3ec; color: #225c39; }
+.bd-pill--warn { background: #fcf2e2; color: #8a5a16; }
+.bd-pill--muted { background: var(--linen); color: var(--stone); }
+.bd-pill--gold { background: var(--gold-lt); color: var(--ink); }
+.bd-pill--dark { background: var(--ink); color: var(--linen); }
+
+.bd-btn--xs { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+.bd-btn--ink { background: var(--ink); color: var(--white); }
+.bd-btn--ink:hover { background: var(--graph); }
+.bd-btn--danger { background: #fff; border-color: #c0564a; color: #9b2c2c; }
+.bd-btn--danger:hover { background: #9b2c2c; color: #fff; border-color: #9b2c2c; }
+.bd-btn--plain { border-color: var(--line2, #DCD5C8); color: var(--ink); background: var(--surface); }
+.bd-btn--plain:hover { border-color: var(--gold); color: var(--gold-dk); }
+
+/* Admin form */
+.bd-aform { max-width: 880px; }
+.bd-aform .bd-form-field label { color: var(--ink); }
+.bd-aform fieldset { border: 1px solid var(--line); border-radius: 6px; padding: 1.4rem 1.6rem 0.4rem; margin: 0 0 1.6rem; background: var(--surface); }
+.bd-aform legend { font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-dk); padding: 0 0.5rem; font-weight: 600; }
+.bd-aform .bd-form-field input,
+.bd-aform .bd-form-field select,
+.bd-aform .bd-form-field textarea { background: var(--white); }
+.bd-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+.bd-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.2rem; }
+.bd-form-actions { display: flex; gap: 0.8rem; align-items: center; margin-top: 0.5rem; }
+.bd-checkline { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.2rem; }
+.bd-checkline input { width: 17px; height: 17px; accent-color: var(--gold-dk); }
+.bd-checkline label { font-size: 0.9rem; }
+
+/* Media manager */
+.bd-media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; margin-top: 1rem; }
+.bd-media-tile { border: 1px solid var(--line); border-radius: 5px; overflow: hidden; background: var(--surface); position: relative; }
+.bd-media-tile img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+.bd-media-tile.is-cover { outline: 2px solid var(--gold); }
+.bd-media-tile__bar { display: flex; align-items: center; justify-content: space-between; gap: 0.3rem; padding: 0.4rem 0.5rem; }
+.bd-media-tile__cover { font-size: 0.72rem; color: var(--gold-dk); }
+.bd-media-empty { color: var(--stone); font-size: 0.9rem; padding: 1rem 0; }
+
+.bd-dz { border: 2px dashed var(--line2, #DCD5C8); border-radius: 6px; padding: 1.6rem; text-align: center; color: var(--stone); background: var(--surface); }
+.bd-dz input { display: block; margin: 0.6rem auto 0; }
+
+/* Dashboard recent lists */
+.bd-dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 0.5rem; }
+.bd-panel { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 1.4rem 1.6rem; }
+.bd-panel h3 { margin: 0 0 1rem; font-size: 1rem; }
+.bd-panel__row { display: flex; justify-content: space-between; gap: 1rem; padding: 0.5rem 0; border-bottom: 1px solid var(--line); font-size: 0.88rem; }
+.bd-panel__row:last-child { border-bottom: none; }
+.bd-panel__row .bd-muted { font-size: 0.8rem; }
+.bd-empty-row { color: var(--stone); font-size: 0.88rem; padding: 0.5rem 0; }
+
+@media (max-width: 760px) {
+  .bd-grid-2, .bd-grid-3, .bd-dash-grid { grid-template-columns: 1fr; }
+}
+
+/* Admin: inline search, item rows */
+.bd-inline-search { display: flex; gap: 0.5rem; }
+.bd-inline-search input { font-family: inherit; font-size: 0.9rem; padding: 0.5rem 0.7rem; border: 1px solid var(--line2, #DCD5C8); border-radius: 3px; background: var(--surface); }
+.bd-filter-pills { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.bd-item-row { display: grid; grid-template-columns: 1fr 1.6fr auto auto; gap: 0.6rem; align-items: center; margin-bottom: 0.6rem; }
+.bd-item-row input { font-family: inherit; font-size: 0.88rem; padding: 0.5rem 0.6rem; border: 1px solid var(--line2, #DCD5C8); border-radius: 3px; background: var(--white); }
+.bd-item-row__btns { display: flex; gap: 0.3rem; }
+.bd-item-row--add { border-top: 1px dashed var(--line2, #DCD5C8); padding-top: 0.8rem; margin-top: 0.4rem; }
+@media (max-width: 760px) { .bd-item-row { grid-template-columns: 1fr; } }
+
+/* WhatsApp floating button */
+.bd-wa { position: fixed; right: 22px; bottom: 22px; z-index: 70; width: 56px; height: 56px; border-radius: 50%; background: #25D366; color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 28px -8px rgba(18,16,14,0.5); transition: transform 0.25s var(--ease); }
+.bd-wa:hover { transform: scale(1.08); color: #fff; }
+@media (max-width: 560px) { .bd-wa { right: 16px; bottom: 16px; width: 50px; height: 50px; } }

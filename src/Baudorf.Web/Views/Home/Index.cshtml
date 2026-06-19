@@ -2,260 +2,215 @@
 @{
     ViewData["Title"] = null; // Startseite nutzt den Marken-Titel
 
-    var leistungen = new (string Titel, string Text)[]
-    {
-        ("Stille Vermarktung", "Diskret, ohne Inserat — die Immobilie wird vertraut, nicht ausgeschrieben."),
-        ("Klassische Vermarktung", "Wenn Reichweite zählt: professionell aufbereitet und zielgerichtet platziert."),
-        ("Immobilienbewertung", "Fundierte Markt- und Ertragswertanalyse als Basis Ihrer Entscheidung."),
-        ("Kaufbegleitung", "Von der Prüfung bis zum Notar — an Ihrer Seite, Schritt für Schritt."),
-        ("Dienstleisternetzwerk", "Architekten, Gutachter, Finanzierer — kuratiert und verlässlich.")
-    };
+    // CTA-Link normalisieren (interne "/#anchor" bleiben, sonst wie angegeben)
+    string Url(string? u) => string.IsNullOrWhiteSpace(u) ? "#" : u;
 }
 
-<!-- ============ HERO ============ -->
-<section class="bd-hero">
-    <div class="bd-hero__emblem" aria-hidden="true">
-        <img src="~/img/brand/baudorf-emblem-gold.png" alt="" />
-    </div>
-    <div class="bd-container bd-hero__inner">
-        <span class="bd-overline bd-overline--light">Off-Market-Immobilien · NRW · seit 1994</span>
-        <h1 class="bd-hero__title">Diskret. <em class="bd-italic-accent">Exklusiv.</em> Direkt.</h1>
-        <p class="bd-hero__lead">
-            Die besten Objekte werden nie inseriert — sie werden vertraut. Wir verbinden
-            außergewöhnliche Immobilien mit den richtigen Investoren. Still, wirkungsvoll, mit Stil.
-        </p>
-        <div class="bd-hero__cta">
-            <a class="bd-btn bd-btn--gold" asp-controller="Kontakt" asp-action="Index">Objekte anfragen</a>
-            <a class="bd-btn bd-btn--ghost" asp-controller="Home" asp-action="Index" asp-fragment="ueber-uns">Über uns</a>
+@{ var hero = Model.Sec("hero"); }
+@if (hero is not null)
+{
+    <section class="bd-hero">
+        <div class="bd-hero__emblem" aria-hidden="true">
+            <img src="~/img/brand/baudorf-emblem-gold.png" alt="" />
         </div>
-    </div>
-    <a class="bd-hero__scroll" href="#philosophie" aria-label="Nach unten scrollen"><span></span></a>
-</section>
-
-<!-- ============ PHILOSOPHIE ============ -->
-<section id="philosophie" class="bd-section bd-section--parch">
-    <div class="bd-container bd-philo" data-reveal>
-        <span class="bd-overline">Philosophie</span>
-        <h2 class="bd-philo__head">Wir vermitteln nicht. <em class="bd-italic-accent">Wir verbinden.</em></h2>
-        <p class="bd-philo__text">
-            Stille ist kein Mangel an Lautstärke — sie ist eine Haltung. Diskretion, Verbindlichkeit
-            und ein feines Gespür für besondere Objekte sind die Grundlage jeder Zusammenarbeit.
-            Wir bewegen Werte, ohne Aufsehen zu erregen.
-        </p>
-    </div>
-</section>
-
-<!-- ============ LEISTUNGEN ============ -->
-<section id="leistungen" class="bd-section bd-section--white">
-    <div class="bd-container">
-        <div class="bd-sec-head" data-reveal>
-            <span class="bd-overline">Leistungen</span>
-            <h2>Was wir für Sie tun</h2>
-            <p class="bd-sec-head__sub">
-                Fünf Disziplinen, ein Anspruch: die richtige Immobilie für den richtigen Investor — diskret zusammengeführt.
-            </p>
-        </div>
-        <div class="bd-cards">
-            @for (var i = 0; i < leistungen.Length; i++)
-            {
-                <article class="bd-card-svc" data-reveal style="transition-delay:@(i * 70)ms">
-                    <span class="bd-card-svc__num">0@(i + 1)</span>
-                    <h3>@leistungen[i].Titel</h3>
-                    <p>@leistungen[i].Text</p>
-                </article>
-            }
-        </div>
-    </div>
-</section>
-
-<!-- ============ AKTUELLE OBJEKTE ============ -->
-<section id="objekte" class="bd-section bd-section--parch">
-    <div class="bd-container">
-        <div class="bd-sec-head bd-sec-head--row" data-reveal>
-            <div>
-                <span class="bd-overline">Aktuelle Objekte</span>
-                <h2>Ausgewählte Immobilien</h2>
+        <div class="bd-container bd-hero__inner">
+            @if (!string.IsNullOrWhiteSpace(hero.Overline)) { <span class="bd-overline bd-overline--light">@hero.Overline</span> }
+            <h1 class="bd-hero__title">@Html.Raw(hero.Titel)</h1>
+            <p class="bd-hero__lead">@hero.Text</p>
+            <div class="bd-hero__cta">
+                @if (!string.IsNullOrWhiteSpace(hero.CtaText)) { <a class="bd-btn bd-btn--gold" href="@Url(hero.CtaUrl)">@hero.CtaText</a> }
+                @if (!string.IsNullOrWhiteSpace(hero.Cta2Text)) { <a class="bd-btn bd-btn--ghost" href="@Url(hero.Cta2Url)">@hero.Cta2Text</a> }
             </div>
-            <a class="bd-link-gold" asp-controller="Immobilien" asp-action="Index">Alle Objekte ansehen &rarr;</a>
         </div>
+        <a class="bd-hero__scroll" href="#philosophie" aria-label="Nach unten scrollen"><span></span></a>
+    </section>
+}
 
-        @if (Model.FeaturedObjekte.Count == 0)
-        {
-            <p class="bd-muted" data-reveal>Derzeit werden keine Objekte öffentlich gezeigt. Sprechen Sie uns vertraulich an.</p>
-        }
-        else
-        {
+@{ var philo = Model.Sec("philosophie"); }
+@if (philo is not null)
+{
+    <section id="philosophie" class="bd-section bd-section--parch">
+        <div class="bd-container bd-philo" data-reveal>
+            @if (!string.IsNullOrWhiteSpace(philo.Overline)) { <span class="bd-overline">@philo.Overline</span> }
+            <h2 class="bd-philo__head">@Html.Raw(philo.Titel)</h2>
+            <p class="bd-philo__text">@philo.Text</p>
+        </div>
+    </section>
+}
+
+@{ var leist = Model.Sec("leistungen"); }
+@if (leist is not null)
+{
+    <section id="leistungen" class="bd-section bd-section--white">
+        <div class="bd-container">
+            <div class="bd-sec-head" data-reveal>
+                <span class="bd-overline">@leist.Overline</span>
+                <h2>@Html.Raw(leist.Titel)</h2>
+                @if (!string.IsNullOrWhiteSpace(leist.Text)) { <p class="bd-sec-head__sub">@leist.Text</p> }
+            </div>
+            <div class="bd-cards">
+                @{ var i = 0; }
+                @foreach (var item in leist.Items)
+                {
+                    <article class="bd-card-svc" data-reveal style="transition-delay:@(i * 70)ms">
+                        <span class="bd-card-svc__num">@((++i).ToString("D2"))</span>
+                        <h3>@item.Titel</h3>
+                        <p>@item.Text</p>
+                    </article>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<!-- Aktuelle Objekte (aus dem Immobilien-Modul) -->
+@if (Model.FeaturedObjekte.Count > 0)
+{
+    <section id="objekte" class="bd-section bd-section--parch">
+        <div class="bd-container">
+            <div class="bd-sec-head bd-sec-head--row" data-reveal>
+                <div>
+                    <span class="bd-overline">Aktuelle Objekte</span>
+                    <h2>Ausgewählte Immobilien</h2>
+                </div>
+                <a class="bd-link-gold" asp-controller="Immobilien" asp-action="Index">Alle Objekte ansehen &rarr;</a>
+            </div>
             <div class="bd-objekte">
                 @foreach (var p in Model.FeaturedObjekte)
                 {
-                    var cover = p.CoverUrl();
-                    var locked = p.IstOffMarket;
-                    <article class="bd-objekt @(locked ? "is-locked" : "")" data-reveal>
-                        <a class="bd-objekt__media" asp-controller="Immobilien" asp-action="Details" asp-route-slug="@p.Slug">
-                            @if (cover != null)
-                            {
-                                <img src="@cover" alt="@(p.Medien.FirstOrDefault(m => m.IstCover)?.Alt ?? p.Titel)" loading="lazy" />
-                            }
-                            else
-                            {
-                                <span class="bd-objekt__placeholder" aria-hidden="true">
-                                    <img src="~/img/brand/baudorf-emblem-cream.png" alt="" />
-                                </span>
-                            }
-                            <span class="bd-objekt__badge">@p.Status.Label()</span>
-                        </a>
-                        <div class="bd-objekt__body">
-                            <span class="bd-objekt__loc">@(string.IsNullOrWhiteSpace(p.Region) ? p.Land : p.Region) · @p.Art.Label()</span>
-                            <h3 class="bd-objekt__title">@p.Titel</h3>
-                            <ul class="bd-objekt__specs">
-                                @if (p.Wohnflaeche.HasValue) { <li>Wfl. @DisplayHelpers.FlaecheText(p.Wohnflaeche)</li> }
-                                @if (p.Grundstuecksflaeche.HasValue) { <li>GF @DisplayHelpers.FlaecheText(p.Grundstuecksflaeche)</li> }
-                                @if (p.Baujahr.HasValue) { <li>BJ @p.Baujahr</li> }
-                                @if (p.Faktor.HasValue) { <li>Faktor @p.Faktor</li> }
-                            </ul>
-                            <div class="bd-objekt__foot">
-                                @if (locked)
-                                {
-                                    <span class="bd-objekt__lock">&#128274; Für vorgemerkte Investoren</span>
-                                }
-                                else
-                                {
-                                    <span class="bd-objekt__price">@p.PreisText()</span>
-                                }
-                            </div>
+                    <partial name="_ObjektCard" model="p" />
+                }
+            </div>
+        </div>
+    </section>
+}
+
+@{ var vorgehen = Model.Sec("vorgehen"); }
+@if (vorgehen is not null)
+{
+    <section class="bd-section bd-section--white">
+        <div class="bd-container">
+            <div class="bd-sec-head" data-reveal>
+                <span class="bd-overline">@vorgehen.Overline</span>
+                <h2>@Html.Raw(vorgehen.Titel)</h2>
+            </div>
+            <ol class="bd-steps">
+                @{ var si = 0; }
+                @foreach (var step in vorgehen.Items)
+                {
+                    <li class="bd-step" data-reveal style="transition-delay:@(si * 80)ms">
+                        <span class="bd-step__num">@((++si).ToString("D2"))</span>
+                        <h3>@step.Titel</h3>
+                        <p>@step.Text</p>
+                    </li>
+                }
+            </ol>
+        </div>
+    </section>
+}
+
+@{ var klientel = Model.Sec("klientel"); }
+@if (klientel is not null)
+{
+    <section class="bd-section bd-section--ink">
+        <div class="bd-container bd-klientel">
+            <div class="bd-sec-head bd-sec-head--light" data-reveal>
+                <span class="bd-overline bd-overline--light">@klientel.Overline</span>
+                <h2>@Html.Raw(klientel.Titel)</h2>
+            </div>
+            <ul class="bd-klientel__list" data-reveal>
+                @foreach (var item in klientel.Items)
+                {
+                    <li>@item.Titel</li>
+                }
+            </ul>
+        </div>
+    </section>
+}
+
+@{ var ueber = Model.Sec("ueber-uns"); }
+@if (ueber is not null && Model.Team.Count > 0)
+{
+    <section id="ueber-uns" class="bd-section bd-section--parch">
+        <div class="bd-container">
+            <div class="bd-sec-head" data-reveal>
+                <span class="bd-overline">@ueber.Overline</span>
+                <h2>@Html.Raw(ueber.Titel)</h2>
+            </div>
+            <div class="bd-team">
+                @foreach (var t in Model.Team)
+                {
+                    <article class="bd-team__card" data-reveal>
+                        @if (!string.IsNullOrWhiteSpace(t.FotoUrl))
+                        {
+                            <img class="bd-team__foto" src="@t.FotoUrl" alt="@t.Name" loading="lazy" />
+                        }
+                        <div class="bd-team__body">
+                            <h3>@t.Name</h3>
+                            @if (!string.IsNullOrWhiteSpace(t.Rolle)) { <span class="bd-team__role">@t.Rolle</span> }
+                            @if (!string.IsNullOrWhiteSpace(t.Bio)) { <p>@t.Bio</p> }
                         </div>
                     </article>
                 }
             </div>
-        }
-    </div>
-</section>
-
-<!-- ============ UNSER VORGEHEN ============ -->
-<section class="bd-section bd-section--white">
-    <div class="bd-container">
-        <div class="bd-sec-head" data-reveal>
-            <span class="bd-overline">Unser Vorgehen</span>
-            <h2>Vom ersten Gespräch bis zum Notar</h2>
         </div>
-        <ol class="bd-steps">
-            @{
-                var steps = new[]
-                {
-                    ("Immobiliensuche", "Wir verstehen Ihr Profil und finden, was zu Ihnen passt."),
-                    ("Objektauswahl", "Kuratierte Vorauswahl — nur Relevantes, vertraulich aufbereitet."),
-                    ("Diskretes Vertrautmachen", "Persönliche Begleitung, ohne Öffentlichkeit, in Ihrem Tempo."),
-                    ("Transaktionsprozess", "Strukturiert bis zum Notartermin — verbindlich und sicher.")
-                };
-            }
-            @for (var i = 0; i < steps.Length; i++)
+    </section>
+}
+
+@{ var zahlen = Model.Sec("zahlen"); }
+@if (zahlen is not null && zahlen.Items.Count > 0)
+{
+    <section class="bd-section bd-section--white">
+        <div class="bd-container bd-zahlen">
+            @{ var zi = 0; }
+            @foreach (var z in zahlen.Items)
             {
-                <li class="bd-step" data-reveal style="transition-delay:@(i * 80)ms">
-                    <span class="bd-step__num">@((i + 1).ToString("D2"))</span>
-                    <h3>@steps[i].Item1</h3>
-                    <p>@steps[i].Item2</p>
-                </li>
-            }
-        </ol>
-    </div>
-</section>
-
-<!-- ============ KLIENTEL ============ -->
-<section class="bd-section bd-section--ink">
-    <div class="bd-container bd-klientel">
-        <div class="bd-sec-head bd-sec-head--light" data-reveal>
-            <span class="bd-overline bd-overline--light">Unsere Klientel</span>
-            <h2>Mit wem wir arbeiten</h2>
-        </div>
-        <ul class="bd-klientel__list" data-reveal>
-            <li>Family Offices</li>
-            <li>Institutionelle Investoren</li>
-            <li>Wohnungsgesellschaften</li>
-            <li>Bauträger</li>
-            <li>Projektentwickler</li>
-        </ul>
-    </div>
-</section>
-
-<!-- ============ ÜBER UNS / TEAM ============ -->
-<section id="ueber-uns" class="bd-section bd-section--parch">
-    <div class="bd-container">
-        <div class="bd-sec-head" data-reveal>
-            <span class="bd-overline">Über uns</span>
-            <h2>Menschen hinter Baudorf</h2>
-        </div>
-        <div class="bd-team">
-            @foreach (var t in Model.Team)
-            {
-                <article class="bd-team__card" data-reveal>
-                    @if (!string.IsNullOrWhiteSpace(t.FotoUrl))
-                    {
-                        <img class="bd-team__foto" src="@t.FotoUrl" alt="@t.Name" loading="lazy" />
-                    }
-                    <div class="bd-team__body">
-                        <h3>@t.Name</h3>
-                        @if (!string.IsNullOrWhiteSpace(t.Rolle)) { <span class="bd-team__role">@t.Rolle</span> }
-                        @if (!string.IsNullOrWhiteSpace(t.Bio)) { <p>@t.Bio</p> }
-                    </div>
-                </article>
+                <div class="bd-zahl" data-reveal style="transition-delay:@(zi++ * 70)ms">
+                    <span class="bd-zahl__num">@z.Titel</span>
+                    <span class="bd-zahl__label">@z.Text</span>
+                </div>
             }
         </div>
-    </div>
-</section>
+    </section>
+}
 
-<!-- ============ ZAHLEN / TRUST ============ -->
-<section class="bd-section bd-section--white">
-    <div class="bd-container bd-zahlen">
-        <div class="bd-zahl" data-reveal>
-            <span class="bd-zahl__num">1994</span>
-            <span class="bd-zahl__label">Jahre Erfahrung — seit 1994 am Markt</span>
+@{ var tipp = Model.Sec("tippgeber"); }
+@if (tipp is not null)
+{
+    <section id="tippgeber" class="bd-section bd-section--ink bd-cta-band">
+        <div class="bd-container bd-cta-band__inner" data-reveal>
+            <div>
+                <span class="bd-overline bd-overline--light">@tipp.Overline</span>
+                <h2>@Html.Raw(tipp.Titel)</h2>
+                @if (!string.IsNullOrWhiteSpace(tipp.Text)) { <p>@tipp.Text</p> }
+            </div>
+            @if (!string.IsNullOrWhiteSpace(tipp.CtaText)) { <a class="bd-btn bd-btn--gold" href="@Url(tipp.CtaUrl)">@tipp.CtaText</a> }
         </div>
-        <div class="bd-zahl" data-reveal style="transition-delay:70ms">
-            <span class="bd-zahl__num">Still</span>
-            <span class="bd-zahl__label">Unsere Methode der Vermarktung</span>
-        </div>
-        <div class="bd-zahl" data-reveal style="transition-delay:140ms">
-            <span class="bd-zahl__num">NRW</span>
-            <span class="bd-zahl__label">Unser Fokusmarkt</span>
-        </div>
-        <div class="bd-zahl" data-reveal style="transition-delay:210ms">
-            <span class="bd-zahl__num">24 h</span>
-            <span class="bd-zahl__label">Reaktionszeit auf Anfragen i. d. R.</span>
-        </div>
-    </div>
-</section>
+    </section>
+}
 
-<!-- ============ TIPPGEBER ============ -->
-<section id="tippgeber" class="bd-section bd-section--ink bd-cta-band">
-    <div class="bd-container bd-cta-band__inner" data-reveal>
-        <div>
-            <span class="bd-overline bd-overline--light">Tippgeber</span>
-            <h2>Empfehlen Sie uns — und <em class="bd-italic-accent">profitieren Sie.</em></h2>
-            <p>Kennen Sie eine Immobilie oder einen Eigentümer? Reichen Sie Ihren Tipp diskret ein.</p>
+@{ var kontakt = Model.Sec("kontakt"); }
+@if (kontakt is not null)
+{
+    <section id="kontakt" class="bd-section bd-section--parch">
+        <div class="bd-container bd-kontakt">
+            <div class="bd-kontakt__text" data-reveal>
+                <span class="bd-overline">@kontakt.Overline</span>
+                <h2>@Html.Raw(kontakt.Titel)</h2>
+                <p>@kontakt.Text</p>
+                <ul class="bd-kontakt__meta">
+                    <li><strong>@Model.S("contact.company", "Baudorf Immobilien GmbH")</strong></li>
+                    <li>@Model.S("contact.street", "Auf der Egge 68") · @Model.S("contact.city", "42555 Velbert")</li>
+                    <li><a href="tel:+4901778387898">@Model.S("contact.phone", "0177 – 838 78 98")</a></li>
+                    <li><a href="mailto:@Model.S("contact.email", "andrea.krueger@baudorf.de")">@Model.S("contact.email", "andrea.krueger@baudorf.de")</a></li>
+                    <li>@Model.S("contact.hours", "Mo–Fr · 09:00–18:00 Uhr")</li>
+                </ul>
+            </div>
+            <div class="bd-kontakt__cta" data-reveal>
+                <p>Schreiben Sie uns über unser Kontaktformular — vertraulich und unverbindlich.</p>
+                @if (!string.IsNullOrWhiteSpace(kontakt.CtaText)) { <a class="bd-btn bd-btn--gold" href="@Url(kontakt.CtaUrl)">@kontakt.CtaText</a> }
+                <a class="bd-btn bd-btn--outline" href="tel:+4901778387898">Andrea Krüger anrufen</a>
+            </div>
         </div>
-        <a class="bd-btn bd-btn--gold" asp-controller="Kontakt" asp-action="Index">Tipp einreichen &rarr;</a>
-    </div>
-</section>
-
-<!-- ============ KONTAKT (Teaser) ============ -->
-<section id="kontakt" class="bd-section bd-section--parch">
-    <div class="bd-container bd-kontakt">
-        <div class="bd-kontakt__text" data-reveal>
-            <span class="bd-overline">Kontakt</span>
-            <h2>Sprechen wir über Ihr <em class="bd-italic-accent">Vorhaben.</em></h2>
-            <p>Alle Anfragen werden streng vertraulich behandelt. Wir melden uns persönlich und diskret — in der Regel innerhalb von 24 Stunden.</p>
-            <ul class="bd-kontakt__meta">
-                <li><strong>Baudorf Immobilien GmbH</strong></li>
-                <li>Auf der Egge 68 · 42555 Velbert</li>
-                <li><a href="tel:+4901778387898">0177 – 838 78 98</a></li>
-                <li><a href="mailto:andrea.krueger@baudorf.de">andrea.krueger@baudorf.de</a></li>
-                <li>Mo–Fr · 09:00–18:00 Uhr</li>
-            </ul>
-        </div>
-        <div class="bd-kontakt__cta" data-reveal>
-            <p>Schreiben Sie uns über unser Kontaktformular — vertraulich und unverbindlich.</p>
-            <a class="bd-btn bd-btn--gold" asp-controller="Kontakt" asp-action="Index">Kontaktformular öffnen &rarr;</a>
-            <a class="bd-btn bd-btn--outline" href="tel:+4901778387898">Andrea Krüger anrufen</a>
-        </div>
-    </div>
-</section>
+    </section>
+}

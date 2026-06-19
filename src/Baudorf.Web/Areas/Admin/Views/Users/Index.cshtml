@@ -1,0 +1,40 @@
+@model List<UserRowViewModel>
+@{
+    ViewData["Title"] = "Benutzer";
+}
+
+<div class="bd-toolbar">
+    <h2>Registrierte Benutzer</h2>
+</div>
+
+<table class="bd-table">
+    <thead><tr><th>E-Mail</th><th>Name</th><th>Rollen</th><th>Off-Market</th><th>Aufrufe</th><th>Registriert</th><th></th></tr></thead>
+    <tbody>
+        @if (Model.Count == 0)
+        {
+            <tr><td colspan="7" class="bd-empty-row">Noch keine Benutzer.</td></tr>
+        }
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td><strong>@r.User.Email</strong></td>
+                <td>@(r.User.AnzeigeName ?? "—")</td>
+                <td>
+                    @foreach (var role in r.Rollen)
+                    {
+                        <span class="bd-pill bd-pill--muted">@role</span>
+                    }
+                </td>
+                <td>
+                    @if (r.User.IstFreigegeben) { <span class="bd-pill bd-pill--ok">Freigegeben</span> }
+                    else { <span class="bd-pill bd-pill--warn">Wartet</span> }
+                </td>
+                <td>@r.AnzahlAufrufe</td>
+                <td>@r.User.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy")</td>
+                <td class="bd-table__actions">
+                    <a class="bd-btn bd-btn--ink bd-btn--xs" asp-action="Details" asp-route-id="@r.User.Id">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

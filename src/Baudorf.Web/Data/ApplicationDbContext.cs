@@ -16,6 +16,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<CareerApplication> CareerApplications => Set<CareerApplication>();
     public DbSet<Favorite> Favorites => Set<Favorite>();
     public DbSet<SiteSetting> SiteSettings => Set<SiteSetting>();
+    public DbSet<HomeSection> HomeSections => Set<HomeSection>();
+    public DbSet<HomeSectionItem> HomeSectionItems => Set<HomeSectionItem>();
+    public DbSet<LoginEvent> LoginEvents => Set<LoginEvent>();
+    public DbSet<PropertyView> PropertyViews => Set<PropertyView>();
+    public DbSet<WhatsAppClick> WhatsAppClicks => Set<WhatsAppClick>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -54,6 +59,32 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .WithMany()
                 .HasForeignKey(f => f.PropertyId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<HomeSection>(e =>
+        {
+            e.HasIndex(s => s.Key).IsUnique();
+            e.HasMany(s => s.Items)
+                .WithOne(i => i.HomeSection!)
+                .HasForeignKey(i => i.HomeSectionId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Aktivitäts-Logs: Nutzerbezug auf SetNull, damit Logs bei Nutzer-Löschung bleiben.
+        builder.Entity<LoginEvent>()
+            .HasOne(l => l.User).WithMany().HasForeignKey(l => l.UserId).OnDelete(DeleteBehavior.SetNull);
+
+        builder.Entity<PropertyView>(e =>
+        {
+            e.HasIndex(v => v.CreatedAt);
+            e.HasOne(v => v.User).WithMany().HasForeignKey(v => v.UserId).OnDelete(DeleteBehavior.SetNull);
+            e.HasOne(v => v.Property).WithMany().HasForeignKey(v => v.PropertyId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<WhatsAppClick>(e =>
+        {
+            e.HasOne(w => w.User).WithMany().HasForeignKey(w => w.UserId).OnDelete(DeleteBehavior.SetNull);
+            e.HasOne(w => w.Property).WithMany().HasForeignKey(w => w.PropertyId).OnDelete(DeleteBehavior.SetNull);
         });
     }
 }
