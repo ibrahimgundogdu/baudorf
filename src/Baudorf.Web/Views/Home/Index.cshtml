@@ -184,7 +184,7 @@
 @if (stmt is not null)
 {
     <section class="hx-band">
-        @if (!string.IsNullOrWhiteSpace(stmt.BildUrl)) { <img class="hx-band__bg" src="@stmt.BildUrl" alt="" /> }
+        @if (!string.IsNullOrWhiteSpace(stmt.BildUrl)) { <div class="hx-band__bg" style="background-image:url('@stmt.BildUrl')"></div> }
         <span class="hx-band__veil"></span>
         <img class="hx-band__emblem" src="~/img/brand/baudorf-emblem-cream.png" alt="" />
         <div class="hx-band__inner" data-reveal>
