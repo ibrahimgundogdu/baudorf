@@ -1,39 +1,76 @@
 @model HomeViewModel
 @{
-    ViewData["Title"] = null; // Startseite nutzt den Marken-Titel
-
-    // CTA-Link normalisieren (interne "/#anchor" bleiben, sonst wie angegeben)
+    ViewData["Title"] = null;
     string Url(string? u) => string.IsNullOrWhiteSpace(u) ? "#" : u;
+    string BadgeBg(PropertyStatus s) => s switch
+    {
+        PropertyStatus.Verfuegbar => "#2F6B4F",
+        PropertyStatus.Reserviert => "#96773A",
+        PropertyStatus.Verkauft => "#5C5550",
+        _ => "#181614"
+    };
 }
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+}
+
+<div class="hx">
 
 @{ var hero = Model.Sec("hero"); }
 @if (hero is not null)
 {
-    <section class="bd-hero">
-        <div class="bd-hero__emblem" aria-hidden="true">
-            <img src="~/img/brand/baudorf-emblem-gold.png" alt="" />
-        </div>
-        <div class="bd-container bd-hero__inner">
-            @if (!string.IsNullOrWhiteSpace(hero.Overline)) { <span class="bd-overline bd-overline--light">@hero.Overline</span> }
-            <h1 class="bd-hero__title">@Html.Raw(hero.Titel)</h1>
-            <p class="bd-hero__lead">@hero.Text</p>
-            <div class="bd-hero__cta">
-                @if (!string.IsNullOrWhiteSpace(hero.CtaText)) { <a class="bd-btn bd-btn--gold" href="@Url(hero.CtaUrl)">@hero.CtaText</a> }
-                @if (!string.IsNullOrWhiteSpace(hero.Cta2Text)) { <a class="bd-btn bd-btn--ghost" href="@Url(hero.Cta2Url)">@hero.Cta2Text</a> }
+    <section class="hx-hero">
+        @if (!string.IsNullOrWhiteSpace(hero.BildUrl))
+        {
+            <img class="hx-hero__bg" src="@hero.BildUrl" alt="" />
+        }
+        <span class="hx-hero__veil hx-hero__veil--side"></span>
+        <span class="hx-hero__veil hx-hero__veil--bottom"></span>
+        <img class="hx-hero__emblem" src="~/img/brand/baudorf-emblem-cream.png" alt="" />
+        <div class="hx-hero__inner">
+            @if (!string.IsNullOrWhiteSpace(hero.Overline))
+            {
+                <div class="hx-eyebrow hx-hero__eyebrow"><span>@hero.Overline</span></div>
+            }
+            <h1 class="hx-h1">@Html.Raw(hero.Titel)</h1>
+            <p class="hx-hero__lead">@hero.Text</p>
+            <div class="hx-hero__cta">
+                @if (!string.IsNullOrWhiteSpace(hero.CtaText)) { <a class="hx-btn hx-btn--gold" href="@Url(hero.CtaUrl)">@hero.CtaText <span>&rarr;</span></a> }
+                @if (!string.IsNullOrWhiteSpace(hero.Cta2Text)) { <a class="hx-btn hx-btn--outline-light" href="@Url(hero.Cta2Url)">@hero.Cta2Text</a> }
             </div>
         </div>
-        <a class="bd-hero__scroll" href="#philosophie" aria-label="Nach unten scrollen"><span></span></a>
+        <div class="hx-hero__scroll"><span>Scrollen</span><span></span></div>
     </section>
 }
 
 @{ var philo = Model.Sec("philosophie"); }
 @if (philo is not null)
 {
-    <section id="philosophie" class="bd-section bd-section--parch">
-        <div class="bd-container bd-philo" data-reveal>
-            @if (!string.IsNullOrWhiteSpace(philo.Overline)) { <span class="bd-overline">@philo.Overline</span> }
-            <h2 class="bd-philo__head">@Html.Raw(philo.Titel)</h2>
-            <p class="bd-philo__text">@philo.Text</p>
+    <section id="philosophie" class="hx-sec hx-sec--bg">
+        <div class="hx-wrap">
+            <div class="hx-split">
+                <div class="hx-philo__text" data-reveal>
+                    <div class="hx-eyebrow"><span>@philo.Overline</span></div>
+                    <h2>@Html.Raw(philo.Titel)</h2>
+                    @foreach (var para in (philo.Text ?? "").Split("\n\n", StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        <p>@Html.Raw(para)</p>
+                    }
+                </div>
+                <div class="hx-media" data-reveal>
+                    @if (!string.IsNullOrWhiteSpace(philo.BildUrl))
+                    {
+                        <img src="@philo.BildUrl" alt="" loading="lazy" />
+                    }
+                    else
+                    {
+                        <span class="hx-media__emblem"><img src="~/img/brand/baudorf-emblem-gold.png" alt="" /></span>
+                    }
+                    <span class="hx-media__veil"></span>
+                    <p class="hx-media__quote">„Still, wirkungsvoll,<br>mit Stil."</p>
+                </div>
+            </div>
         </div>
     </section>
 }
@@ -41,46 +78,117 @@
 @{ var leist = Model.Sec("leistungen"); }
 @if (leist is not null)
 {
-    <section id="leistungen" class="bd-section bd-section--white">
-        <div class="bd-container">
-            <div class="bd-sec-head" data-reveal>
-                <span class="bd-overline">@leist.Overline</span>
-                <h2>@Html.Raw(leist.Titel)</h2>
-                @if (!string.IsNullOrWhiteSpace(leist.Text)) { <p class="bd-sec-head__sub">@leist.Text</p> }
+    <section id="leistungen" class="hx-sec hx-sec--surface">
+        <div class="hx-wrap">
+            <div class="hx-head-row" data-reveal>
+                <div>
+                    <div class="hx-eyebrow"><span>@leist.Overline</span></div>
+                    <h2 class="hx-h2">@Html.Raw(leist.Titel)</h2>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(leist.Text)) { <p class="hx-head-row__desc">@leist.Text</p> }
             </div>
-            <div class="bd-cards">
-                @{ var i = 0; }
+            <div class="hx-grid-cards">
+                @{ var ln = 0; }
                 @foreach (var item in leist.Items)
                 {
-                    <article class="bd-card-svc" data-reveal style="transition-delay:@(i * 70)ms">
-                        <span class="bd-card-svc__num">@((++i).ToString("D2"))</span>
+                    <div class="hx-card" data-reveal>
+                        <span class="hx-card__no">0@(++ln)</span>
                         <h3>@item.Titel</h3>
                         <p>@item.Text</p>
-                    </article>
+                        <span class="hx-card__more">Mehr erfahren &rarr;</span>
+                    </div>
                 }
+                <a class="hx-card hx-card--dark" data-reveal asp-controller="Kontakt" asp-action="Index">
+                    <span>Sprechen wir über Ihr Vorhaben.</span>
+                    <span class="hx-card__more">Kontakt aufnehmen &rarr;</span>
+                </a>
             </div>
         </div>
     </section>
 }
 
-<!-- Aktuelle Objekte (aus dem Immobilien-Modul) -->
+<!-- AKTUELLE OBJEKTE (Mosaik) -->
 @if (Model.FeaturedObjekte.Count > 0)
 {
-    <section id="objekte" class="bd-section bd-section--parch">
-        <div class="bd-container">
-            <div class="bd-sec-head bd-sec-head--row" data-reveal>
+    <section id="objekte" class="hx-sec hx-sec--bg">
+        <div class="hx-wrap">
+            <div class="hx-head-row" data-reveal>
                 <div>
-                    <span class="bd-overline">Aktuelle Objekte</span>
-                    <h2>Ausgewählte Immobilien</h2>
+                    <div class="hx-eyebrow"><span>Aktuelle Objekte</span></div>
+                    <h2 class="hx-h2">Ausgewählte <em class="hx-em">Investments</em></h2>
                 </div>
-                <a class="bd-link-gold" asp-controller="Immobilien" asp-action="Index">Alle Objekte ansehen &rarr;</a>
+                <p class="hx-head-row__desc">Ein Auszug aus unserem Portfolio. Off-Market-Objekte sind sichtbar — ihre Kennzahlen vorgemerkten Investoren vorbehalten.</p>
             </div>
-            <div class="bd-objekte">
-                @foreach (var p in Model.FeaturedObjekte)
+            <div class="hx-mosaic">
+                @foreach (var p in Model.FeaturedObjekte.Take(6))
                 {
-                    <partial name="_ObjektCard" model="p" />
+                    var cover = p.CoverUrl();
+                    <a class="hx-tile" data-reveal asp-controller="Immobilien" asp-action="Details" asp-route-slug="@p.Slug">
+                        @if (cover != null)
+                        {
+                            <img class="hx-tile__img" src="@cover" alt="@p.Titel" loading="lazy" />
+                        }
+                        else
+                        {
+                            <span class="hx-tile__ph"><img src="~/img/brand/baudorf-emblem-ink.png" alt="" /></span>
+                        }
+                        <span class="hx-tile__veil"></span>
+                        <span class="hx-tile__badge" style="background:@BadgeBg(p.Status)">@p.Status.Label()</span>
+                        <div class="hx-tile__cap">
+                            <span class="hx-tile__ort">@(string.IsNullOrWhiteSpace(p.Region) ? p.Land : p.Region)</span>
+                            <h3 class="hx-tile__name">@p.Titel</h3>
+                        </div>
+                        <div class="hx-tile__slide">
+                            <div>
+                                <span class="hx-tile__badge" style="position:static;display:inline-block;background:@BadgeBg(p.Status);margin-bottom:16px">@p.Status.Label()</span>
+                                <span class="hx-tile__ort">@(string.IsNullOrWhiteSpace(p.Region) ? p.Land : p.Region)</span>
+                                <h3 class="hx-tile__name">@p.Titel</h3>
+                            </div>
+                            <div>
+                                <div class="hx-tile__specs">
+                                    @if (p.Wohnflaeche.HasValue) { <span>Wfl. <b>@DisplayHelpers.FlaecheText(p.Wohnflaeche)</b></span> }
+                                    @if (p.Grundstuecksflaeche.HasValue) { <span>GF <b>@DisplayHelpers.FlaecheText(p.Grundstuecksflaeche)</b></span> }
+                                    @if (p.Baujahr.HasValue) { <span>BJ <b>@p.Baujahr</b></span> }
+                                </div>
+                                <div class="hx-tile__foot">
+                                    @if (p.IstOffMarket)
+                                    {
+                                        <span class="hx-tile__lock">&#128274; Für vorgemerkte Investoren</span>
+                                    }
+                                    else if (p.Faktor.HasValue)
+                                    {
+                                        <span class="hx-tile__faktor"><small>Faktor</small><b>@p.Faktor</b></span>
+                                    }
+                                    else
+                                    {
+                                        <span class="hx-tile__faktor"><small>Kaufpreis</small><b style="font-size:17px">@p.PreisText()</b></span>
+                                    }
+                                    <span class="hx-tile__det">Details &rarr;</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
                 }
             </div>
+            <div class="hx-mosaic-more">
+                <a class="hx-link" asp-controller="Immobilien" asp-action="Index">Alle Objekte ansehen &rarr;</a>
+            </div>
+        </div>
+    </section>
+}
+
+@{ var stmt = Model.Sec("statement"); }
+@if (stmt is not null)
+{
+    <section class="hx-band">
+        @if (!string.IsNullOrWhiteSpace(stmt.BildUrl)) { <img class="hx-band__bg" src="@stmt.BildUrl" alt="" /> }
+        <span class="hx-band__veil"></span>
+        <img class="hx-band__emblem" src="~/img/brand/baudorf-emblem-cream.png" alt="" />
+        <div class="hx-band__inner" data-reveal>
+            <div class="hx-eyebrow hx-eyebrow--light hx-eyebrow--center"><span>@stmt.Overline</span></div>
+            <h2>@Html.Raw(stmt.Titel)</h2>
+            @if (!string.IsNullOrWhiteSpace(stmt.Text)) { <p>@stmt.Text</p> }
+            @if (!string.IsNullOrWhiteSpace(stmt.CtaText)) { <a class="hx-btn hx-btn--gold hx-btn--gold-lt" href="@Url(stmt.CtaUrl)">@stmt.CtaText &rarr;</a> }
         </div>
     </section>
 }
@@ -88,23 +196,26 @@
 @{ var vorgehen = Model.Sec("vorgehen"); }
 @if (vorgehen is not null)
 {
-    <section class="bd-section bd-section--white">
-        <div class="bd-container">
-            <div class="bd-sec-head" data-reveal>
-                <span class="bd-overline">@vorgehen.Overline</span>
-                <h2>@Html.Raw(vorgehen.Titel)</h2>
+    <section id="vorgehen" class="hx-sec hx-sec--bg">
+        <div class="hx-wrap">
+            <div class="hx-vorgehen__head" data-reveal>
+                <div class="hx-eyebrow"><span>@vorgehen.Overline</span></div>
+                <h2 class="hx-h2">@Html.Raw(vorgehen.Titel)</h2>
             </div>
-            <ol class="bd-steps">
-                @{ var si = 0; }
-                @foreach (var step in vorgehen.Items)
-                {
-                    <li class="bd-step" data-reveal style="transition-delay:@(si * 80)ms">
-                        <span class="bd-step__num">@((++si).ToString("D2"))</span>
-                        <h3>@step.Titel</h3>
-                        <p>@step.Text</p>
-                    </li>
-                }
-            </ol>
+            <div class="hx-timeline">
+                <span class="hx-timeline__line"></span>
+                <div class="hx-steps">
+                    @{ var vn = 0; }
+                    @foreach (var step in vorgehen.Items)
+                    {
+                        <div class="hx-step" data-reveal>
+                            <div class="hx-step__circle"><span>0@(++vn)</span></div>
+                            <h3>@step.Titel</h3>
+                            <p>@step.Text</p>
+                        </div>
+                    }
+                </div>
+            </div>
         </div>
     </section>
 }
@@ -112,79 +223,163 @@
 @{ var klientel = Model.Sec("klientel"); }
 @if (klientel is not null)
 {
-    <section class="bd-section bd-section--ink">
-        <div class="bd-container bd-klientel">
-            <div class="bd-sec-head bd-sec-head--light" data-reveal>
-                <span class="bd-overline bd-overline--light">@klientel.Overline</span>
-                <h2>@Html.Raw(klientel.Titel)</h2>
-            </div>
-            <ul class="bd-klientel__list" data-reveal>
-                @foreach (var item in klientel.Items)
-                {
-                    <li>@item.Titel</li>
-                }
-            </ul>
-        </div>
-    </section>
-}
-
-@{ var ueber = Model.Sec("ueber-uns"); }
-@if (ueber is not null && Model.Team.Count > 0)
-{
-    <section id="ueber-uns" class="bd-section bd-section--parch">
-        <div class="bd-container">
-            <div class="bd-sec-head" data-reveal>
-                <span class="bd-overline">@ueber.Overline</span>
-                <h2>@Html.Raw(ueber.Titel)</h2>
-            </div>
-            <div class="bd-team">
-                @foreach (var t in Model.Team)
-                {
-                    <article class="bd-team__card" data-reveal>
-                        @if (!string.IsNullOrWhiteSpace(t.FotoUrl))
-                        {
-                            <img class="bd-team__foto" src="@t.FotoUrl" alt="@t.Name" loading="lazy" />
-                        }
-                        <div class="bd-team__body">
-                            <h3>@t.Name</h3>
-                            @if (!string.IsNullOrWhiteSpace(t.Rolle)) { <span class="bd-team__role">@t.Rolle</span> }
-                            @if (!string.IsNullOrWhiteSpace(t.Bio)) { <p>@t.Bio</p> }
-                        </div>
-                    </article>
-                }
+    <section class="hx-sec hx-sec--band hx-klientel">
+        <img class="hx-klientel__emblem" src="~/img/brand/baudorf-emblem-gold.png" alt="" />
+        <div class="hx-wrap" style="position:relative;z-index:1">
+            <div class="hx-split">
+                <div class="hx-klientel__intro" data-reveal>
+                    <div class="hx-eyebrow"><span>@klientel.Overline</span></div>
+                    <h2>@Html.Raw(klientel.Titel)</h2>
+                    @if (!string.IsNullOrWhiteSpace(klientel.Text)) { <p>@klientel.Text</p> }
+                </div>
+                <div class="hx-klientel__list" data-reveal>
+                    @{ var kn = 0; }
+                    @foreach (var k in klientel.Items)
+                    {
+                        <div class="hx-klientel__row"><b>0@(++kn)</b><span>@k.Titel</span></div>
+                    }
+                </div>
             </div>
         </div>
     </section>
 }
 
-@{ var zahlen = Model.Sec("zahlen"); }
-@if (zahlen is not null && zahlen.Items.Count > 0)
+@{ var ueber = Model.Sec("ueber-uns"); var andrea = Model.Team.FirstOrDefault(); var ayla = Model.Team.Skip(1).FirstOrDefault(); }
+@if (ueber is not null && andrea is not null)
 {
-    <section class="bd-section bd-section--white">
-        <div class="bd-container bd-zahlen">
-            @{ var zi = 0; }
-            @foreach (var z in zahlen.Items)
+    <section id="ueber" class="hx-sec hx-sec--surface">
+        <div class="hx-wrap">
+            <div class="hx-split hx-split--rev">
+                <div class="hx-ueber__intro" data-reveal>
+                    <div class="hx-eyebrow"><span>@ueber.Overline</span></div>
+                    <h2>@andrea.Name</h2>
+                    @if (!string.IsNullOrWhiteSpace(andrea.Rolle)) { <p class="hx-ueber__role">@andrea.Rolle</p> }
+                    @foreach (var para in (andrea.Bio ?? "").Split("\n\n", StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        <p>@para</p>
+                    }
+                    <div class="hx-ueber__stats">
+                        <div><b>1994</b><small>Gegründet</small></div>
+                        <div><b>Velbert</b><small>Sitz · NRW</small></div>
+                    </div>
+                </div>
+                <div class="hx-ueber__photo" data-reveal>
+                    @if (!string.IsNullOrWhiteSpace(andrea.FotoUrl)) { <img src="@andrea.FotoUrl" alt="@andrea.Name" /> }
+                    <span class="hx-ueber__photo-veil"></span>
+                    <div class="hx-ueber__photo-cap"><b>@andrea.Name</b><small>Geschäftsführerin</small></div>
+                </div>
+            </div>
+
+            @if (ayla is not null)
             {
-                <div class="bd-zahl" data-reveal style="transition-delay:@(zi++ * 70)ms">
-                    <span class="bd-zahl__num">@z.Titel</span>
-                    <span class="bd-zahl__label">@z.Text</span>
+                <div class="hx-ayla" data-reveal>
+                    @if (!string.IsNullOrWhiteSpace(ayla.FotoUrl)) { <img src="@ayla.FotoUrl" alt="@ayla.Name" /> }
+                    <div class="hx-ayla__body">
+                        <span>@ayla.Rolle</span>
+                        <h3>@ayla.Name</h3>
+                        @if (!string.IsNullOrWhiteSpace(ayla.Bio)) { <p>@ayla.Bio</p> }
+                    </div>
                 </div>
             }
         </div>
     </section>
 }
 
-@{ var tipp = Model.Sec("tippgeber"); }
-@if (tipp is not null)
+@{ var zahlen = Model.Sec("zahlen"); var testi = Model.Sec("testimonial"); }
+@if (zahlen is not null)
 {
-    <section id="tippgeber" class="bd-section bd-section--ink bd-cta-band">
-        <div class="bd-container bd-cta-band__inner" data-reveal>
-            <div>
-                <span class="bd-overline bd-overline--light">@tipp.Overline</span>
-                <h2>@Html.Raw(tipp.Titel)</h2>
-                @if (!string.IsNullOrWhiteSpace(tipp.Text)) { <p>@tipp.Text</p> }
+    <section id="bd-stats" class="hx-sec hx-sec--band">
+        <div class="hx-wrap">
+            <div class="hx-zahlen">
+                @foreach (var z in zahlen.Items)
+                {
+                    <div class="hx-zahl" data-reveal>
+                        <b>@Html.Raw(z.Titel)</b>
+                        <span class="hx-zahl__line"></span>
+                        <span>@z.Text</span>
+                    </div>
+                }
             </div>
-            @if (!string.IsNullOrWhiteSpace(tipp.CtaText)) { <a class="bd-btn bd-btn--gold" href="@Url(tipp.CtaUrl)">@tipp.CtaText</a> }
+            @if (testi is not null)
+            {
+                <div class="hx-testi" data-reveal>
+                    <div style="display:flex;gap:50px;align-items:flex-start;justify-content:space-between">
+                        <div class="hx-testi__quote">
+                            <span class="hx-testi__mark">&ldquo;</span>
+                            <p>@testi.Text</p>
+                            <p class="hx-testi__who">@testi.Titel</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+}
+
+@{ var tipp = Model.Sec("tippgeber"); var karriere = Model.Sec("karriere"); }
+@if (tipp is not null || karriere is not null)
+{
+    <section id="tippgeber" class="hx-sec hx-sec--bg">
+        <div class="hx-wrap">
+            <div class="hx-tk">
+                @if (tipp is not null)
+                {
+                    <div class="hx-tk__cell hx-tk__cell--light" data-reveal>
+                        <div>
+                            <span class="lbl">@tipp.Overline</span>
+                            <h3>@Html.Raw(tipp.Titel)</h3>
+                            <p>@tipp.Text</p>
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(tipp.CtaText)) { <a class="hx-btn hx-btn--gold" href="@Url(tipp.CtaUrl)">@tipp.CtaText &rarr;</a> }
+                    </div>
+                }
+                @if (karriere is not null)
+                {
+                    <div class="hx-tk__cell hx-tk__cell--dark" data-reveal>
+                        <div>
+                            <span class="lbl">@karriere.Overline</span>
+                            <h3>@Html.Raw(karriere.Titel)</h3>
+                            <p>@karriere.Text</p>
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(karriere.CtaText)) { <a class="hx-btn hx-btn--outline-light" href="@Url(karriere.CtaUrl)">@karriere.CtaText &rarr;</a> }
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<!-- INSIGHTS -->
+@{ var insSec = Model.Sec("insights"); }
+@if (Model.Insights.Count > 0)
+{
+    <section id="insights" class="hx-sec hx-sec--surface">
+        <div class="hx-wrap">
+            <div class="hx-head-row" data-reveal>
+                <div>
+                    <div class="hx-eyebrow"><span>@(insSec?.Overline ?? "Markt & Insights")</span></div>
+                    <h2 class="hx-h2">@Html.Raw(insSec?.Titel ?? "Expertenwissen für <em class=\"hx-em\">kluge Investoren</em>")</h2>
+                </div>
+                <a class="hx-link" asp-controller="Home" asp-action="Index">Alle Beiträge &rarr;</a>
+            </div>
+            <div class="hx-insights">
+                @foreach (var a in Model.Insights)
+                {
+                    <div class="hx-art" data-reveal>
+                        <div class="hx-art__media">
+                            @if (!string.IsNullOrWhiteSpace(a.CoverUrl)) { <img src="@a.CoverUrl" alt="@a.Titel" loading="lazy" /> }
+                        </div>
+                        <div class="hx-art__body">
+                            <div class="hx-art__meta">
+                                <span class="hx-art__cat">@(a.Kategorie ?? "Insight")</span>
+                                <span class="hx-art__read">5 Min.</span>
+                            </div>
+                            <h3>@a.Titel</h3>
+                            <span class="hx-art__date">@(a.PublishedAt?.ToString("dd.MM.yyyy"))</span>
+                        </div>
+                    </div>
+                }
+            </div>
         </div>
     </section>
 }
@@ -192,25 +387,22 @@
 @{ var kontakt = Model.Sec("kontakt"); }
 @if (kontakt is not null)
 {
-    <section id="kontakt" class="bd-section bd-section--parch">
-        <div class="bd-container bd-kontakt">
-            <div class="bd-kontakt__text" data-reveal>
-                <span class="bd-overline">@kontakt.Overline</span>
+    <section id="kontakt" class="hx-kontakt">
+        @if (!string.IsNullOrWhiteSpace(kontakt.BildUrl)) { <img class="hx-kontakt__bg" src="@kontakt.BildUrl" alt="" /> }
+        <span class="hx-kontakt__veil"></span>
+        <img class="hx-kontakt__emblem" src="~/img/brand/baudorf-emblem-cream.png" alt="" />
+        <div class="hx-kontakt__inner">
+            <div class="hx-kontakt__box" data-reveal>
+                <div class="hx-eyebrow hx-eyebrow--light"><span>@kontakt.Overline</span></div>
                 <h2>@Html.Raw(kontakt.Titel)</h2>
                 <p>@kontakt.Text</p>
-                <ul class="bd-kontakt__meta">
-                    <li><strong>@Model.S("contact.company", "Baudorf Immobilien GmbH")</strong></li>
-                    <li>@Model.S("contact.street", "Auf der Egge 68") · @Model.S("contact.city", "42555 Velbert")</li>
-                    <li><a href="tel:+4901778387898">@Model.S("contact.phone", "0177 – 838 78 98")</a></li>
-                    <li><a href="mailto:@Model.S("contact.email", "andrea.krueger@baudorf.de")">@Model.S("contact.email", "andrea.krueger@baudorf.de")</a></li>
-                    <li>@Model.S("contact.hours", "Mo–Fr · 09:00–18:00 Uhr")</li>
-                </ul>
-            </div>
-            <div class="bd-kontakt__cta" data-reveal>
-                <p>Schreiben Sie uns über unser Kontaktformular — vertraulich und unverbindlich.</p>
-                @if (!string.IsNullOrWhiteSpace(kontakt.CtaText)) { <a class="bd-btn bd-btn--gold" href="@Url(kontakt.CtaUrl)">@kontakt.CtaText</a> }
-                <a class="bd-btn bd-btn--outline" href="tel:+4901778387898">Andrea Krüger anrufen</a>
+                <div class="hx-kontakt__cta">
+                    @if (!string.IsNullOrWhiteSpace(kontakt.CtaText)) { <a class="hx-btn hx-btn--gold hx-btn--gold-lt" href="@Url(kontakt.CtaUrl)">@kontakt.CtaText &rarr;</a> }
+                    <a class="hx-btn hx-btn--outline-light" href="tel:+4901778387898">Anrufen</a>
+                </div>
             </div>
         </div>
     </section>
 }
+
+</div>

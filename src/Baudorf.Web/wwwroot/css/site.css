@@ -16,13 +16,20 @@
   --linen:   #EDE8DF;
   --white:   #FDFCFA;
 
-  --bg:      var(--parch);
-  --surface: var(--white);
-  --line:    var(--linen);
-  --accent:  var(--gold);
+  --bg:      #F5F2EC;
+  --surface: #FDFCFA;
+  --band:    #ECE6DA;
+  --muted:   #5C5550;
+  --line:    #EDE8DF;
+  --line2:   #DCD5C8;
+  --accent:  #C4A46B;
+  --accent-dk: #96773A;
+  --accent-lt: #D9BF8E;
+  --on-accent: #181614;
+  --bd-gold: #C4A46B;
 
-  --font: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  --maxw: 1240px;
+  --font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --maxw: 1560px;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -601,3 +608,50 @@ h1, h2, h3 {
 .bd-wa { position: fixed; right: 22px; bottom: 22px; z-index: 70; width: 56px; height: 56px; border-radius: 50%; background: #25D366; color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 28px -8px rgba(18,16,14,0.5); transition: transform 0.25s var(--ease); }
 .bd-wa:hover { transform: scale(1.08); color: #fff; }
 @media (max-width: 560px) { .bd-wa { right: 16px; bottom: 16px; width: 50px; height: 50px; } }
+
+/* ==========================================================================
+   Nav + Footer (originalgetreu, ueberschreibt fruehere Regeln)
+   ========================================================================== */
+.bd-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 90; background: rgba(250,249,246,.6); backdrop-filter: blur(30px) saturate(185%); -webkit-backdrop-filter: blur(30px) saturate(185%); border-bottom: 1px solid rgba(255,255,255,.4); box-shadow: 0 1px 24px -12px rgba(18,16,14,.18); padding: 20px 0; transition: padding .45s var(--ease); }
+.bd-nav.is-scrolled { padding: 11px 0; }
+.bd-nav__inner { position: relative; margin: 0 auto; padding: 0 clamp(20px,4vw,56px); display: flex; align-items: center; justify-content: space-between; gap: 24px; max-width: none; }
+.bd-nav__brand { display: flex; align-items: center; }
+.bd-nav__brand img { height: 40px; width: auto; display: block; transition: height .45s var(--ease); }
+.bd-nav.is-scrolled .bd-nav__brand img { height: 32px; }
+.bd-nav__phone { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); display: inline-flex; align-items: center; gap: 8px; font: 700 13px/1 var(--font); letter-spacing: .04em; color: var(--accent-dk); white-space: nowrap; transition: .3s; }
+.bd-nav__phone:hover { color: var(--accent); }
+.bd-nav__links { display: flex; align-items: center; gap: 26px; }
+.bd-nav__links > a { font: 700 12px/1 var(--font); letter-spacing: .1em; text-transform: uppercase; color: var(--ink); padding: 8px 0; border-bottom: 1px solid transparent; transition: .3s; }
+.bd-nav__links > a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+.bd-nav__login { display: inline-flex !important; align-items: center; gap: 7px; }
+.bd-nav__register { font-size: 11px !important; letter-spacing: .14em !important; color: var(--on-accent) !important; background: var(--bd-gold); padding: 13px 24px !important; border-bottom: none !important; transition: .35s; }
+.bd-nav__register:hover { background: var(--accent-dk); color: #fff !important; border-bottom-color: transparent !important; }
+.bd-nav__burger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 6px; background: none; border: 0; }
+.bd-nav__burger span { width: 26px; height: 1.5px; background: var(--ink); display: block; }
+.bd-nav__burger span:last-child { width: 18px; background: var(--accent); }
+.bd-mobile { position: fixed; inset: 0; z-index: 95; background: var(--bg); display: flex; flex-direction: column; padding: 30px clamp(22px,6vw,48px); }
+.bd-mobile__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 60px; }
+.bd-mobile__close { font: 300 34px/1 var(--font); color: var(--ink); cursor: pointer; background: none; border: 0; }
+.bd-mobile__links { display: flex; flex-direction: column; gap: 6px; }
+.bd-mobile__links a { font: 400 38px/1 var(--font); color: var(--ink); padding: 10px 0; border-bottom: 1px solid rgba(24,22,20,.12); }
+.bd-mobile__actions { margin-top: 40px; display: flex; gap: 14px; flex-wrap: wrap; }
+.bd-mobile__login { font: 600 12px/1 var(--font); letter-spacing: .16em; text-transform: uppercase; color: var(--ink); border: 1px solid var(--line2); padding: 16px 28px; }
+.bd-mobile__register { font: 600 12px/1 var(--font); letter-spacing: .16em; text-transform: uppercase; color: var(--on-accent); background: var(--bd-gold); padding: 16px 30px; }
+@media (max-width: 1080px) { .bd-nav__links, .bd-nav__phone { display: none; } .bd-nav__burger { display: flex; } }
+.bd-footer { background: var(--band); padding: clamp(60px,8vw,90px) 0 40px; border-top: 1px solid var(--line2); }
+.bd-footer__grid { max-width: 1560px; margin: 0 auto; padding: 0 clamp(22px,5vw,48px) 54px; display: grid; grid-template-columns: 1.6fr 1fr 1fr 1.2fr; gap: 44px 30px; border-bottom: 1px solid rgba(24,22,20,.1); }
+.bd-footer__brand img { height: 40px; margin-bottom: 24px; }
+.bd-footer__brand p { margin: 0; max-width: 280px; font: 300 14px/1.7 var(--font); color: rgba(24,22,20,.6); }
+.bd-footer__slogan { margin: 24px 0 0 !important; font: italic 20px/1.4 var(--font) !important; color: var(--bd-gold) !important; }
+.bd-footer__col { display: flex; flex-direction: column; gap: 13px; }
+.bd-footer__head { font: 600 11px/1 var(--font); letter-spacing: .2em; text-transform: uppercase; color: var(--accent-dk); margin-bottom: 9px; }
+.bd-footer__col a, .bd-footer__col span { font: 300 14px/1.6 var(--font); color: rgba(24,22,20,.7); transition: .3s; }
+.bd-footer__col a:hover { color: var(--accent); }
+.bd-footer__muted { color: rgba(24,22,20,.5) !important; }
+.bd-footer__legal { max-width: 1560px; margin: 0 auto; padding: 26px clamp(22px,5vw,48px) 0; display: flex; justify-content: space-between; align-items: center; gap: 18px; flex-wrap: wrap; }
+.bd-footer__legal > span { font: 300 12px/1.5 var(--font); color: rgba(24,22,20,.4); }
+.bd-footer__legal nav { display: flex; gap: 26px; }
+.bd-footer__legal nav a { font: 300 12px/1 var(--font); color: rgba(24,22,20,.5); transition: .3s; }
+.bd-footer__legal nav a:hover { color: var(--accent); }
+@media (max-width: 900px) { .bd-footer__grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .bd-footer__grid { grid-template-columns: 1fr; } }

@@ -50,7 +50,10 @@ public static class DbSeeder
         await SeedSettingsAsync(db);
         await SeedPropertiesAsync(db);
         await SeedHomeSectionsAsync(db);
+        await db.SaveChangesAsync();
 
+        // Einmalige Inhalts-Aktualisierung auf den freigegebenen Entwurf (Version 2).
+        await RefreshDesignContentAsync(db);
         await db.SaveChangesAsync();
     }
 
@@ -304,5 +307,107 @@ public static class DbSeeder
         var neue = alle.Where(s => !vorhanden.Contains(s.Key)).ToList();
         if (neue.Count > 0)
             db.HomeSections.AddRange(neue);
+    }
+
+    private const string DesignVersion = "2";
+
+    /// <summary>
+    /// Einmalige Aktualisierung der Startseiten-Inhalte auf den freigegebenen Entwurf.
+    /// Setzt Abschnitte + Team-Texte neu (versioniert über SiteSetting), ohne bei jedem Start zu überschreiben.
+    /// </summary>
+    private static async Task RefreshDesignContentAsync(ApplicationDbContext db)
+    {
+        var marker = await db.SiteSettings.FirstOrDefaultAsync(s => s.Key == "design.contentVersion");
+        if (marker?.Value == DesignVersion) return;
+
+        // Abschnitte neu aufbauen (löscht auch Items via Cascade).
+        var alt = await db.HomeSections.ToListAsync();
+        db.HomeSections.RemoveRange(alt);
+        await db.SaveChangesAsync();
+
+        HomeSection Sec(string key, int ord, string? ov, string? ti, string? tx,
+            string? cta = null, string? ctaUrl = null, string? cta2 = null, string? cta2Url = null,
+            params (string? t, string? x)[] items)
+        {
+            var s = new HomeSection { Key = key, Reihenfolge = ord, Overline = ov, Titel = ti, Text = tx,
+                CtaText = cta, CtaUrl = ctaUrl, Cta2Text = cta2, Cta2Url = cta2Url, IstSichtbar = true };
+            for (var i = 0; i < items.Length; i++)
+                s.Items.Add(new HomeSectionItem { Titel = items[i].t, Text = items[i].x, Reihenfolge = i });
+            return s;
+        }
+
+        db.HomeSections.AddRange(
+            Sec("hero", 1, "Off-Market-Immobilien · NRW · seit 1994",
+                "Diskret. <em>Exklusiv.</em> Direkt.",
+                "Wir vermitteln Wohn-, Gewerbe- und Kapitalanlageobjekte abseits des öffentlichen Marktes — vertraulich, fundiert und auf Augenhöhe mit Family Offices und institutionellen Investoren.",
+                "Objekte anfragen", "/Kontakt", "Über uns", "/#ueber"),
+            Sec("philosophie", 2, "Philosophie",
+                "Wir vermitteln nicht.<br><em>Wir verbinden.</em>",
+                "Seit 1994 begleiten wir Eigentümer und Investoren bei Transaktionen, die nicht für die Öffentlichkeit bestimmt sind. Was als Architekturbüro begann, ist heute ein spezialisiertes Maklerhaus für die diskrete Vermarktung anspruchsvoller Immobilien in NRW und darüber hinaus.\n\nStille ist kein Mangel an Lautstärke — sie ist eine Haltung. <strong>Still, wirkungsvoll, mit Stil.</strong>"),
+            Sec("leistungen", 3, "Leistungen", "Was wir für Sie tun",
+                "Fünf Disziplinen, ein Anspruch: die richtige Immobilie für den richtigen Investor — diskret zusammengeführt.",
+                null, null, null, null,
+                ("Stille Vermarktung", "Diskret, ohne Inserat — die Immobilie wird vertraut, nicht ausgeschrieben."),
+                ("Klassische Vermarktung", "Wenn Reichweite zählt: professionell aufbereitet und zielgerichtet platziert."),
+                ("Immobilienbewertung", "Fundierte Markt- und Ertragswertanalyse als Basis Ihrer Entscheidung."),
+                ("Kaufbegleitung", "Von der Prüfung bis zum Notar — an Ihrer Seite, Schritt für Schritt."),
+                ("Dienstleisternetzwerk", "Architekten, Gutachter, Finanzierer — kuratiert und verlässlich.")),
+            Sec("statement", 4, "Off-Market · NRW",
+                "Die besten Objekte werden nie inseriert.<br><em>Sie werden vertraut.</em>",
+                "Über 480 Mio. € begleitetes Transaktionsvolumen — abseits des öffentlichen Marktes, auf Augenhöhe mit professionellen Investoren.",
+                "Off-Market-Zugang anfragen", "/Kontakt"),
+            Sec("vorgehen", 5, "Unser Vorgehen", "Vom ersten Gespräch <em>bis zum Notar</em>", null,
+                null, null, null, null,
+                ("Erstgespräch", "Vertraulich und unverbindlich klären wir Ihre Ziele und Möglichkeiten."),
+                ("Objektauswahl", "Kuratierte Vorauswahl — nur Relevantes, diskret aufbereitet."),
+                ("Prüfung & Begleitung", "Fundierte Bewertung und persönliche Begleitung in Ihrem Tempo."),
+                ("Abschluss", "Strukturiert bis zum Notartermin — verbindlich und sicher.")),
+            Sec("klientel", 6, "Unsere Klientel", "Mit wem wir <em>arbeiten</em>",
+                "Unsere Mandanten erwarten Substanz statt Show. Wir bewegen uns dort, wo Vertraulichkeit zählt und Entscheidungen mit Bedacht getroffen werden.",
+                null, null, null, null,
+                ("Family Offices", null), ("Institutionelle Investoren", null),
+                ("Wohnungsgesellschaften", null), ("Bauträger", null), ("Projektentwickler", null)),
+            Sec("ueber-uns", 7, "Über uns", "Andrea Krüger", null),
+            Sec("zahlen", 8, null, null, null, null, null, null, null,
+                ("30+", "Jahre Erfahrung — seit 1994 am Markt"),
+                ("480 Mio. €", "Transaktionsvolumen begleitet"),
+                ("100 %", "Diskretion — Off-Market als Kernsegment"),
+                ("24 h", "Reaktionszeit auf Anfragen i. d. R.")),
+            Sec("testimonial", 9, null,
+                "Family Office · Düsseldorf",
+                "Baudorf hat unsere Transaktion mit einer Diskretion und Sachkenntnis begleitet, wie wir sie selten erlebt haben. Verbindlich, ruhig, auf den Punkt."),
+            Sec("tippgeber", 10, "Tippgeber", "Empfehlen Sie uns — und <em>profitieren Sie.</em>",
+                "Sie kennen einen Eigentümer mit Verkaufsabsicht? Vermitteln Sie den Kontakt — bei erfolgreichem Abschluss honorieren wir Ihren Hinweis.",
+                "Tipp einreichen", "/Kontakt"),
+            Sec("karriere", 11, "Karriere", "Werden Sie Teil von Baudorf.",
+                "Wir suchen Menschen mit Gespür für Immobilien und Diskretion. Initiativbewerbungen sind jederzeit willkommen.",
+                "Initiativ bewerben", "/Kontakt"),
+            Sec("insights", 12, "Markt & Insights", "Expertenwissen für <em>kluge Investoren</em>", null),
+            Sec("kontakt", 13, "Kontakt", "Sprechen wir — <em>diskret.</em>",
+                "Ob Verkauf, Investment oder Bewertung — wir melden uns persönlich und vertraulich, in der Regel innerhalb von 24 Stunden.",
+                "Anfrage senden", "/Kontakt")
+        );
+
+        // Team-Texte auf Entwurf setzen.
+        var team = await db.TeamMembers.OrderBy(t => t.Reihenfolge).ToListAsync();
+        var andrea = team.FirstOrDefault(t => t.Name.Contains("Andrea"));
+        if (andrea is not null)
+        {
+            andrea.Rolle = "Geschäftsführerin · Immobilienmaklerin · Dipl.-Ing. Architektin";
+            andrea.Bio = "1994 als Architekturbüro gegründet, 2018 in die Baudorf Immobilien GmbH überführt: Aus dem geschulten Blick für Substanz und Gestaltung wurde ein Maklerhaus, das Immobilien nicht nur vermittelt, sondern versteht.\n\nAls Architektin liest Andrea Krüger Gebäude — als Maklerin liest sie Menschen. Diese Verbindung macht den Unterschied, wenn es um diskrete, anspruchsvolle Transaktionen geht.";
+            andrea.FotoUrl = "/img/team/andrea.jpg";
+        }
+        var ayla = team.FirstOrDefault(t => t.Name.Contains("Ayla"));
+        if (ayla is not null)
+        {
+            ayla.Rolle = "Immobilien-Spürnase";
+            ayla.Bio = "Unsere Bürohündin begleitet jeden Termin mit untrüglichem Gespür — für gute Lagen, ehrliche Menschen und den passenden Moment für eine Pause. Sie gehört einfach dazu.";
+            ayla.FotoUrl = "/img/team/ayla.jpg";
+        }
+
+        if (marker is null)
+            db.SiteSettings.Add(new SiteSetting { Key = "design.contentVersion", Value = DesignVersion });
+        else
+            marker.Value = DesignVersion;
     }
 }
