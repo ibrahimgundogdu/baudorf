@@ -20,10 +20,11 @@
 @{ var hero = Model.Sec("hero"); }
 @if (hero is not null)
 {
-    <section class="hx-hero">
-        @if (!string.IsNullOrWhiteSpace(hero.BildUrl))
+    <section class="hx-hero" x-data="{ i: 0, n: 4 }" x-init="setInterval(() => i = (i + 1) % n, 5500)">
+        @{ var heroImgs = new[] { "/img/design/hero1.jpg", "/img/design/hero2.jpg", "/img/design/hero3.jpg", "/img/design/hero4.jpg" }; }
+        @for (var hi = 0; hi < heroImgs.Length; hi++)
         {
-            <img class="hx-hero__bg" src="@hero.BildUrl" alt="" />
+            <img class="hx-hero__bg" :class="{ 'is-on': i === @hi }" src="@heroImgs[hi]" alt="" @(hi == 0 ? "fetchpriority=high" : "loading=lazy") />
         }
         <span class="hx-hero__veil hx-hero__veil--side"></span>
         <span class="hx-hero__veil hx-hero__veil--bottom"></span>
@@ -39,6 +40,12 @@
                 @if (!string.IsNullOrWhiteSpace(hero.CtaText)) { <a class="hx-btn hx-btn--gold" href="@Url(hero.CtaUrl)">@hero.CtaText <span>&rarr;</span></a> }
                 @if (!string.IsNullOrWhiteSpace(hero.Cta2Text)) { <a class="hx-btn hx-btn--outline-light" href="@Url(hero.Cta2Url)">@hero.Cta2Text</a> }
             </div>
+        </div>
+        <div class="hx-hero__dots">
+            @for (var hi = 0; hi < heroImgs.Length; hi++)
+            {
+                <button type="button" :class="{ 'is-on': i === @hi }" @@click="i = @hi" aria-label="Bild @(hi + 1)"></button>
+            }
         </div>
         <div class="hx-hero__scroll"><span>Scrollen</span><span></span></div>
     </section>

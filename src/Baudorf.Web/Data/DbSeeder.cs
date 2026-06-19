@@ -309,7 +309,7 @@ public static class DbSeeder
             db.HomeSections.AddRange(neue);
     }
 
-    private const string DesignVersion = "2";
+    private const string DesignVersion = "4";
 
     /// <summary>
     /// Einmalige Aktualisierung der Startseiten-Inhalte auf den freigegebenen Entwurf.
@@ -336,7 +336,8 @@ public static class DbSeeder
             return s;
         }
 
-        db.HomeSections.AddRange(
+        var sektionen = new List<HomeSection>
+        {
             Sec("hero", 1, "Off-Market-Immobilien · NRW · seit 1994",
                 "Diskret. <em>Exklusiv.</em> Direkt.",
                 "Wir vermitteln Wohn-, Gewerbe- und Kapitalanlageobjekte abseits des öffentlichen Marktes — vertraulich, fundiert und auf Augenhöhe mit Family Offices und institutionellen Investoren.",
@@ -369,10 +370,10 @@ public static class DbSeeder
                 ("Wohnungsgesellschaften", null), ("Bauträger", null), ("Projektentwickler", null)),
             Sec("ueber-uns", 7, "Über uns", "Andrea Krüger", null),
             Sec("zahlen", 8, null, null, null, null, null, null, null,
-                ("30+", "Jahre Erfahrung — seit 1994 am Markt"),
-                ("480 Mio. €", "Transaktionsvolumen begleitet"),
-                ("100 %", "Diskretion — Off-Market als Kernsegment"),
-                ("24 h", "Reaktionszeit auf Anfragen i. d. R.")),
+                ("30<span class=\"hx-unit\">+</span>", "Jahre Erfahrung — seit 1994 am Markt"),
+                ("480<span class=\"hx-unit\"> Mio. €</span>", "Transaktionsvolumen begleitet"),
+                ("100<span class=\"hx-unit\"> %</span>", "Diskretion — Off-Market als Kernsegment"),
+                ("24<span class=\"hx-unit\"> h</span>", "Reaktionszeit auf Anfragen i. d. R.")),
             Sec("testimonial", 9, null,
                 "Family Office · Düsseldorf",
                 "Baudorf hat unsere Transaktion mit einer Diskretion und Sachkenntnis begleitet, wie wir sie selten erlebt haben. Verbindlich, ruhig, auf den Punkt."),
@@ -386,7 +387,41 @@ public static class DbSeeder
             Sec("kontakt", 13, "Kontakt", "Sprechen wir — <em>diskret.</em>",
                 "Ob Verkauf, Investment oder Bewertung — wir melden uns persönlich und vertraulich, in der Regel innerhalb von 24 Stunden.",
                 "Anfrage senden", "/Kontakt")
-        );
+        };
+
+        // Hintergrundbilder aus dem Entwurf.
+        void SetBild(string key, string url)
+        {
+            var s = sektionen.FirstOrDefault(x => x.Key == key);
+            if (s is not null) s.BildUrl = url;
+        }
+        SetBild("philosophie", "/img/design/philo.jpg");
+        SetBild("statement", "/img/design/hero3.jpg");
+        SetBild("kontakt", "/img/design/kontakt.jpg");
+
+        db.HomeSections.AddRange(sektionen);
+
+        // Objekt-Titelbilder aus dem Entwurf (nur wenn das Objekt noch kein Bild hat).
+        var objektBilder = new Dictionary<string, string>
+        {
+            ["faktor-20-7-40-wohneinheiten-kfw40-qng"] = "/img/design/obj1.jpg",
+            ["neubau-senioreneinrichtung-80-plaetze-herne"] = "/img/design/obj2.jpg",
+            ["wohn-geschaeftshaus-wuppertal-zentrum"] = "/img/design/obj3.jpg",
+            ["exklusive-wohnanlage-24-einheiten-duesseldorf"] = "/img/design/obj4.jpg",
+            ["baugrundstueck-projektentwicklung-essen"] = "/img/design/obj5.jpg",
+            ["ferienresort-mittelmeer-bestandsobjekt"] = "/img/design/obj6.jpg"
+        };
+        var objekte = await db.Properties.Include(p => p.Medien)
+            .Where(p => objektBilder.Keys.Contains(p.Slug)).ToListAsync();
+        foreach (var p in objekte)
+        {
+            p.IstFeatured = true; // 6er-Mosaik auf der Startseite wie im Entwurf
+            if (!p.Medien.Any())
+                p.Medien.Add(new PropertyMedia
+                {
+                    Typ = MediaType.Image, Url = objektBilder[p.Slug], IstCover = true, Reihenfolge = 0, Alt = p.Titel
+                });
+        }
 
         // Team-Texte auf Entwurf setzen.
         var team = await db.TeamMembers.OrderBy(t => t.Reihenfolge).ToListAsync();
