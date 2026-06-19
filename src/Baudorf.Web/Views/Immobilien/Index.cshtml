@@ -3,110 +3,132 @@
     ViewData["Title"] = "Immobilien";
     ViewData["MetaDescription"] = "Off-Market-Immobilien, Kapitalanlagen und Investments in NRW — diskret vermittelt von Baudorf Immobilien.";
 
-    string SortLabel(string v) => v switch
+    string BadgeBg(PropertyStatus s) => s switch
     {
-        "preis-auf" => "Preis aufsteigend",
-        "preis-ab" => "Preis absteigend",
-        "flaeche" => "Größte Fläche",
-        _ => "Neueste zuerst"
+        PropertyStatus.Verfuegbar => "#2F6B4F",
+        PropertyStatus.Reserviert => "#96773A",
+        PropertyStatus.Verkauft => "#5C5550",
+        _ => "#181614"
     };
-}
 
-<section class="bd-pagehead">
-    <div class="bd-container">
-        <span class="bd-overline">Portfolio</span>
-        <h1>Immobilien</h1>
-        <p>Ausgewählte Objekte — verfügbar und Off-Market. Vertraulich, kuratiert, für Investoren.</p>
-    </div>
-</section>
-
-<section class="bd-section bd-section--parch bd-section--top">
-    <div class="bd-container">
-        <form class="bd-filter" method="get" asp-action="Index">
-            <div class="bd-filter__field">
-                <label for="f-q">Suche</label>
-                <input id="f-q" type="text" name="q" value="@Model.Filter.Q" placeholder="Titel oder Region" />
-            </div>
-            <div class="bd-filter__field">
-                <label for="f-art">Objektart</label>
-                <select id="f-art" name="art">
-                    <option value="">Alle</option>
-                    @foreach (var k in Enum.GetValues<PropertyKind>())
-                    {
-                        <option value="@((int)k)" selected="@(Model.Filter.Art == k)">@k.Label()</option>
-                    }
-                </select>
-            </div>
-            <div class="bd-filter__field">
-                <label for="f-status">Status</label>
-                <select id="f-status" name="status">
-                    <option value="">Alle</option>
-                    @foreach (var s in Enum.GetValues<PropertyStatus>())
-                    {
-                        <option value="@((int)s)" selected="@(Model.Filter.Status == s)">@s.Label()</option>
-                    }
-                </select>
-            </div>
-            <div class="bd-filter__field">
-                <label for="f-sort">Sortierung</label>
-                <select id="f-sort" name="sort">
-                    @foreach (var v in new[] { "neu", "preis-auf", "preis-ab", "flaeche" })
-                    {
-                        <option value="@v" selected="@(Model.Filter.Sort == v)">@SortLabel(v)</option>
-                    }
-                </select>
-            </div>
-            <button type="submit" class="bd-btn bd-btn--gold bd-btn--sm">Filtern</button>
-        </form>
-
-        <div class="bd-result-meta">
-            <span>@Model.TotalCount Objekt@(Model.TotalCount == 1 ? "" : "e")</span>
-        </div>
-
-        @if (Model.Objekte.Count == 0)
-        {
-            <div class="bd-empty" data-reveal>
-                <p>Keine Objekte gefunden. Passen Sie die Filter an oder sprechen Sie uns vertraulich an.</p>
-                <a class="bd-btn bd-btn--outline" asp-controller="Home" asp-action="Index" asp-fragment="kontakt">Kontakt aufnehmen</a>
-            </div>
-        }
-        else
-        {
-            <div class="bd-objekte">
-                @foreach (var p in Model.Objekte)
-                {
-                    <partial name="_ObjektCard" model="p" />
-                }
-            </div>
-
-            @if (Model.TotalPages > 1)
-            {
-                <nav class="bd-pager" aria-label="Seitennavigation">
-                    @if (Model.HatVorige)
-                    {
-                        <a class="bd-pager__link" asp-action="Index"
-                           asp-all-route-data="@RouteData(Model, Model.Page - 1)">&larr; Zurück</a>
-                    }
-                    <span class="bd-pager__info">Seite @Model.Page von @Model.TotalPages</span>
-                    @if (Model.HatNaechste)
-                    {
-                        <a class="bd-pager__link" asp-action="Index"
-                           asp-all-route-data="@RouteData(Model, Model.Page + 1)">Weiter &rarr;</a>
-                    }
-                </nav>
-            }
-        }
-    </div>
-</section>
-
-@functions {
-    Dictionary<string, string> RouteData(ImmobilienListViewModel m, int page)
+    // Chip-URLs: aktuellen Filter beibehalten, einen Wert überschreiben.
+    string ChipUrl(string key, string? val)
     {
-        var d = new Dictionary<string, string> { ["page"] = page.ToString(), ["sort"] = m.Filter.Sort };
-        if (m.Filter.Art is { } a) d["art"] = ((int)a).ToString();
-        if (m.Filter.Status is { } s) d["status"] = ((int)s).ToString();
-        if (!string.IsNullOrWhiteSpace(m.Filter.Q)) d["q"] = m.Filter.Q;
-        if (m.Filter.PreisMax is { } pm) d["preisMax"] = pm.ToString(System.Globalization.CultureInfo.InvariantCulture);
-        return d;
+        var d = new Dictionary<string, string?>
+        {
+            ["art"] = Model.Filter.Art.HasValue ? ((int)Model.Filter.Art).ToString() : null,
+            ["status"] = Model.Filter.Status.HasValue ? ((int)Model.Filter.Status).ToString() : null,
+            ["q"] = Model.Filter.Q,
+            ["sort"] = Model.Filter.Sort
+        };
+        d[key] = val;
+        var qs = string.Join("&", d.Where(kv => !string.IsNullOrEmpty(kv.Value)).Select(kv => $"{kv.Key}={Uri.EscapeDataString(kv.Value!)}"));
+        return Url.Action("Index") + (qs.Length > 0 ? "?" + qs : "");
     }
 }
+
+<section class="hx-pagehead">
+    <img class="hx-pagehead__emblem" src="~/img/brand/baudorf-emblem-gold.png" alt="" />
+    <div class="hx-wrap">
+        <div class="hx-eyebrow"><span>Immobilien</span></div>
+        <h1>Das <em class="hx-em">Portfolio</em></h1>
+        <p>Ausgewählte Wohn-, Gewerbe- und Kapitalanlageobjekte. Off-Market-Objekte sind sichtbar, ihre Eckdaten jedoch vorgemerkten Investoren vorbehalten.</p>
+    </div>
+</section>
+
+<div class="hx-wrap">
+    <form class="hx-filter" method="get" id="filterForm">
+        <input type="hidden" name="q" value="@Model.Filter.Q" />
+        <div class="hx-filter__fields">
+            <div class="hx-filter__rowf">
+                <span class="hx-filter__lbl">Status</span>
+                <div class="hx-chips">
+                    <a class="hx-chip @(Model.Filter.Status == null ? "is-on" : "")" href="@ChipUrl("status", null)">Alle</a>
+                    @foreach (var s in Enum.GetValues<PropertyStatus>())
+                    {
+                        <a class="hx-chip @(Model.Filter.Status == s ? "is-on" : "")" href="@ChipUrl("status", ((int)s).ToString())">@s.Label()</a>
+                    }
+                </div>
+            </div>
+            <div class="hx-filter__rowf">
+                <span class="hx-filter__lbl">Objektart</span>
+                <div class="hx-chips">
+                    <a class="hx-chip @(Model.Filter.Art == null ? "is-on" : "")" href="@ChipUrl("art", null)">Alle</a>
+                    @foreach (var k in Enum.GetValues<PropertyKind>())
+                    {
+                        <a class="hx-chip @(Model.Filter.Art == k ? "is-on" : "")" href="@ChipUrl("art", ((int)k).ToString())">@k.Label()</a>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="hx-filter__count">
+            <b>@Model.TotalCount</b>
+            <span>von @Model.TotalCount<br>Objekten</span>
+        </div>
+    </form>
+
+    @if (Model.Objekte.Count == 0)
+    {
+        <div class="hx-empty">
+            <p>Keine Objekte gefunden. Passen Sie die Filter an oder sprechen Sie uns vertraulich an.</p>
+            <a class="hx-btn hx-btn--outline-dark" asp-controller="Kontakt" asp-action="Index">Kontakt aufnehmen</a>
+        </div>
+    }
+    else
+    {
+        <div class="hx-list">
+            @foreach (var p in Model.Objekte)
+            {
+                var cover = p.CoverUrl();
+                var locked = p.IstOffMarket;
+                <article class="hx-lcard @(locked ? "is-locked" : "")">
+                    <a class="hx-lcard__media" asp-controller="Immobilien" asp-action="Details" asp-route-slug="@p.Slug">
+                        @if (cover != null)
+                        {
+                            <img src="@cover" alt="@p.Titel" loading="lazy" />
+                        }
+                        else
+                        {
+                            <span class="hx-lcard__ph"><img src="~/img/brand/baudorf-emblem-ink.png" alt="" /></span>
+                        }
+                        <span class="hx-lcard__badge" style="background:@BadgeBg(p.Status)">@p.Status.Label()</span>
+                        <span class="hx-lcard__art">@p.Art.Label()</span>
+                    </a>
+                    <div class="hx-lcard__body">
+                        <span class="hx-lcard__ort">@(string.IsNullOrWhiteSpace(p.Region) ? p.Land : p.Region)</span>
+                        <h3 class="hx-lcard__name"><a asp-controller="Immobilien" asp-action="Details" asp-route-slug="@p.Slug">@p.Titel</a></h3>
+                        <div class="hx-lcard__specs">
+                            @if (p.Wohnflaeche.HasValue) { <span>Wfl. <b>@DisplayHelpers.FlaecheText(p.Wohnflaeche)</b></span> }
+                            @if (p.Grundstuecksflaeche.HasValue) { <span>GF <b>@DisplayHelpers.FlaecheText(p.Grundstuecksflaeche)</b></span> }
+                            @if (p.Baujahr.HasValue) { <span>BJ <b>@p.Baujahr</b></span> }
+                        </div>
+                        <div class="hx-lcard__foot">
+                            @if (locked)
+                            {
+                                <div class="hx-lcard__faktor"><small>Eckdaten</small><b style="filter:blur(6px);user-select:none;color:#8a847d">@(p.Faktor?.ToString() ?? "—")</b></div>
+                                <a class="hx-lcard__lock" asp-area="Identity" asp-page="/Account/Register">Freischalten</a>
+                            }
+                            else
+                            {
+                                @if (p.Faktor.HasValue)
+                                {
+                                    <div class="hx-lcard__faktor"><small>Faktor</small><b>@p.Faktor</b></div>
+                                }
+                                <div class="hx-lcard__preis"><small>Kaufpreis</small><b>@p.PreisText()</b></div>
+                            }
+                        </div>
+                    </div>
+                </article>
+            }
+        </div>
+
+        @if (Model.TotalPages > 1)
+        {
+            <nav class="hx-pager">
+                @if (Model.HatVorige) { <a href="@ChipUrl("page", (Model.Page - 1).ToString())">&larr; Zurück</a> }
+                <span>Seite @Model.Page von @Model.TotalPages</span>
+                @if (Model.HatNaechste) { <a href="@ChipUrl("page", (Model.Page + 1).ToString())">Weiter &rarr;</a> }
+            </nav>
+        }
+    }
+</div>

@@ -5,72 +5,68 @@
     var gesendet = ViewData["Gesendet"] as bool? == true;
 }
 
-<section class="bd-pagehead">
-    <div class="bd-container">
-        <span class="bd-overline bd-overline--light">Kontakt</span>
-        <h1>Sprechen wir über Ihr <em class="bd-italic-accent">Vorhaben.</em></h1>
+<section class="hx-pagehead">
+    <img class="hx-pagehead__emblem" src="~/img/brand/baudorf-emblem-gold.png" alt="" />
+    <div class="hx-wrap">
+        <div class="hx-eyebrow"><span>Kontakt</span></div>
+        <h1>Sprechen wir — <em class="hx-em">diskret.</em></h1>
         <p>Alle Anfragen werden streng vertraulich behandelt. Diskretion ist für uns selbstverständlich.</p>
     </div>
 </section>
 
-<section class="bd-section bd-section--parch bd-section--top">
-    <div class="bd-container bd-kontakt-grid">
-
-        <div class="bd-kontakt-form">
+<div class="hx-wrap">
+    <div class="hx-form-grid">
+        <div>
             @if (gesendet)
             {
-                <div class="bd-thanks" data-reveal>
-                    <span class="bd-thanks__mark">&#10003;</span>
-                    <h2>Vielen Dank für Ihre Nachricht.</h2>
-                    <p>Wir melden uns persönlich und diskret — in der Regel innerhalb von 24 Stunden.</p>
-                    <a class="bd-btn bd-btn--outline" asp-controller="Home" asp-action="Index">Zur Startseite</a>
+                <div class="hx-thanks">
+                    <span class="hx-thanks__mark">&#10003;</span>
+                    <h2 class="hx-h2" style="font-size:28px">Vielen Dank für Ihre Nachricht.</h2>
+                    <p style="color:var(--muted)">Wir melden uns persönlich und diskret — in der Regel innerhalb von 24 Stunden.</p>
+                    <a class="hx-btn hx-btn--outline-dark" asp-controller="Home" asp-action="Index">Zur Startseite</a>
                 </div>
             }
             else
             {
                 @if (!string.IsNullOrWhiteSpace(Model.ObjektTitel))
                 {
-                    <div class="bd-kontakt-objekt">
-                        <span class="bd-overline">Anfrage zum Objekt</span>
+                    <div class="hx-fobjekt">
+                        <div class="hx-eyebrow"><span>Anfrage zum Objekt</span></div>
                         <strong>@Model.ObjektTitel</strong>
                     </div>
                 }
-
                 <form method="post" asp-action="Senden" novalidate>
                     @Html.AntiForgeryToken()
                     <input type="hidden" asp-for="ObjektSlug" />
                     <input type="hidden" asp-for="ObjektTitel" />
+                    <div asp-validation-summary="ModelOnly" class="hx-vsum"></div>
 
-                    <div asp-validation-summary="ModelOnly" class="bd-validation-summary"></div>
-
-                    <div class="bd-form-row">
-                        <div class="bd-form-field">
-                            <label asp-for="Vorname"></label>
+                    <div class="hx-frow">
+                        <div class="hx-field">
+                            <label asp-for="Vorname">Vorname *</label>
                             <input asp-for="Vorname" autocomplete="given-name" />
                             <span asp-validation-for="Vorname"></span>
                         </div>
-                        <div class="bd-form-field">
-                            <label asp-for="Nachname"></label>
+                        <div class="hx-field">
+                            <label asp-for="Nachname">Nachname *</label>
                             <input asp-for="Nachname" autocomplete="family-name" />
                             <span asp-validation-for="Nachname"></span>
                         </div>
                     </div>
-
-                    <div class="bd-form-row">
-                        <div class="bd-form-field">
-                            <label asp-for="Email"></label>
+                    <div class="hx-frow">
+                        <div class="hx-field">
+                            <label asp-for="Email">E-Mail *</label>
                             <input asp-for="Email" type="email" autocomplete="email" />
                             <span asp-validation-for="Email"></span>
                         </div>
-                        <div class="bd-form-field">
-                            <label asp-for="Telefon"></label>
+                        <div class="hx-field">
+                            <label asp-for="Telefon">Telefon</label>
                             <input asp-for="Telefon" type="tel" autocomplete="tel" />
                             <span asp-validation-for="Telefon"></span>
                         </div>
                     </div>
-
-                    <div class="bd-form-field">
-                        <label asp-for="Interesse"></label>
+                    <div class="hx-field">
+                        <label asp-for="Interesse">Ich interessiere mich als</label>
                         <select asp-for="Interesse">
                             @foreach (var t in Enum.GetValues<InterestType>())
                             {
@@ -79,52 +75,50 @@
                         </select>
                         <span asp-validation-for="Interesse"></span>
                     </div>
-
-                    <div class="bd-form-field">
-                        <label asp-for="Nachricht"></label>
+                    <div class="hx-field">
+                        <label asp-for="Nachricht">Ihr Anliegen *</label>
                         <textarea asp-for="Nachricht" rows="6"></textarea>
                         <span asp-validation-for="Nachricht"></span>
                     </div>
 
-                    @* Honeypot: für Menschen unsichtbar, für Bots verführerisch *@
-                    <div class="bd-hp" aria-hidden="true">
+                    <div class="hx-hp" aria-hidden="true">
                         <label for="Website">Website (bitte leer lassen)</label>
                         <input asp-for="Website" tabindex="-1" autocomplete="off" />
                     </div>
 
-                    <div class="bd-form-check">
+                    <div class="hx-check">
                         <input asp-for="DsgvoAkzeptiert" type="checkbox" value="true" />
                         <label asp-for="DsgvoAkzeptiert">
                             Ich habe die <a asp-controller="Legal" asp-action="Datenschutz" target="_blank">Datenschutzerklärung</a>
                             gelesen und stimme der Verarbeitung meiner Daten zur Bearbeitung meiner Anfrage zu. *
                         </label>
                     </div>
-                    <span asp-validation-for="DsgvoAkzeptiert" class="bd-check-error"></span>
+                    <span asp-validation-for="DsgvoAkzeptiert" class="field-validation-error"></span>
 
-                    <button type="submit" class="bd-btn bd-btn--gold">Anfrage senden &rarr;</button>
+                    <div style="margin-top:1.4rem">
+                        <button type="submit" class="hx-btn hx-btn--gold">Anfrage senden &rarr;</button>
+                    </div>
                 </form>
             }
         </div>
 
-        <aside class="bd-kontakt-aside" data-reveal>
-            <div class="bd-aside-card">
-                <h2>Baudorf Immobilien GmbH</h2>
-                <ul class="bd-kontakt__meta">
-                    <li>Auf der Egge 68</li>
-                    <li>42555 Velbert</li>
-                    <li><a href="tel:+4901778387898">0177 – 838 78 98</a></li>
-                    <li><a href="mailto:andrea.krueger@baudorf.de">andrea.krueger@baudorf.de</a></li>
-                    <li>Mo–Fr · 09:00–18:00 Uhr</li>
-                </ul>
-                <div class="bd-kontakt-actions">
-                    <a class="bd-btn bd-btn--outline bd-btn--sm" href="tel:+4901778387898">Anrufen</a>
-                    <a class="bd-btn bd-btn--outline bd-btn--sm" href="https://wa.me/4901778387898" target="_blank" rel="noopener">WhatsApp</a>
-                </div>
-                <p class="bd-aside-card__note">Alle Anfragen werden streng vertraulich behandelt.</p>
+        <aside class="hx-aside-contact">
+            <h2>Baudorf Immobilien GmbH</h2>
+            <ul>
+                <li>Auf der Egge 68</li>
+                <li>42555 Velbert</li>
+                <li><a href="tel:+4901778387898">0177 – 838 78 98</a></li>
+                <li><a href="mailto:andrea.krueger@baudorf.de">andrea.krueger@baudorf.de</a></li>
+                <li>Mo–Fr · 09:00–18:00 Uhr</li>
+            </ul>
+            <div class="hx-aside-actions">
+                <a class="hx-btn hx-btn--outline-dark" href="tel:+4901778387898" style="padding:14px 22px">Anrufen</a>
+                <a class="hx-btn hx-btn--outline-dark" asp-controller="WhatsApp" asp-action="Chat" target="_blank" rel="noopener" style="padding:14px 22px">WhatsApp</a>
             </div>
+            <p style="margin:1.4rem 0 0;font-size:13px;color:var(--muted)">Alle Anfragen werden streng vertraulich behandelt.</p>
         </aside>
     </div>
-</section>
+</div>
 
 @section Scripts {
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
