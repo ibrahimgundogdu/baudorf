@@ -1,0 +1,53 @@
+name: Deploy (VDS / IIS)
+
+# "git push" auf main → der Self-hosted-Runner auf dem VDS baut & deployt automatisch.
+# Manuell auslösbar über den Actions-Tab (workflow_dispatch).
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, windows]
+
+    # >>> Diese zwei Werte ggf. an deinen Server anpassen <<<
+    env:
+      SITE_PATH: 'C:\inetpub\baudorf'   # Physischer Pfad der IIS-Site
+      APP_POOL:  'Baudorf'              # Name des IIS-Anwendungspools
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: .NET-Version prüfen
+        run: dotnet --version
+
+      - name: Publish (Release)
+        run: dotnet publish src/Baudorf.Web/Baudorf.Web.csproj -c Release -o "${{ github.workspace }}\publish"
+
+      - name: App offline schalten
+        shell: pwsh
+        run: |
+          New-Item -Path "$env:SITE_PATH\app_offline.htm" -ItemType File -Force | Out-Null
+          Start-Sleep -Seconds 3
+
+      - name: Dateien synchronisieren (Prod-Config + Uploads bleiben erhalten)
+        shell: pwsh
+        run: |
+          robocopy "${{ github.workspace }}\publish" "$env:SITE_PATH" /MIR /R:3 /W:3 /NFL /NDL /XF app_offline.htm appsettings.Production.json /XD "$env:SITE_PATH\wwwroot\uploads"
+          if ($LASTEXITCODE -ge 8) { Write-Error "robocopy fehlgeschlagen ($LASTEXITCODE)"; exit $LASTEXITCODE }
+          exit 0
+
+      - name: App-Pool neu starten & online schalten
+        shell: pwsh
+        run: |
+          Import-Module WebAdministration
+          $state = (Get-WebAppPoolState -Name $env:APP_POOL -ErrorAction SilentlyContinue).Value
+          if ($state -ne 'Started') { Start-WebAppPool -Name $env:APP_POOL } else { Restart-WebAppPool -Name $env:APP_POOL }
+          Remove-Item "$env:SITE_PATH\app_offline.htm" -Force -ErrorAction SilentlyContinue
