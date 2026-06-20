@@ -1,98 +1,105 @@
-# Deployment — VDS (Windows Server + IIS) über GitHub Actions Self-hosted Runner
+# Deploy — VDS (Windows Server + IIS) · GitHub Actions Self-hosted Runner
 
-Ziel: **`git push` auf `main` → der Server baut und veröffentlicht automatisch.**
-Kein manuelles Kopieren mehr. Der Runner läuft als Windows-Dienst auf dem VDS, holt
-den Code, baut mit `dotnet publish` und kopiert in den IIS-Ordner.
+Amaç: **`main`'e `git push` → sunucu otomatik build alıp yayınlasın.**
+Artık manuel kopyalama yok. Runner, VDS üzerinde bir Windows servisi olarak çalışır;
+kodu çeker, `dotnet publish` ile derler ve IIS klasörüne kopyalar.
 
-Die Pipeline liegt in [.github/workflows/deploy.yml](.github/workflows/deploy.yml).
-Zwei Werte oben in der Datei ggf. anpassen: `SITE_PATH` und `APP_POOL`.
+Pipeline dosyası: [.github/workflows/deploy.yml](.github/workflows/deploy.yml).
+Dosyanın en üstündeki iki değeri gerekirse kendi sunucuna göre düzenle: `SITE_PATH` ve `APP_POOL`.
 
 ---
 
-## A. Einmalige Server-Vorbereitung (auf dem VDS)
+## A. Sunucuda tek seferlik hazırlık (VDS üzerinde)
 
-### 1. .NET 10 installieren
-- **ASP.NET Core 10 Hosting Bundle** (IIS-Modul + Runtime) — Pflicht, damit IIS die App ausführt.
-  Danach `iisreset` ausführen.
-- **.NET 10 SDK** — nötig, weil der Build auf dem Server läuft.
+### 1. .NET 10 kurulumu
+- **ASP.NET Core 10 Hosting Bundle** (IIS modülü + runtime) — zorunlu; IIS'in uygulamayı
+  çalıştırması için gerekir. Kurduktan sonra `iisreset` çalıştır.
+- **.NET 10 SDK** — build sunucuda yapılacağı için gerekli.
 
-Prüfen in PowerShell:
+PowerShell ile doğrula:
 ```powershell
-dotnet --version          # z. B. 10.0.xxx
-dotnet --list-runtimes    # muss Microsoft.AspNetCore.App 10.x enthalten
+dotnet --version          # örn. 10.0.xxx
+dotnet --list-runtimes    # Microsoft.AspNetCore.App 10.x içermeli
 ```
 
-### 2. IIS-Site + Anwendungspool anlegen
+### 2. IIS sitesi + uygulama havuzu (app pool) oluştur
 ```powershell
 Import-Module WebAdministration
 $site = "Baudorf"
 $path = "C:\inetpub\baudorf"
 New-Item -ItemType Directory -Force -Path $path | Out-Null
 
-# App-Pool: "No Managed Code" (ASP.NET Core läuft Out-of-Process/InProcess über das ANCM-Modul)
+# App pool: "No Managed Code" (ASP.NET Core, ANCM modülü üzerinden çalışır)
 New-WebAppPool -Name $site
 Set-ItemProperty IIS:\AppPools\$site -Name managedRuntimeVersion -Value ""
 Set-ItemProperty IIS:\AppPools\$site -Name startMode -Value "AlwaysRunning"
 
-# Site (Port 80; HTTPS/Domain unten)
+# Site (Port 80; HTTPS/domain aşağıda)
 New-Website -Name $site -PhysicalPath $path -ApplicationPool $site -Port 80
 ```
-Domain/HTTPS: später Binding für `deine-domain.de` hinzufügen und Zertifikat
-(z. B. win-acme / Let's Encrypt) einrichten.
+Domain/HTTPS: sonradan `senin-domainin.de` için binding ekle ve sertifika
+(örn. win-acme / Let's Encrypt) kur.
 
-### 3. Produktions-Konfiguration anlegen (bleibt auf dem Server, wird NIE überschrieben)
-Datei `C:\inetpub\baudorf\appsettings.Production.json` anlegen:
+### 3. Production yapılandırması (sunucuda kalır, ASLA üzerine yazılmaz)
+`C:\inetpub\baudorf\appsettings.Production.json` dosyasını oluştur:
 ```json
 {
   "ConnectionStrings": {
     "DefaultConnection": "Data Source=...;Initial Catalog=BaudorfWebDB;User ID=...;Password=...;TrustServerCertificate=True"
   },
-  "Seed": { "AdminEmail": "andrea.krueger@baudorf.de", "AdminPassword": "<sicheres-Passwort>" }
+  "Seed": { "AdminEmail": "andrea.krueger@baudorf.de", "AdminPassword": "<guclu-parola>" }
 }
 ```
-> Diese Datei ist in der Pipeline von der Synchronisierung **ausgeschlossen** (`/XF`),
-> bleibt also bei jedem Deploy erhalten. Secrets gehören **nicht** ins Git-Repo.
+> Bu dosya pipeline'da senkronizasyondan **hariç tutulur** (`/XF`), yani her deploy'da
+> korunur. Secret'lar **kesinlikle** Git deposuna girmez.
 
-ASP.NET Core nutzt im IIS automatisch `ASPNETCORE_ENVIRONMENT=Production`.
+IIS altında ASP.NET Core otomatik olarak `ASPNETCORE_ENVIRONMENT=Production` kullanır.
 
-### 4. Ordnerrechte
-Der App-Pool braucht Lese-/Schreibrechte (u. a. für `wwwroot/uploads`):
+### 4. Klasör izinleri
+App pool'un (özellikle `wwwroot/uploads` için) okuma/yazma iznine ihtiyacı var:
 ```powershell
 icacls "C:\inetpub\baudorf" /grant "IIS AppPool\Baudorf:(OI)(CI)M" /T
 ```
 
-### 5. GitHub Actions Self-hosted Runner installieren
+### 5. GitHub Actions Self-hosted Runner kurulumu
 GitHub → Repo **Settings → Actions → Runners → New self-hosted runner → Windows**.
-Den dort gezeigten Befehlen folgen (Download + `config.cmd`). Wichtig:
-- Beim `config.cmd` als **Labels** `windows` ergänzen (das nutzt die Pipeline:
+Orada gösterilen komutları uygula (indir + `config.cmd`). Önemli noktalar:
+- `config.cmd` sırasında **label** olarak `windows` ekle (pipeline bunu kullanıyor:
   `runs-on: [self-hosted, windows]`).
-- Als **Dienst** installieren, damit er dauerhaft läuft:
+- **Servis** olarak kur ki sürekli çalışsın:
   ```powershell
-  .\svc.sh install      # bzw. unter Windows: .\svc install  (siehe Runner-Anleitung)
+  .\svc install
   .\svc start
   ```
-- Der Runner-Dienst muss IIS verwalten dürfen (App-Pool neu starten). Empfehlung:
-  Dienstkonto mit lokalen Admin-Rechten verwenden (oder LocalSystem).
+- Runner servisi IIS'i yönetebilmeli (app pool restart). Öneri: servis hesabı olarak
+  yerel **admin** haklı bir hesap kullan (veya LocalSystem).
 
 ---
 
-## B. Ab jetzt: deployen
+## B. Bundan sonra deploy
 
 ```bash
 git push origin main
 ```
-→ GitHub triggert den Runner → `dotnet publish` → `app_offline.htm` → Dateien
-synchronisieren (Prod-Config & Uploads bleiben) → App-Pool recyceln → online.
+→ GitHub runner'ı tetikler → `dotnet publish` → `app_offline.htm` → dosyalar
+senkronize edilir (Prod config & uploads korunur) → app pool recycle → site online.
 
-Status sichtbar im GitHub **Actions**-Tab. Manuell auslösbar dort über **Run workflow**.
+Durumu GitHub **Actions** sekmesinden izlersin. Elle tetiklemek için orada **Run workflow**.
 
 ---
 
-## C. Was die Pipeline bewusst NICHT anfasst
-- `appsettings.Production.json` (deine Server-Secrets)
-- `wwwroot/uploads` (vom Admin hochgeladene Medien)
+## C. Pipeline'ın bilerek dokunmadıkları
+- `appsettings.Production.json` (sunucudaki secret'ların)
+- `wwwroot/uploads` (admin'den yüklenen medya)
 
-## D. Erststart
-Beim ersten Start wendet die App automatisch die EF-Core-Migrationen an und seedet
-Rollen/Admin/Inhalte (idempotent). Stelle sicher, dass die Produktions-Datenbank
-erreichbar ist und der Connection String in `appsettings.Production.json` stimmt.
+## D. İlk çalıştırma
+Uygulama ilk açılışta EF Core migration'larını otomatik uygular ve
+rolleri/admin'i/içeriği seed'ler (idempotent). Production veritabanının erişilebilir
+ve `appsettings.Production.json` içindeki connection string'in doğru olduğundan emin ol.
+
+---
+
+## E. Workflow'da düzenleyebileceğin iki değer
+[.github/workflows/deploy.yml](.github/workflows/deploy.yml) en üstte:
+- `SITE_PATH` — IIS sitesinin fiziksel yolu (varsayılan `C:\inetpub\baudorf`)
+- `APP_POOL` — IIS uygulama havuzu adı (varsayılan `Baudorf`)
