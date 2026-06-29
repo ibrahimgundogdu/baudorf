@@ -46,13 +46,15 @@
 
     <fieldset>
         <legend>Titelbild</legend>
-        @if (!string.IsNullOrWhiteSpace(Model.CoverUrl))
-        {
-            <img class="bd-thumb" style="width:160px;height:auto;" src="@Model.CoverUrl" alt="" />
-        }
+        <img id="blogCoverPreview" class="bd-thumb" style="width:160px;height:auto;display:@(string.IsNullOrWhiteSpace(Model.CoverUrl) ? "none" : "block");margin-bottom:.6rem;" src="@Model.CoverUrl" alt="" />
+        <input type="hidden" asp-for="CoverUrl" id="blogCoverUrl" />
         <div class="bd-form-field">
-            <label>Bild hochladen (ersetzt vorhandenes)</label>
-            <input type="file" name="cover" accept="image/*" />
+            <label>Bild</label>
+            <div style="display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;">
+                <button type="button" class="bd-btn bd-btn--plain bd-btn--xs" data-media-pick data-media-target="#blogCoverUrl" data-media-preview="#blogCoverPreview">Aus Mediathek wählen</button>
+                <span class="bd-muted">oder hochladen:</span>
+                <input type="file" name="cover" accept="image/*" />
+            </div>
             <span asp-validation-for="CoverUrl"></span>
         </div>
     </fieldset>

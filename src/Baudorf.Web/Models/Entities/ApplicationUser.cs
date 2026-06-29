@@ -17,6 +17,9 @@ public class ApplicationUser : IdentityUser
     /// <summary>Beruf des Interessenten.</summary>
     [MaxLength(120)] public string? Beruf { get; set; }
 
+    /// <summary>Investorentyp (Family Office, Institutioneller Investor, Privatinvestor …).</summary>
+    [MaxLength(80)] public string? Investorentyp { get; set; }
+
     /// <summary>Begründung: Warum möchte die Person Zugang? (Hilft bei der Freigabe-Entscheidung.)</summary>
     [MaxLength(2000)] public string? Registrierungsgrund { get; set; }
 

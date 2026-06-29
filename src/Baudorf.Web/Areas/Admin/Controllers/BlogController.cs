@@ -9,7 +9,7 @@ namespace Baudorf.Web.Areas.Admin.Controllers;
 
 [Area("Admin")]
 [Authorize(Policy = "AdminArea")]
-public class BlogController(ApplicationDbContext db, IStorageService storage) : Controller
+public class BlogController(ApplicationDbContext db, IStorageService storage, IMediaLibrary media) : Controller
 {
     public async Task<IActionResult> Index()
     {
@@ -90,14 +90,14 @@ public class BlogController(ApplicationDbContext db, IStorageService storage) : 
             await db.BlogPosts.AnyAsync(b => b.Slug == model.Slug && b.Id != model.Id))
             ModelState.AddModelError(nameof(BlogPost.Slug), "Dieser Slug ist bereits vergeben.");
 
-        model.CoverUrl = existingCover;
+        // CoverUrl ist bereits aus dem Formular gebunden (Bestand oder aus der Mediathek gewählt).
+        if (string.IsNullOrWhiteSpace(model.CoverUrl)) model.CoverUrl = existingCover;
         if (cover is { Length: > 0 })
         {
             if (UploadValidation.IsValidImage(cover.FileName, cover.ContentType, cover.Length, out var err))
             {
-                if (!string.IsNullOrWhiteSpace(existingCover)) await storage.DeleteAsync(existingCover);
-                await using var stream = cover.OpenReadStream();
-                model.CoverUrl = await storage.SaveAsync(stream, cover.FileName, cover.ContentType);
+                // Kein Löschen der alten Datei: sie bleibt in der Mediathek wiederverwendbar.
+                model.CoverUrl = (await media.SaveAsync(cover)).Url;
             }
             else
             {

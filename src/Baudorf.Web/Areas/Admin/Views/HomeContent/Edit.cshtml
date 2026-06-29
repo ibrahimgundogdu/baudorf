@@ -37,11 +37,13 @@
         </div>
         <div class="bd-form-field">
             <label>Bild (optional)</label>
-            @if (!string.IsNullOrWhiteSpace(Model.BildUrl))
-            {
-                <img class="bd-thumb" style="width:140px;height:auto;display:block;margin-bottom:0.5rem;" src="@Model.BildUrl" alt="" />
-            }
-            <input type="file" name="bild" accept="image/*" />
+            <img id="secBildPreview" class="bd-thumb" style="width:140px;height:auto;display:@(string.IsNullOrWhiteSpace(Model.BildUrl) ? "none" : "block");margin-bottom:0.5rem;" src="@Model.BildUrl" alt="" />
+            <input type="hidden" asp-for="BildUrl" id="secBildUrl" />
+            <div style="display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;">
+                <button type="button" class="bd-btn bd-btn--plain bd-btn--xs" data-media-pick data-media-target="#secBildUrl" data-media-preview="#secBildPreview">Aus Mediathek wählen</button>
+                <span class="bd-muted">oder hochladen:</span>
+                <input type="file" name="bild" accept="image/*" />
+            </div>
         </div>
     </fieldset>
     <div class="bd-form-actions">

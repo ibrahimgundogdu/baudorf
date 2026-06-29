@@ -461,14 +461,17 @@ h1, h2, h3 {
 .bd-nav.is-scrolled .bd-nav__brand img { height: 32px; }
 .bd-nav__phone { display: inline-flex; align-items: center; gap: 8px; font: 700 13px/1 var(--font); letter-spacing: .04em; color: var(--accent-dk); white-space: nowrap; transition: .3s; }
 .bd-nav__phone:hover { color: var(--accent); }
-/* Telefon nur auf sehr breiten Schirmen exakt mittig (sonst kollidiert die absolute Zentrierung mit den Links). */
-@media (min-width: 1700px) { .bd-nav__phone { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); } }
+/* Telefon bleibt im Flow (zwischen Logo und Links) — kollidiert nie mit den Navigationslinks,
+   auch nicht im eingeloggten Zustand mit zusätzlichen Einträgen. */
 .bd-nav__links { display: flex; align-items: center; gap: 26px; }
 .bd-nav__links > a { font: 700 12px/1 var(--font); letter-spacing: .1em; text-transform: uppercase; color: var(--ink); padding: 8px 0; border-bottom: 1px solid transparent; transition: .3s; white-space: nowrap; }
 .bd-nav__links > a:hover { color: var(--accent); border-bottom-color: var(--accent); }
 .bd-nav__login { display: inline-flex !important; align-items: center; gap: 7px; }
 .bd-nav__register { font-size: 11px !important; letter-spacing: .14em !important; color: var(--on-accent) !important; background: var(--bd-gold); padding: 13px 24px !important; border-bottom: none !important; transition: .35s; }
 .bd-nav__register:hover { background: var(--accent-dk); color: #fff !important; border-bottom-color: transparent !important; }
+.bd-nav__user { display: inline-flex !important; align-items: center; gap: 7px; font: 700 12px/1 var(--font); letter-spacing: .08em; text-transform: uppercase; color: var(--ink); white-space: nowrap; max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
+.bd-nav__logout { display: inline-flex; margin: 0; }
+.bd-nav__logout button { border: 0; cursor: pointer; }
 .bd-nav__burger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 6px; background: none; border: 0; }
 .bd-nav__burger span { width: 26px; height: 1.5px; background: var(--ink); display: block; }
 .bd-nav__burger span:last-child { width: 18px; background: var(--accent); }
@@ -541,7 +544,7 @@ h1, h2, h3 {
 /* ==========================================================================
    Cookie-Consent
    ========================================================================== */
-.bd-cc { position: fixed; left: clamp(16px,3vw,28px); bottom: clamp(16px,3vw,28px); z-index: 150; width: min(440px, calc(100vw - 32px)); }
+.bd-cc { position: fixed; left: clamp(16px,3vw,28px); bottom: clamp(16px,3vw,28px); z-index: 150; width: min(620px, calc(100vw - 32px)); }
 .bd-cc[hidden] { display: none; }
 .bd-cc__card { background: var(--white); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 24px 60px -20px rgba(12,12,12,.4); padding: 26px 26px 22px; }
 .bd-cc__title { margin: 0 0 10px; font: 600 18px/1.3 var(--font); color: var(--ink); }

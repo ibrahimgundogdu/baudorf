@@ -27,6 +27,7 @@ builder.Services
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders()
     .AddErrorDescriber<GermanIdentityErrorDescriber>()
+    .AddClaimsPrincipalFactory<AdditionalUserClaimsPrincipalFactory>()
     .AddDefaultUI();
 
 // Login-Protokoll: bei jeder Anmeldung einen LoginEvent speichern.

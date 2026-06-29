@@ -10,7 +10,7 @@ namespace Baudorf.Web.Areas.Admin.Controllers;
 
 [Area("Admin")]
 [Authorize(Policy = "AdminArea")]
-public class PropertiesController(ApplicationDbContext db, IStorageService storage) : Controller
+public class PropertiesController(ApplicationDbContext db, IStorageService storage, IMediaLibrary media) : Controller
 {
     public async Task<IActionResult> Index(string? q)
     {
@@ -118,8 +118,7 @@ public class PropertiesController(ApplicationDbContext db, IStorageService stora
                 TempData["Error"] = err;
                 continue;
             }
-            await using var stream = file.OpenReadStream();
-            var url = await storage.SaveAsync(stream, file.FileName, file.ContentType);
+            var url = (await media.SaveAsync(file)).Url;
             p.Medien.Add(new PropertyMedia
             {
                 Typ = MediaType.Image,

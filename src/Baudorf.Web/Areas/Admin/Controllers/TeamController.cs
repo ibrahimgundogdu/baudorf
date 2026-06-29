@@ -9,7 +9,7 @@ namespace Baudorf.Web.Areas.Admin.Controllers;
 
 [Area("Admin")]
 [Authorize(Policy = "AdminArea")]
-public class TeamController(ApplicationDbContext db, IStorageService storage) : Controller
+public class TeamController(ApplicationDbContext db, IMediaLibrary media) : Controller
 {
     public async Task<IActionResult> Index()
     {
@@ -70,14 +70,13 @@ public class TeamController(ApplicationDbContext db, IStorageService storage) : 
 
     private async Task ProcessPhotoAsync(TeamMember model, IFormFile? foto, string? existing)
     {
-        model.FotoUrl = existing;
+        // FotoUrl ist bereits aus dem Formular gebunden (Bestand oder aus der Mediathek gewählt).
+        if (string.IsNullOrWhiteSpace(model.FotoUrl)) model.FotoUrl = existing;
         if (foto is { Length: > 0 })
         {
             if (UploadValidation.IsValidImage(foto.FileName, foto.ContentType, foto.Length, out var err))
             {
-                if (!string.IsNullOrWhiteSpace(existing)) await storage.DeleteAsync(existing);
-                await using var stream = foto.OpenReadStream();
-                model.FotoUrl = await storage.SaveAsync(stream, foto.FileName, foto.ContentType);
+                model.FotoUrl = (await media.SaveAsync(foto)).Url;
             }
             else ModelState.AddModelError("foto", err!);
         }

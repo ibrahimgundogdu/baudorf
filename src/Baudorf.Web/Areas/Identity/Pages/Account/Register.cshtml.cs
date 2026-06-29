@@ -27,10 +27,15 @@ public class RegisterModel(
 
     public class InputModel
     {
-        [Required(ErrorMessage = "Bitte geben Sie Ihren Namen ein.")]
-        [Display(Name = "Name")]
-        [StringLength(120, ErrorMessage = "Der Name darf höchstens {1} Zeichen lang sein.")]
-        public string AnzeigeName { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Bitte geben Sie Ihren Vornamen ein.")]
+        [Display(Name = "Vorname")]
+        [StringLength(80)]
+        public string Vorname { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Bitte geben Sie Ihren Nachnamen ein.")]
+        [Display(Name = "Nachname")]
+        [StringLength(80)]
+        public string Nachname { get; set; } = string.Empty;
 
         [Display(Name = "Firma (optional)")]
         [StringLength(160)]
@@ -45,6 +50,10 @@ public class RegisterModel(
         [Phone(ErrorMessage = "Bitte geben Sie eine gültige Telefonnummer ein.")]
         [Display(Name = "Telefon")]
         public string Telefon { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Bitte wählen Sie Ihren Investorentyp.")]
+        [Display(Name = "Investorentyp")]
+        public string Investorentyp { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Bitte geben Sie Ihren Beruf an.")]
         [StringLength(120)]
@@ -103,9 +112,10 @@ public class RegisterModel(
             UserName = Input.Email,
             Email = Input.Email,
             PhoneNumber = Input.Telefon.Trim(),
-            AnzeigeName = Input.AnzeigeName.Trim(),
+            AnzeigeName = $"{Input.Vorname.Trim()} {Input.Nachname.Trim()}".Trim(),
             Firma = string.IsNullOrWhiteSpace(Input.Firma) ? null : Input.Firma.Trim(),
             Beruf = Input.Beruf.Trim(),
+            Investorentyp = Input.Investorentyp.Trim(),
             Registrierungsgrund = Input.Registrierungsgrund.Trim(),
             AgbAkzeptiertAm = DateTime.UtcNow,
             IstFreigegeben = false,

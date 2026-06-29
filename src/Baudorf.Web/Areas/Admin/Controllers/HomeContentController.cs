@@ -9,7 +9,7 @@ namespace Baudorf.Web.Areas.Admin.Controllers;
 
 [Area("Admin")]
 [Authorize(Policy = "AdminArea")]
-public class HomeContentController(ApplicationDbContext db, IStorageService storage) : Controller
+public class HomeContentController(ApplicationDbContext db, IMediaLibrary media) : Controller
 {
     public async Task<IActionResult> Index()
     {
@@ -40,13 +40,15 @@ public class HomeContentController(ApplicationDbContext db, IStorageService stor
         s.Cta2Text = model.Cta2Text; s.Cta2Url = model.Cta2Url;
         s.Reihenfolge = model.Reihenfolge; s.IstSichtbar = model.IstSichtbar;
 
+        // BildUrl aus dem Formular (Bestand oder aus der Mediathek gewählt).
+        if (!string.IsNullOrWhiteSpace(model.BildUrl)) s.BildUrl = model.BildUrl;
+
         if (bild is { Length: > 0 })
         {
             if (UploadValidation.IsValidImage(bild.FileName, bild.ContentType, bild.Length, out var err))
             {
-                if (!string.IsNullOrWhiteSpace(s.BildUrl)) await storage.DeleteAsync(s.BildUrl);
-                await using var stream = bild.OpenReadStream();
-                s.BildUrl = await storage.SaveAsync(stream, bild.FileName, bild.ContentType);
+                // Kein Löschen: Datei bleibt in der Mediathek wiederverwendbar.
+                s.BildUrl = (await media.SaveAsync(bild)).Url;
             }
             else
             {

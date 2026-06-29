@@ -40,13 +40,15 @@
 
     <fieldset>
         <legend>Foto</legend>
-        @if (!string.IsNullOrWhiteSpace(Model.FotoUrl))
-        {
-            <img class="bd-thumb" style="width:120px;height:auto;" src="@Model.FotoUrl" alt="" />
-        }
+        <img id="teamFotoPreview" class="bd-thumb" style="width:120px;height:auto;display:@(string.IsNullOrWhiteSpace(Model.FotoUrl) ? "none" : "block");margin-bottom:.6rem;" src="@Model.FotoUrl" alt="" />
+        <input type="hidden" asp-for="FotoUrl" id="teamFotoUrl" />
         <div class="bd-form-field">
-            <label>Foto hochladen</label>
-            <input type="file" name="foto" accept="image/*" />
+            <label>Foto</label>
+            <div style="display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;">
+                <button type="button" class="bd-btn bd-btn--plain bd-btn--xs" data-media-pick data-media-target="#teamFotoUrl" data-media-preview="#teamFotoPreview">Aus Mediathek wählen</button>
+                <span class="bd-muted">oder hochladen:</span>
+                <input type="file" name="foto" accept="image/*" />
+            </div>
         </div>
     </fieldset>
 

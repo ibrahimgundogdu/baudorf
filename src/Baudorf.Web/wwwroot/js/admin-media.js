@@ -79,6 +79,18 @@
     }
 
     window.BaudorfMedia = { open, close };
+
+    // Generische Feld-Picker: Button [data-media-pick] setzt ein Ziel-Input + optionale Vorschau.
+    document.querySelectorAll("[data-media-pick]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const target = btn.dataset.mediaTarget ? document.querySelector(btn.dataset.mediaTarget) : null;
+        const preview = btn.dataset.mediaPreview ? document.querySelector(btn.dataset.mediaPreview) : null;
+        open((url) => {
+          if (target) target.value = url;
+          if (preview) { preview.src = url; preview.style.display = "block"; }
+        });
+      });
+    });
   }
 
   // ---------- WYSIWYG (Quill) ----------

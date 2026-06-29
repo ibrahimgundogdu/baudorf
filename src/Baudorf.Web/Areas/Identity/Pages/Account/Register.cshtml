@@ -1,99 +1,125 @@
 @page
 @model RegisterModel
 @{
-    ViewData["Title"] = "Registrieren";
-    ViewData["MetaDescription"] = "Registrieren Sie sich für den diskreten Zugang zu Off-Market-Immobilien von Baudorf.";
+    ViewData["Title"] = "Investoren-Zugang beantragen";
+    ViewData["MetaDescription"] = "Beantragen Sie den vertraulichen Investoren-Zugang zu den Off-Market-Objekten von Baudorf Immobilien.";
 }
 
-<section class="hx-pagehead">
-    <img class="hx-pagehead__emblem" src="~/img/brand/baudorf-emblem-gold.png" alt="" />
-    <div class="hx-wrap">
-        <div class="hx-eyebrow"><span>Mein Konto</span></div>
-        <h1>Diskreter <em class="hx-em">Zugang.</em></h1>
-        <p>Registrieren Sie sich für den vertraulichen Zugang zu unseren Off-Market-Objekten. Nach einer kurzen Prüfung durch unser Team werden Sie freigeschaltet.</p>
+<section class="hx-authsplit">
+    <div class="hx-authsplit__media">
+        <img src="~/img/design/hero2.jpg" alt="" />
+        <span class="hx-authsplit__veil"></span>
+        <img class="hx-authsplit__emblem" src="~/img/brand/baudorf-emblem-cream.png" alt="" />
+        <div class="hx-authsplit__caption">
+            <div class="hx-eyebrow hx-eyebrow--light"><span>Vorgemerkte Investoren</span></div>
+            <h2>Diskretion<br /><em class="hx-em">durch Vormerkung.</em></h2>
+            <ol class="hx-authsteps">
+                <li><span class="hx-authsteps__no">1</span><span>Antrag stellen — wir prüfen Ihr Investitionsprofil.</span></li>
+                <li><span class="hx-authsteps__no">2</span><span>Persönliche Freischaltung durch Andrea Krüger.</span></li>
+                <li><span class="hx-authsteps__no">3</span><span>Voller Zugang zu Off-Market-Objekten &amp; Kennzahlen.</span></li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="hx-authsplit__panel">
+        <div class="hx-authsplit__inner">
+            <h1>Investoren-Zugang beantragen</h1>
+            <p class="hx-authsplit__sub">Der Zugang ist vorgemerkten Investoren vorbehalten und wird nach persönlicher Prüfung freigeschaltet.</p>
+
+            <form method="post" class="hx-authform">
+                <div asp-validation-summary="ModelOnly" class="hx-vsum"></div>
+
+                <div class="hx-authrow">
+                    <label class="hx-authfield">
+                        <span class="hx-authlabel">Vorname *</span>
+                        <input asp-for="Input.Vorname" autocomplete="given-name" />
+                        <span asp-validation-for="Input.Vorname"></span>
+                    </label>
+                    <label class="hx-authfield">
+                        <span class="hx-authlabel">Nachname *</span>
+                        <input asp-for="Input.Nachname" autocomplete="family-name" />
+                        <span asp-validation-for="Input.Nachname"></span>
+                    </label>
+                </div>
+
+                <div class="hx-authrow">
+                    <label class="hx-authfield">
+                        <span class="hx-authlabel">Firma</span>
+                        <input asp-for="Input.Firma" autocomplete="organization" placeholder="Optional" />
+                        <span asp-validation-for="Input.Firma"></span>
+                    </label>
+                    <label class="hx-authfield">
+                        <span class="hx-authlabel">Telefon *</span>
+                        <input asp-for="Input.Telefon" type="tel" autocomplete="tel" placeholder="+49 …" />
+                        <span asp-validation-for="Input.Telefon"></span>
+                    </label>
+                </div>
+
+                <label class="hx-authfield">
+                    <span class="hx-authlabel">E-Mail *</span>
+                    <input asp-for="Input.Email" type="email" autocomplete="username" placeholder="name@beispiel.de" />
+                    <span asp-validation-for="Input.Email"></span>
+                </label>
+
+                <label class="hx-authfield">
+                    <span class="hx-authlabel">Investorentyp *</span>
+                    <select asp-for="Input.Investorentyp">
+                        <option value="">Bitte wählen …</option>
+                        <option>Family Office</option>
+                        <option>Institutioneller Investor</option>
+                        <option>Privatinvestor</option>
+                        <option>Wohnungsgesellschaft</option>
+                        <option>Bauträger / Projektentwickler</option>
+                        <option>Sonstiges</option>
+                    </select>
+                    <span asp-validation-for="Input.Investorentyp"></span>
+                </label>
+
+                <label class="hx-authfield">
+                    <span class="hx-authlabel">Beruf *</span>
+                    <input asp-for="Input.Beruf" autocomplete="organization-title" placeholder="z. B. Geschäftsführer, Privatinvestor" />
+                    <span asp-validation-for="Input.Beruf"></span>
+                </label>
+
+                <label class="hx-authfield">
+                    <span class="hx-authlabel">Warum möchten Sie sich registrieren? *</span>
+                    <textarea asp-for="Input.Registrierungsgrund" rows="3" placeholder="Kurze Beschreibung Ihres Interesses — das hilft uns bei der Freigabe."></textarea>
+                    <span asp-validation-for="Input.Registrierungsgrund"></span>
+                </label>
+
+                <div class="hx-authrow">
+                    <label class="hx-authfield">
+                        <span class="hx-authlabel">Passwort *</span>
+                        <input asp-for="Input.Password" autocomplete="new-password" placeholder="Mind. 8 Zeichen" />
+                        <span asp-validation-for="Input.Password"></span>
+                    </label>
+                    <label class="hx-authfield">
+                        <span class="hx-authlabel">Passwort bestätigen *</span>
+                        <input asp-for="Input.ConfirmPassword" autocomplete="new-password" placeholder="••••••••" />
+                        <span asp-validation-for="Input.ConfirmPassword"></span>
+                    </label>
+                </div>
+
+                <label class="hx-authcheck">
+                    <input asp-for="Input.AgbAkzeptiert" type="checkbox" value="true" />
+                    <span>Ich akzeptiere die <a asp-controller="Legal" asp-action="Agb" target="_blank">AGB</a> und die <a asp-controller="Legal" asp-action="Datenschutz" target="_blank">Datenschutzerklärung</a>. *</span>
+                </label>
+                <span asp-validation-for="Input.AgbAkzeptiert" class="field-validation-error"></span>
+
+                @if (Model.TurnstileSiteKey is not null)
+                {
+                    <div class="cf-turnstile" data-sitekey="@Model.TurnstileSiteKey" style="margin-top:1.4rem"></div>
+                }
+
+                <button type="submit" class="hx-authsubmit">Zugang beantragen &rarr;</button>
+            </form>
+
+            <div class="hx-authsplit__alt">
+                Bereits vorgemerkt? <a asp-area="Identity" asp-page="/Account/Login">Anmelden &rarr;</a>
+            </div>
+        </div>
     </div>
 </section>
-
-<div class="hx-wrap">
-    <div class="hx-auth">
-        <form id="registerForm" method="post">
-            <div asp-validation-summary="ModelOnly" class="hx-vsum"></div>
-
-            <div class="hx-frow">
-                <div class="hx-field">
-                    <label asp-for="Input.AnzeigeName">Name *</label>
-                    <input asp-for="Input.AnzeigeName" autocomplete="name" aria-required="true" placeholder="Vor- und Nachname" />
-                    <span asp-validation-for="Input.AnzeigeName"></span>
-                </div>
-                <div class="hx-field">
-                    <label asp-for="Input.Firma">Firma</label>
-                    <input asp-for="Input.Firma" autocomplete="organization" placeholder="Optional" />
-                    <span asp-validation-for="Input.Firma"></span>
-                </div>
-            </div>
-
-            <div class="hx-frow">
-                <div class="hx-field">
-                    <label asp-for="Input.Email">E-Mail *</label>
-                    <input asp-for="Input.Email" type="email" autocomplete="username" aria-required="true" placeholder="name@beispiel.de" />
-                    <span asp-validation-for="Input.Email"></span>
-                </div>
-                <div class="hx-field">
-                    <label asp-for="Input.Telefon">Telefon *</label>
-                    <input asp-for="Input.Telefon" type="tel" autocomplete="tel" aria-required="true" placeholder="+49 …" />
-                    <span asp-validation-for="Input.Telefon"></span>
-                </div>
-            </div>
-
-            <div class="hx-field">
-                <label asp-for="Input.Beruf">Beruf *</label>
-                <input asp-for="Input.Beruf" autocomplete="organization-title" aria-required="true" placeholder="z. B. Geschäftsführer, Family Office, Privatinvestor" />
-                <span asp-validation-for="Input.Beruf"></span>
-            </div>
-
-            <div class="hx-field">
-                <label asp-for="Input.Registrierungsgrund">Warum möchten Sie sich registrieren? *</label>
-                <textarea asp-for="Input.Registrierungsgrund" rows="4" aria-required="true" placeholder="Kurze Beschreibung Ihres Interesses — das hilft uns bei der Freigabe."></textarea>
-                <span asp-validation-for="Input.Registrierungsgrund"></span>
-            </div>
-
-            <div class="hx-frow">
-                <div class="hx-field">
-                    <label asp-for="Input.Password">Passwort *</label>
-                    <input asp-for="Input.Password" autocomplete="new-password" aria-required="true" placeholder="Mind. 8 Zeichen" />
-                    <span asp-validation-for="Input.Password"></span>
-                </div>
-                <div class="hx-field">
-                    <label asp-for="Input.ConfirmPassword">Passwort bestätigen *</label>
-                    <input asp-for="Input.ConfirmPassword" autocomplete="new-password" aria-required="true" placeholder="••••••••" />
-                    <span asp-validation-for="Input.ConfirmPassword"></span>
-                </div>
-            </div>
-
-            <div class="hx-check">
-                <input asp-for="Input.AgbAkzeptiert" type="checkbox" value="true" />
-                <label asp-for="Input.AgbAkzeptiert">
-                    Ich akzeptiere die <a asp-controller="Legal" asp-action="Agb" target="_blank">AGB</a>
-                    und die <a asp-controller="Legal" asp-action="Datenschutz" target="_blank">Datenschutzerklärung</a>. *
-                </label>
-            </div>
-            <span asp-validation-for="Input.AgbAkzeptiert" class="field-validation-error"></span>
-
-            @if (Model.TurnstileSiteKey is not null)
-            {
-                <div class="cf-turnstile" data-sitekey="@Model.TurnstileSiteKey" style="margin-top:1.2rem"></div>
-            }
-
-            <div style="margin-top:1.4rem">
-                <button type="submit" class="hx-btn hx-btn--gold">Registrieren &rarr;</button>
-            </div>
-        </form>
-
-        <p class="hx-auth__alt">
-            Bereits registriert? <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Model.ReturnUrl">Hier anmelden</a>
-        </p>
-    </div>
-</div>
 
 @section Scripts {
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
