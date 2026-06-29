@@ -19,35 +19,70 @@
         <form id="registerForm" method="post">
             <div asp-validation-summary="ModelOnly" class="hx-vsum"></div>
 
-            <div class="hx-field">
-                <label asp-for="Input.AnzeigeName">Name</label>
-                <input asp-for="Input.AnzeigeName" autocomplete="name" aria-required="true" placeholder="Vor- und Nachname" />
-                <span asp-validation-for="Input.AnzeigeName"></span>
-            </div>
-
-            <div class="hx-field">
-                <label asp-for="Input.Email">E-Mail</label>
-                <input asp-for="Input.Email" type="email" autocomplete="username" aria-required="true" placeholder="name@beispiel.de" />
-                <span asp-validation-for="Input.Email"></span>
+            <div class="hx-frow">
+                <div class="hx-field">
+                    <label asp-for="Input.AnzeigeName">Name *</label>
+                    <input asp-for="Input.AnzeigeName" autocomplete="name" aria-required="true" placeholder="Vor- und Nachname" />
+                    <span asp-validation-for="Input.AnzeigeName"></span>
+                </div>
+                <div class="hx-field">
+                    <label asp-for="Input.Firma">Firma</label>
+                    <input asp-for="Input.Firma" autocomplete="organization" placeholder="Optional" />
+                    <span asp-validation-for="Input.Firma"></span>
+                </div>
             </div>
 
             <div class="hx-frow">
                 <div class="hx-field">
-                    <label asp-for="Input.Password">Passwort</label>
+                    <label asp-for="Input.Email">E-Mail *</label>
+                    <input asp-for="Input.Email" type="email" autocomplete="username" aria-required="true" placeholder="name@beispiel.de" />
+                    <span asp-validation-for="Input.Email"></span>
+                </div>
+                <div class="hx-field">
+                    <label asp-for="Input.Telefon">Telefon *</label>
+                    <input asp-for="Input.Telefon" type="tel" autocomplete="tel" aria-required="true" placeholder="+49 …" />
+                    <span asp-validation-for="Input.Telefon"></span>
+                </div>
+            </div>
+
+            <div class="hx-field">
+                <label asp-for="Input.Beruf">Beruf *</label>
+                <input asp-for="Input.Beruf" autocomplete="organization-title" aria-required="true" placeholder="z. B. Geschäftsführer, Family Office, Privatinvestor" />
+                <span asp-validation-for="Input.Beruf"></span>
+            </div>
+
+            <div class="hx-field">
+                <label asp-for="Input.Registrierungsgrund">Warum möchten Sie sich registrieren? *</label>
+                <textarea asp-for="Input.Registrierungsgrund" rows="4" aria-required="true" placeholder="Kurze Beschreibung Ihres Interesses — das hilft uns bei der Freigabe."></textarea>
+                <span asp-validation-for="Input.Registrierungsgrund"></span>
+            </div>
+
+            <div class="hx-frow">
+                <div class="hx-field">
+                    <label asp-for="Input.Password">Passwort *</label>
                     <input asp-for="Input.Password" autocomplete="new-password" aria-required="true" placeholder="Mind. 8 Zeichen" />
                     <span asp-validation-for="Input.Password"></span>
                 </div>
                 <div class="hx-field">
-                    <label asp-for="Input.ConfirmPassword">Passwort bestätigen</label>
+                    <label asp-for="Input.ConfirmPassword">Passwort bestätigen *</label>
                     <input asp-for="Input.ConfirmPassword" autocomplete="new-password" aria-required="true" placeholder="••••••••" />
                     <span asp-validation-for="Input.ConfirmPassword"></span>
                 </div>
             </div>
 
-            <p class="hx-auth__hint">
-                Mit der Registrierung stimmen Sie unserer
-                <a asp-controller="Legal" asp-action="Datenschutz" target="_blank">Datenschutzerklärung</a> zu.
-            </p>
+            <div class="hx-check">
+                <input asp-for="Input.AgbAkzeptiert" type="checkbox" value="true" />
+                <label asp-for="Input.AgbAkzeptiert">
+                    Ich akzeptiere die <a asp-controller="Legal" asp-action="Agb" target="_blank">AGB</a>
+                    und die <a asp-controller="Legal" asp-action="Datenschutz" target="_blank">Datenschutzerklärung</a>. *
+                </label>
+            </div>
+            <span asp-validation-for="Input.AgbAkzeptiert" class="field-validation-error"></span>
+
+            @if (Model.TurnstileSiteKey is not null)
+            {
+                <div class="cf-turnstile" data-sitekey="@Model.TurnstileSiteKey" style="margin-top:1.2rem"></div>
+            }
 
             <div style="margin-top:1.4rem">
                 <button type="submit" class="hx-btn hx-btn--gold">Registrieren &rarr;</button>
@@ -63,4 +98,8 @@
 @section Scripts {
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <partial name="_ValidationScriptsPartial" />
+    @if (Model.TurnstileSiteKey is not null)
+    {
+        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    }
 }

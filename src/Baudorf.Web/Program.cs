@@ -53,6 +53,10 @@ builder.Services.ConfigureApplicationCookie(options =>
 // --- Site-/SEO-Konfiguration ---
 builder.Services.Configure<SiteOptions>(builder.Configuration.GetSection(SiteOptions.SectionName));
 
+// --- Turnstile (CAPTCHA, optional) ---
+builder.Services.Configure<TurnstileOptions>(builder.Configuration.GetSection(TurnstileOptions.SectionName));
+builder.Services.AddHttpClient<ITurnstileVerifier, TurnstileVerifier>();
+
 // --- Anwendungsdienste ---
 builder.Services.AddScoped<IStorageService, LocalStorageService>();
 builder.Services.AddScoped<IEmailService, LoggingEmailService>();

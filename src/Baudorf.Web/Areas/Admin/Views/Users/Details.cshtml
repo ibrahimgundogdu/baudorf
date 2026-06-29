@@ -12,6 +12,17 @@
         <h3>Profil</h3>
         <div class="bd-panel__row"><span class="bd-muted">E-Mail</span><span>@Model.User.Email</span></div>
         <div class="bd-panel__row"><span class="bd-muted">Name</span><span>@(Model.User.AnzeigeName ?? "—")</span></div>
+        <div class="bd-panel__row"><span class="bd-muted">Firma</span><span>@(string.IsNullOrWhiteSpace(Model.User.Firma) ? "—" : Model.User.Firma)</span></div>
+        <div class="bd-panel__row"><span class="bd-muted">Telefon</span><span>@(string.IsNullOrWhiteSpace(Model.User.PhoneNumber) ? "—" : Model.User.PhoneNumber)</span></div>
+        <div class="bd-panel__row"><span class="bd-muted">Beruf</span><span>@(string.IsNullOrWhiteSpace(Model.User.Beruf) ? "—" : Model.User.Beruf)</span></div>
+        @if (!string.IsNullOrWhiteSpace(Model.User.Registrierungsgrund))
+        {
+            <div class="bd-panel__row" style="flex-direction:column;align-items:flex-start;gap:.3rem;">
+                <span class="bd-muted">Grund der Registrierung</span>
+                <span>@Model.User.Registrierungsgrund</span>
+            </div>
+        }
+        <div class="bd-panel__row"><span class="bd-muted">AGB akzeptiert</span><span>@(Model.User.AgbAkzeptiertAm is { } d ? d.ToLocalTime().ToString("dd.MM.yyyy") : "—")</span></div>
         <div class="bd-panel__row"><span class="bd-muted">Registriert</span><span>@Model.User.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</span></div>
         <div class="bd-panel__row"><span class="bd-muted">Off-Market-Freigabe</span>
             <span>@(Model.User.IstFreigegeben ? $"seit {Model.User.FreigegebenAm?.ToLocalTime():dd.MM.yyyy}" : "nein")</span>

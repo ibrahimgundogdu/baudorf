@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 
 namespace Baudorf.Web.Models.Entities;
@@ -9,6 +10,18 @@ namespace Baudorf.Web.Models.Entities;
 public class ApplicationUser : IdentityUser
 {
     public string? AnzeigeName { get; set; }
+
+    /// <summary>Firma/Unternehmen (optional, falls vorhanden).</summary>
+    [MaxLength(160)] public string? Firma { get; set; }
+
+    /// <summary>Beruf des Interessenten.</summary>
+    [MaxLength(120)] public string? Beruf { get; set; }
+
+    /// <summary>Begründung: Warum möchte die Person Zugang? (Hilft bei der Freigabe-Entscheidung.)</summary>
+    [MaxLength(2000)] public string? Registrierungsgrund { get; set; }
+
+    /// <summary>Zeitpunkt der AGB-/Vertragszustimmung bei der Registrierung.</summary>
+    public DateTime? AgbAkzeptiertAm { get; set; }
 
     /// <summary>Vom Admin freigegebener Investor → darf Off-Market-Details sehen.</summary>
     public bool IstFreigegeben { get; set; }

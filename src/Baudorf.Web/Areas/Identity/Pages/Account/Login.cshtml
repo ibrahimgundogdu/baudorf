@@ -31,9 +31,12 @@
                 <span asp-validation-for="Input.Password"></span>
             </div>
 
-            <div class="hx-check">
-                <input asp-for="Input.RememberMe" type="checkbox" value="true" />
-                <label asp-for="Input.RememberMe">Angemeldet bleiben</label>
+            <div class="hx-check" style="justify-content:space-between;">
+                <span style="display:inline-flex;align-items:center;gap:.5rem;">
+                    <input asp-for="Input.RememberMe" type="checkbox" value="true" />
+                    <label asp-for="Input.RememberMe">Angemeldet bleiben</label>
+                </span>
+                <a asp-area="Identity" asp-page="/Account/ForgotPassword" style="font-size:13px;">Passwort vergessen?</a>
             </div>
 
             <div style="margin-top:1.4rem">
