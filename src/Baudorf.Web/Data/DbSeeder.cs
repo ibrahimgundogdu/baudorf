@@ -48,6 +48,8 @@ public static class DbSeeder
 
         await SeedTeamAsync(db);
         await SeedSettingsAsync(db);
+        await SeedLegalPagesAsync(db);
+        await SeedBlogPostsAsync(db);
         await SeedPropertiesAsync(db);
         await SeedHomeSectionsAsync(db);
         await db.SaveChangesAsync();
@@ -94,14 +96,171 @@ public static class DbSeeder
         Set("contact.company", "Baudorf Immobilien GmbH");
         Set("contact.street", "Auf der Egge 68");
         Set("contact.city", "42555 Velbert");
+        Set("contact.cityShort", "Velbert");
         Set("contact.phone", "0177 – 838 78 98");
         Set("contact.email", "andrea.krueger@baudorf.de");
-        Set("contact.hours", "Mo–Fr 09:00–18:00");
+        Set("contact.hours", "Mo–Fr · 09:00–18:00 Uhr");
         Set("brand.slogan", "Still, wirkungsvoll, mit Stil.");
         Set("brand.claim", "Diskret. Exklusiv. Direkt.");
+        Set("footer.intro", "Off-Market-Immobilien aus Velbert. Diskrete Vermarktung anspruchsvoller Wohn-, Gewerbe- und Kapitalanlageobjekte — seit 1994.");
+        Set("cookie.title", "Wir schätzen Ihre Privatsphäre");
+        Set("cookie.text", "Wir verwenden Cookies, um Ihr Surferlebnis zu verbessern, personalisierte Anzeigen oder Inhalte einzusetzen und unseren Datenverkehr zu analysieren. Wenn Sie auf „Alle akzeptieren\" klicken, stimmen Sie der Anwendung von Cookies zu.");
         Set("whatsapp.number", "4901778387898", "WhatsApp-Nummer im internationalen Format ohne + und Leerzeichen.");
         Set("whatsapp.enabled", "true", "Schwebenden WhatsApp-Button anzeigen (true/false).");
         Set("whatsapp.message", "Hallo Baudorf, ich interessiere mich für Ihre Immobilien.", "Vorausgefüllte WhatsApp-Nachricht.");
+    }
+
+    private static async Task SeedLegalPagesAsync(ApplicationDbContext db)
+    {
+        // Idempotent pro Slug: fehlende Rechtsseiten werden mit dem bisherigen Inhalt angelegt.
+        var vorhanden = await db.LegalPages.Select(l => l.Slug).ToListAsync();
+        void Add(string slug, string titel, string body)
+        {
+            if (!vorhanden.Contains(slug))
+                db.LegalPages.Add(new LegalPage { Slug = slug, Titel = titel, Overline = "Rechtliches", BodyHtml = body.Trim() });
+        }
+
+        Add("impressum", "Impressum", """
+        <h2>Angaben gemäß § 5 DDG</h2>
+        <p>
+            <strong>Baudorf Immobilien GmbH</strong><br />
+            Auf der Egge 68<br />
+            42555 Velbert<br />
+            Deutschland
+        </p>
+        <h2>Vertreten durch</h2>
+        <p>Andrea Krüger (Geschäftsführerin)</p>
+        <h2>Kontakt</h2>
+        <p>
+            Telefon: <a href="tel:+4901778387898">0177 – 838 78 98</a><br />
+            E-Mail: <a href="mailto:andrea.krueger@baudorf.de">andrea.krueger@baudorf.de</a>
+        </p>
+        <h2>Registereintrag</h2>
+        <p>
+            Eingetragen im Handelsregister.<br />
+            Registergericht: Amtsgericht Wuppertal<br />
+            Registernummer: HRB &lt;wird ergänzt&gt;
+        </p>
+        <h2>Umsatzsteuer-ID</h2>
+        <p>Umsatzsteuer-Identifikationsnummer gemäß § 27a UStG: &lt;wird ergänzt&gt;</p>
+        <h2>Aufsichtsbehörde / Erlaubnis nach § 34c GewO</h2>
+        <p>Zuständige Aufsichtsbehörde für die Maklertätigkeit: Stadt Velbert.</p>
+        <h2>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h2>
+        <p>Andrea Krüger · Auf der Egge 68 · 42555 Velbert</p>
+        <h2>Haftung für Inhalte</h2>
+        <p>Als Diensteanbieter sind wir gemäß § 7 Abs. 1 DDG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 DDG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen.</p>
+        <h2>Haftung für Links</h2>
+        <p>Unser Angebot enthält ggf. Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber verantwortlich.</p>
+        <h2>Urheberrecht</h2>
+        <p>Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht.</p>
+        <p style="margin-top:2rem;color:#8a847d;font-size:13px">Hinweis: Mit &lt;…&gt; markierte Angaben sind vor Veröffentlichung durch die offiziellen Registerdaten zu ergänzen.</p>
+        """);
+
+        Add("datenschutz", "Datenschutzerklärung", """
+        <h2>1. Verantwortlicher</h2>
+        <p>
+            Verantwortlich für die Datenverarbeitung auf dieser Website ist:<br />
+            <strong>Baudorf Immobilien GmbH</strong>, Auf der Egge 68, 42555 Velbert.<br />
+            E-Mail: <a href="mailto:andrea.krueger@baudorf.de">andrea.krueger@baudorf.de</a>
+        </p>
+        <h2>2. Allgemeines zur Datenverarbeitung</h2>
+        <p>Wir verarbeiten personenbezogene Daten unserer Nutzer grundsätzlich nur, soweit dies zur Bereitstellung einer funktionsfähigen Website sowie unserer Inhalte und Leistungen erforderlich ist. Die Verarbeitung erfolgt auf Grundlage der DSGVO.</p>
+        <h2>3. Kontakt- und Anfrageformular</h2>
+        <p>Wenn Sie uns über das Kontaktformular Anfragen zukommen lassen, werden Ihre Angaben (Vor- und Nachname, E-Mail, Telefon, Anliegen) zwecks Bearbeitung der Anfrage und für den Fall von Anschlussfragen bei uns gespeichert. Rechtsgrundlage ist Ihre Einwilligung (Art. 6 Abs. 1 lit. a DSGVO) sowie unser berechtigtes Interesse bzw. die Anbahnung eines Vertragsverhältnisses (Art. 6 Abs. 1 lit. b und f DSGVO).</p>
+        <h2>4. Benutzerkonto (Off-Market-Zugang)</h2>
+        <p>Für den Zugang zu vertraulichen Off-Market-Objekten können Sie ein Benutzerkonto anlegen. Hierbei verarbeiten wir Ihre E-Mail-Adresse und Anmeldedaten. Zur Sicherheit protokollieren wir Anmeldevorgänge (Zeitpunkt, IP-Adresse) sowie aufgerufene Objekte, um Missbrauch vorzubeugen und unser Angebot zu verbessern. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b und f DSGVO.</p>
+        <h2>5. Server-Logfiles &amp; Hosting</h2>
+        <p>Beim Aufruf der Website werden technisch notwendige Daten (IP-Adresse, Datum/Uhrzeit, User-Agent) verarbeitet. Diese Verarbeitung ist zur sicheren Bereitstellung der Website erforderlich (Art. 6 Abs. 1 lit. f DSGVO).</p>
+        <h2>6. Cookies</h2>
+        <p>Wir setzen technisch notwendige Cookies zur Sitzungsverwaltung und Sicherheit ein. Nicht notwendige Cookies werden nur mit Ihrer Einwilligung gesetzt.</p>
+        <h2>7. Ihre Rechte</h2>
+        <p>Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit sowie Widerspruch. Eine erteilte Einwilligung können Sie jederzeit mit Wirkung für die Zukunft widerrufen. Zudem steht Ihnen ein Beschwerderecht bei einer Aufsichtsbehörde zu.</p>
+        <h2>8. Speicherdauer</h2>
+        <p>Wir speichern personenbezogene Daten nur so lange, wie es für die genannten Zwecke erforderlich ist oder gesetzliche Aufbewahrungsfristen dies vorschreiben.</p>
+        <h2>9. Kontakt zum Datenschutz</h2>
+        <p>Bei Fragen zum Datenschutz erreichen Sie uns unter <a href="mailto:andrea.krueger@baudorf.de">andrea.krueger@baudorf.de</a>.</p>
+        """);
+
+        Add("agb", "AGB", """
+        <h2>§ 1 Geltungsbereich</h2>
+        <p>Diese Allgemeinen Geschäftsbedingungen gelten für alle Maklerleistungen der Baudorf Immobilien GmbH (nachfolgend „Makler") gegenüber ihren Auftraggebern und Interessenten.</p>
+        <h2>§ 2 Leistungen des Maklers</h2>
+        <p>Der Makler erbringt Nachweis- und/oder Vermittlungsleistungen für Immobilien. Ein Anspruch auf einen bestimmten Vermarktungserfolg besteht nicht. Off-Market-Objekte werden ausschließlich vorgemerkten, geprüften Interessenten zugänglich gemacht.</p>
+        <h2>§ 3 Provision</h2>
+        <p>Mit dem Zustandekommen eines Hauptvertrages (Kauf-, Miet- oder vergleichbarer Vertrag) infolge des Nachweises oder der Vermittlung des Maklers wird die vereinbarte Provision fällig. Die Höhe richtet sich nach der jeweiligen Vereinbarung und den gesetzlichen Vorgaben.</p>
+        <h2>§ 4 Vertraulichkeit</h2>
+        <p>Sämtliche überlassenen Objektinformationen sind vertraulich zu behandeln und dürfen ohne Zustimmung des Maklers nicht an Dritte weitergegeben werden. Bei Verstoß behält sich der Makler Schadensersatzansprüche vor.</p>
+        <h2>§ 5 Haftung</h2>
+        <p>Angaben zu Objekten beruhen auf Informationen des Eigentümers und werden ohne Gewähr weitergegeben. Eine Haftung des Maklers für Richtigkeit und Vollständigkeit besteht nur bei Vorsatz und grober Fahrlässigkeit.</p>
+        <h2>§ 6 Widerrufsrecht für Verbraucher</h2>
+        <p>Verbrauchern steht bei im Fernabsatz geschlossenen Verträgen ein gesetzliches Widerrufsrecht zu. Die Einzelheiten ergeben sich aus der gesondert erteilten Widerrufsbelehrung.</p>
+        <h2>§ 7 Schlussbestimmungen</h2>
+        <p>Es gilt das Recht der Bundesrepublik Deutschland. Sollten einzelne Bestimmungen unwirksam sein, bleibt die Wirksamkeit der übrigen Bestimmungen unberührt.</p>
+        <p style="margin-top:2rem;color:#8a847d;font-size:13px">Hinweis: Diese AGB sind eine allgemeine Vorlage und vor produktivem Einsatz rechtlich zu prüfen.</p>
+        """);
+    }
+
+    private static async Task SeedBlogPostsAsync(ApplicationDbContext db)
+    {
+        // Idempotent pro Slug: Inhalte aus dem freigegebenen Entwurf (Markt & Insights).
+        var vorhanden = await db.BlogPosts.Select(b => b.Slug).ToListAsync();
+        void Add(string slug, string titel, string kategorie, string cover, DateTime datum, string excerpt, string body)
+        {
+            if (!vorhanden.Contains(slug))
+            {
+                db.BlogPosts.Add(new BlogPost
+                {
+                    Slug = slug,
+                    Titel = titel,
+                    Kategorie = kategorie,
+                    CoverUrl = cover,
+                    Excerpt = excerpt,
+                    Body = body.Trim(),
+                    IstVeroeffentlicht = true,
+                    PublishedAt = datum,
+                    MetaDescription = excerpt
+                });
+            }
+        }
+
+        Add("off-market-2026-warum-die-besten-objekte-nie-inseriert-werden",
+            "Off-Market 2026 — warum die besten Objekte nie inseriert werden.",
+            "Markt", "/img/design/obj1.jpg", new DateTime(2026, 5, 14),
+            "Die attraktivsten Immobilien wechseln den Eigentümer, lange bevor ein Exposé entsteht. Warum Diskretion zum entscheidenden Wettbewerbsvorteil wird.",
+            """
+            <p>Wer 2026 hochwertige Wohn-, Gewerbe- oder Kapitalanlageobjekte sucht, findet die interessantesten Gelegenheiten nicht auf den großen Portalen. Sie werden gar nicht erst öffentlich angeboten. Off-Market ist längst kein Nischenphänomen mehr, sondern der bevorzugte Weg für Eigentümer, die Wert auf Diskretion, Geschwindigkeit und qualifizierte Käufer legen.</p>
+            <h2>Diskretion schützt Wert</h2>
+            <p>Ein öffentlich gelistetes Objekt, das über Monate sichtbar bleibt, verliert an Attraktivität — der Markt liest jede Preisanpassung mit. Die stille Vermarktung vermeidet genau das: Sie spricht ausschließlich vorgemerkte, geprüfte Interessenten an und bewahrt so die Verhandlungsposition beider Seiten.</p>
+            <h2>Warum Netzwerke entscheiden</h2>
+            <p>Off-Market funktioniert über Vertrauen. Eigentümer geben sensible Informationen nur an Partner weiter, die deren Tragweite verstehen und einen belastbaren Käuferkreis mitbringen. Für Investoren bedeutet das: Der Zugang zu den besten Objekten führt nicht über Reichweite, sondern über die richtige Adresse.</p>
+            <p>Genau hier setzen wir an — vertraulich, fundiert und auf Augenhöhe mit Family Offices und institutionellen Investoren.</p>
+            """);
+
+        Add("faktor-und-rendite-richtig-lesen-leitfaden-fuer-kapitalanleger",
+            "Faktor & Rendite richtig lesen — ein Leitfaden für Kapitalanleger.",
+            "Investment", "/img/design/obj5.jpg", new DateTime(2026, 4, 28),
+            "Der Kaufpreisfaktor ist die meistgenannte und am häufigsten missverstandene Kennzahl am Immobilienmarkt. Was wirklich dahintersteckt.",
+            """
+            <p>„Das Objekt geht zum 22-Fachen" — kaum eine Angabe fällt bei Kapitalanlagen so oft wie der Faktor. Doch die Zahl allein sagt wenig, solange man nicht weiß, worauf sie sich bezieht und welche Annahmen ihr zugrunde liegen.</p>
+            <h2>Faktor ist nicht gleich Rendite</h2>
+            <p>Der Kaufpreisfaktor beschreibt das Verhältnis von Kaufpreis zur Jahresnettomiete. Die Bruttorendite ist sein Kehrwert. Entscheidend für die tatsächliche Verzinsung ist jedoch die Nettorendite — nach Bewirtschaftungskosten, Instandhaltung und Mietausfallrisiko.</p>
+            <h2>Worauf es wirklich ankommt</h2>
+            <p>Lage, Mietermix, Restnutzungsdauer und Entwicklungspotenzial bestimmen, ob ein scheinbar teurer Faktor günstig oder ein günstiger Faktor teuer ist. Ein voll vermietetes Objekt in stabiler Lage rechtfertigt einen höheren Faktor als ein vermeintliches Schnäppchen mit Sanierungsstau.</p>
+            <p>Wir ordnen jede Kennzahl in ihren Kontext ein — damit aus einer Zahl eine fundierte Entscheidung wird.</p>
+            """);
+
+        Add("kfw-40-qng-was-neubau-portfolios-heute-wirklich-wert-macht",
+            "KfW 40 / QNG — was Neubau-Portfolios heute wirklich wert macht.",
+            "Neubau", "/img/design/hero2.jpg", new DateTime(2026, 4, 9),
+            "Energiestandard und Nachhaltigkeitszertifizierung sind 2026 keine Kür mehr, sondern werttreibende Faktoren. Ein Überblick für Bestandshalter und Entwickler.",
+            """
+            <p>Die Anforderungen an Neubauten haben sich grundlegend verschoben. Was vor wenigen Jahren als ambitioniert galt, ist heute Marktstandard — und entscheidet zunehmend über Finanzierbarkeit, Mietniveau und Wiederverkaufswert.</p>
+            <h2>KfW 40 als Eintrittskarte</h2>
+            <p>Der Effizienzhausstandard KfW 40 sichert nicht nur günstigere Finanzierungskonditionen, sondern auch eine bessere Vermietbarkeit. Energieeffiziente Objekte sprechen eine zahlungskräftige, zukunftsorientierte Mieterschaft an und reduzieren das Risiko künftiger Nachrüstpflichten.</p>
+            <h2>QNG — Nachhaltigkeit wird messbar</h2>
+            <p>Das Qualitätssiegel Nachhaltiges Gebäude (QNG) macht ökologische und soziale Qualität nachweisbar. Für institutionelle Investoren mit ESG-Vorgaben ist es oft die Voraussetzung für einen Ankauf — und damit ein konkreter Werttreiber im Portfolio.</p>
+            <p>Wir bewerten Neubau-Portfolios mit Blick auf genau diese Faktoren — vorausschauend statt rückwärtsgewandt.</p>
+            """);
     }
 
     private static async Task SeedPropertiesAsync(ApplicationDbContext db)

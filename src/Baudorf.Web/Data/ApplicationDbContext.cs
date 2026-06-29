@@ -21,6 +21,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<LoginEvent> LoginEvents => Set<LoginEvent>();
     public DbSet<PropertyView> PropertyViews => Set<PropertyView>();
     public DbSet<WhatsAppClick> WhatsAppClicks => Set<WhatsAppClick>();
+    public DbSet<LegalPage> LegalPages => Set<LegalPage>();
+    public DbSet<MediaAsset> MediaAssets => Set<MediaAsset>();
+    public DbSet<WiderrufAntrag> WiderrufAntraege => Set<WiderrufAntrag>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -41,6 +44,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         builder.Entity<BlogPost>().HasIndex(b => b.Slug).IsUnique();
 
         builder.Entity<SiteSetting>().HasIndex(s => s.Key).IsUnique();
+
+        builder.Entity<LegalPage>().HasIndex(l => l.Slug).IsUnique();
 
         builder.Entity<Lead>()
             .HasOne(l => l.Property)

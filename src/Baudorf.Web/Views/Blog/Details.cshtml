@@ -1,0 +1,109 @@
+@model BlogPost
+@inject Microsoft.Extensions.Options.IOptions<SiteOptions> SiteOpt
+@{
+    var de = new System.Globalization.CultureInfo("de-DE");
+    var weitere = ViewData["Weitere"] as List<BlogPost> ?? new();
+
+    // --- SEO ---
+    var site = SiteOpt.Value;
+    var req = ViewContext.HttpContext.Request;
+    var canonical = SeoUrls.Canonical(req, site);
+    var imgAbs = SeoUrls.Absolute(req, site, Model.CoverUrl ?? site.DefaultOgImage);
+    var baseUrl = SeoUrls.Base(req, site);
+    ViewData["Title"] = string.IsNullOrWhiteSpace(Model.MetaTitle) ? Model.Titel : Model.MetaTitle;
+    ViewData["MetaDescription"] = string.IsNullOrWhiteSpace(Model.MetaDescription) ? Model.Excerpt : Model.MetaDescription;
+    ViewData["OgType"] = "article";
+    ViewData["OgImage"] = Model.CoverUrl;
+
+    var published = (Model.PublishedAt ?? Model.CreatedAt).ToString("yyyy-MM-dd");
+    var blogPosting = new Dictionary<string, object?>
+    {
+        ["@context"] = "https://schema.org",
+        ["@type"] = "BlogPosting",
+        ["headline"] = Model.Titel,
+        ["description"] = JsonLd.NullIfBlank(Model.Excerpt),
+        ["image"] = string.IsNullOrEmpty(imgAbs) ? null : new[] { imgAbs },
+        ["datePublished"] = published,
+        ["dateModified"] = published,
+        ["articleSection"] = JsonLd.NullIfBlank(Model.Kategorie),
+        ["mainEntityOfPage"] = canonical,
+        ["author"] = new Dictionary<string, object?> { ["@id"] = baseUrl + "/#organization" },
+        ["publisher"] = new Dictionary<string, object?> { ["@id"] = baseUrl + "/#organization" }
+    };
+    var breadcrumb = new Dictionary<string, object?>
+    {
+        ["@context"] = "https://schema.org",
+        ["@type"] = "BreadcrumbList",
+        ["itemListElement"] = new object[]
+        {
+            new Dictionary<string, object?> { ["@type"] = "ListItem", ["position"] = 1, ["name"] = "Startseite", ["item"] = baseUrl + "/" },
+            new Dictionary<string, object?> { ["@type"] = "ListItem", ["position"] = 2, ["name"] = "Aktuelles", ["item"] = SeoUrls.Absolute(req, site, Url.Action("Index", "Blog")) },
+            new Dictionary<string, object?> { ["@type"] = "ListItem", ["position"] = 3, ["name"] = Model.Titel, ["item"] = canonical }
+        }
+    };
+    ViewData["JsonLd"] = new Microsoft.AspNetCore.Html.HtmlString(
+        $"<script type=\"application/ld+json\">{JsonLd.Serialize(blogPosting)}</script>" +
+        $"<script type=\"application/ld+json\">{JsonLd.Serialize(breadcrumb)}</script>");
+}
+
+<section class="hx-pagehead">
+    <img class="hx-pagehead__emblem" src="~/img/brand/baudorf-emblem-gold.png" alt="" />
+    <div class="hx-wrap">
+        <div class="hx-eyebrow"><span>@(Model.Kategorie ?? "Markt & Insights")</span></div>
+        <h1>@Model.Titel</h1>
+        <p class="hx-artmeta">
+            <span>@((Model.PublishedAt ?? Model.CreatedAt).ToString("dd. MMMM yyyy", de))</span>
+            <span>·</span>
+            <span>@Model.LesezeitMinuten() Min. Lesezeit</span>
+        </p>
+    </div>
+</section>
+
+@if (!string.IsNullOrWhiteSpace(Model.CoverUrl))
+{
+    <div class="hx-wrap">
+        <img class="hx-artcover" src="@Model.CoverUrl" alt="@Model.Titel" />
+    </div>
+}
+
+<div class="hx-wrap">
+    <article class="hx-prose hx-article">
+        @if (!string.IsNullOrWhiteSpace(Model.Excerpt))
+        {
+            <p class="hx-article__lead">@Model.Excerpt</p>
+        }
+        @Html.Raw(Model.Body)
+    </article>
+
+    <div class="hx-article__back">
+        <a class="hx-link" asp-controller="Blog" asp-action="Index">&larr; Alle Beiträge</a>
+    </div>
+
+    @if (weitere.Count > 0)
+    {
+        <div class="hx-similar">
+            <h2 class="hx-h2">Weitere <em class="hx-em">Beiträge</em></h2>
+            <div class="hx-insights">
+                @foreach (var a in weitere)
+                {
+                    <a class="hx-art" asp-controller="Blog" asp-action="Details" asp-route-slug="@a.Slug">
+                        <div class="hx-art__media">
+                            @if (!string.IsNullOrWhiteSpace(a.CoverUrl))
+                            {
+                                <img src="@a.CoverUrl" alt="@a.Titel" loading="lazy" />
+                            }
+                        </div>
+                        <div class="hx-art__body">
+                            <div class="hx-art__meta">
+                                <span class="hx-art__cat">@(a.Kategorie ?? "Insight")</span>
+                                <span class="hx-art__read">@a.LesezeitMinuten() Min.</span>
+                            </div>
+                            <h3>@a.Titel</h3>
+                            <span class="hx-art__date">@(a.PublishedAt?.ToString("dd. MMMM yyyy", de))</span>
+                        </div>
+                    </a>
+                }
+            </div>
+        </div>
+    }
+</div>

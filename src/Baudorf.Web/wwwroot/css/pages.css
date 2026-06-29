@@ -159,3 +159,14 @@ main section[role=alert] a, main a { color: var(--accent-dk); }
 .hx-auth__alt { margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
 .hx-auth__hint { margin-top: 18px; font-size: 13px; color: var(--muted); }
 .hx-auth__actions { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: 30px; }
+
+/* Blog / Insights — Liste & Artikel */
+.hx-art { display: block; }
+.hx-art__excerpt { margin: 0 0 18px; color: var(--muted); font: 300 15px/1.6 var(--font); }
+.hx-muted { color: var(--muted); }
+.hx-artmeta { display: flex; gap: 12px; align-items: center; color: var(--muted); font: 400 13px/1 var(--font); margin: 18px 0 0; }
+.hx-artcover { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 14px; margin: 10px 0 4px; }
+.hx-article { max-width: 760px; margin: clamp(36px,5vw,56px) auto 0; }
+.hx-article__lead { font: 300 clamp(18px,1.5vw,21px)/1.6 var(--font); color: var(--ink); margin: 0 0 1.4em; }
+.hx-article__back { max-width: 760px; margin: 44px auto 0; }
+.hx-article + .hx-article__back { border-top: 1px solid var(--line); padding-top: 28px; }

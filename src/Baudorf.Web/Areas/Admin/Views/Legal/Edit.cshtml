@@ -1,0 +1,33 @@
+@model LegalPage
+@{
+    ViewData["Title"] = $"Rechtstext: {Model.Titel}";
+}
+
+<div class="bd-toolbar">
+    <a class="bd-btn bd-btn--plain bd-btn--xs" asp-action="Index">&larr; Zurück</a>
+</div>
+
+<form method="post" asp-action="Edit" asp-route-id="@Model.Id" class="bd-aform">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Slug" />
+    <fieldset>
+        <legend>@Model.Titel</legend>
+        <div class="bd-grid-2">
+            <div class="bd-form-field">
+                <label asp-for="Overline">Overline (kleine Überschrift)</label>
+                <input asp-for="Overline" />
+            </div>
+            <div class="bd-form-field">
+                <label asp-for="Titel">Titel</label>
+                <input asp-for="Titel" />
+            </div>
+        </div>
+        <div class="bd-form-field">
+            <label asp-for="BodyHtml">Inhalt</label>
+            <textarea asp-for="BodyHtml" rows="22" class="js-rte"></textarea>
+        </div>
+    </fieldset>
+    <div class="bd-form-actions">
+        <button type="submit" class="bd-btn bd-btn--gold">Speichern</button>
+    </div>
+</form>

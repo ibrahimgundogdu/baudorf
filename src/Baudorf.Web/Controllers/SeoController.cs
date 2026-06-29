@@ -53,6 +53,7 @@ public class SeoController(ApplicationDbContext db, IOptions<SiteOptions> siteOp
         // Statische öffentliche Seiten
         urlset.Add(Url("/", "weekly", "1.0"));
         urlset.Add(Url("/Immobilien", "daily", "0.9"));
+        urlset.Add(Url("/Aktuelles", "weekly", "0.7"));
         urlset.Add(Url("/Kontakt", "monthly", "0.6"));
         urlset.Add(Url("/Legal/Impressum", "yearly", "0.3"));
         urlset.Add(Url("/Legal/Datenschutz", "yearly", "0.3"));
@@ -67,6 +68,17 @@ public class SeoController(ApplicationDbContext db, IOptions<SiteOptions> siteOp
         foreach (var o in objekte)
         {
             urlset.Add(Url($"/Immobilien/Details/{o.Slug}", "weekly", "0.8", o.UpdatedAt ?? o.CreatedAt));
+        }
+
+        // Veröffentlichte Blog-/Insights-Beiträge
+        var beitraege = await db.BlogPosts
+            .Where(b => b.IstVeroeffentlicht)
+            .Select(b => new { b.Slug, b.PublishedAt, b.CreatedAt })
+            .ToListAsync();
+
+        foreach (var b in beitraege)
+        {
+            urlset.Add(Url($"/Aktuelles/{b.Slug}", "monthly", "0.6", b.PublishedAt ?? b.CreatedAt));
         }
 
         var doc = new XDocument(new XDeclaration("1.0", "utf-8", null), urlset);

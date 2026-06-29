@@ -1,0 +1,100 @@
+@model WiderrufViewModel
+@{
+    ViewData["Title"] = "Vertrag widerrufen";
+    ViewData["MetaDescription"] = "Widerrufen Sie Ihren Maklervertrag mit Baudorf Immobilien über das nachfolgende Formular.";
+    var gesendet = ViewData["Gesendet"] as bool? == true;
+}
+
+<section class="hx-pagehead">
+    <img class="hx-pagehead__emblem" src="~/img/brand/baudorf-emblem-gold.png" alt="" />
+    <div class="hx-wrap">
+        <div class="hx-eyebrow"><span>Rechtliches</span></div>
+        <h1>Vertrag <em class="hx-em">widerrufen.</em></h1>
+        <p>Nutzen Sie das nachfolgende Formular, um Ihren Vertrag zu widerrufen. Wir bestätigen den Eingang umgehend.</p>
+    </div>
+</section>
+
+<div class="hx-wrap">
+    <div class="hx-auth">
+        @if (gesendet)
+        {
+            <div class="hx-thanks">
+                <span class="hx-thanks__mark">&#10003;</span>
+                <h2 class="hx-h2" style="font-size:28px">Ihr Widerruf ist eingegangen.</h2>
+                <p style="color:var(--muted)">Wir haben Ihren Widerruf erhalten und bestätigen den Eingang. Sie erhalten zeitnah eine Rückmeldung.</p>
+                <a class="hx-btn hx-btn--outline-dark" asp-controller="Home" asp-action="Index">Zur Startseite</a>
+            </div>
+        }
+        else
+        {
+            <form method="post" asp-action="Senden" novalidate>
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="hx-vsum"></div>
+
+                <div class="hx-frow">
+                    <div class="hx-field">
+                        <label asp-for="Vorname">Vorname *</label>
+                        <input asp-for="Vorname" autocomplete="given-name" />
+                        <span asp-validation-for="Vorname"></span>
+                    </div>
+                    <div class="hx-field">
+                        <label asp-for="Nachname">Nachname *</label>
+                        <input asp-for="Nachname" autocomplete="family-name" />
+                        <span asp-validation-for="Nachname"></span>
+                    </div>
+                </div>
+
+                <div class="hx-field">
+                    <label asp-for="Email">E-Mail-Adresse *</label>
+                    <input asp-for="Email" type="email" autocomplete="email" />
+                    <span asp-validation-for="Email"></span>
+                </div>
+
+                <div class="hx-frow">
+                    <div class="hx-field">
+                        <label asp-for="Strasse">Straße Nr.</label>
+                        <input asp-for="Strasse" autocomplete="street-address" />
+                        <span asp-validation-for="Strasse"></span>
+                    </div>
+                    <div class="hx-field">
+                        <label asp-for="PlzOrt">PLZ Ort</label>
+                        <input asp-for="PlzOrt" autocomplete="postal-code" />
+                        <span asp-validation-for="PlzOrt"></span>
+                    </div>
+                </div>
+
+                <div class="hx-field">
+                    <label asp-for="Vertragsidentifikation">Vertragsidentifikation (Auftragsnummer) *</label>
+                    <input asp-for="Vertragsidentifikation" />
+                    <span asp-validation-for="Vertragsidentifikation"></span>
+                </div>
+
+                <div class="hx-field">
+                    <label asp-for="DatumBeschreibung">Datum / Beschreibung *</label>
+                    <textarea asp-for="DatumBeschreibung" rows="5" placeholder="z. B. Vertrag vom 01.03.2026 über die Vermittlung von …"></textarea>
+                    <span asp-validation-for="DatumBeschreibung"></span>
+                </div>
+
+                <div class="hx-hp" aria-hidden="true">
+                    <label for="Website">Website (bitte leer lassen)</label>
+                    <input asp-for="Website" tabindex="-1" autocomplete="off" />
+                </div>
+
+                <div class="hx-check">
+                    <input asp-for="Bestaetigt" type="checkbox" value="true" />
+                    <label asp-for="Bestaetigt">Ich bestätige hiermit meinen eindeutigen Widerrufswillen. *</label>
+                </div>
+                <span asp-validation-for="Bestaetigt" class="field-validation-error"></span>
+
+                <div style="margin-top:1.4rem">
+                    <button type="submit" class="hx-btn hx-btn--gold">Widerruf bestätigen &rarr;</button>
+                </div>
+            </form>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+}

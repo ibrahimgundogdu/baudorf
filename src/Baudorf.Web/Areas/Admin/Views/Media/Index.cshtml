@@ -1,0 +1,45 @@
+@model List<MediaAsset>
+@{
+    ViewData["Title"] = "Mediathek";
+}
+
+<div class="bd-toolbar">
+    <h1 class="bd-h1">Mediathek</h1>
+    <span class="bd-muted">@Model.Count Datei(en)</span>
+</div>
+
+<form method="post" asp-action="Upload" enctype="multipart/form-data" class="bd-media-upload">
+    @Html.AntiForgeryToken()
+    <label class="bd-media-drop">
+        <input type="file" name="dateien" accept="image/*" multiple onchange="this.form.submit()" />
+        <span>+ Bilder hochladen <small>(mehrere möglich · JPG/PNG/WebP, max. 12&nbsp;MB)</small></span>
+    </label>
+</form>
+
+@if (Model.Count == 0)
+{
+    <p class="bd-muted" style="margin-top:1.5rem;">Noch keine Medien. Lade oben Bilder hoch.</p>
+}
+else
+{
+    <div class="bd-media-grid">
+        @foreach (var m in Model)
+        {
+            <figure class="bd-media-card">
+                <div class="bd-media-card__thumb" style="background-image:url('@m.Url')"></div>
+                <figcaption>
+                    <input class="bd-media-card__url" value="@m.Url" readonly onclick="this.select();document.execCommand('copy');" title="Klicken zum Kopieren" />
+                    <form method="post" asp-action="UpdateAlt" asp-route-id="@m.Id" class="bd-media-card__alt">
+                        @Html.AntiForgeryToken()
+                        <input name="alt" value="@m.Alt" placeholder="Alt-Text" />
+                        <button type="submit" class="bd-btn bd-btn--plain bd-btn--xs">✓</button>
+                    </form>
+                    <form method="post" asp-action="Delete" asp-route-id="@m.Id" onsubmit="return confirm('Datei wirklich löschen?');">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="bd-btn bd-btn--danger bd-btn--xs">Löschen</button>
+                    </form>
+                </figcaption>
+            </figure>
+        }
+    </div>
+}

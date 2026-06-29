@@ -1,4 +1,5 @@
 @model KontaktViewModel
+@inject ISiteSettings Settings
 @{
     ViewData["Title"] = "Kontakt";
     ViewData["MetaDescription"] = "Sprechen Sie mit Baudorf Immobilien — vertraulich und persönlich. Auf der Egge 68, 42555 Velbert.";
@@ -103,16 +104,16 @@
         </div>
 
         <aside class="hx-aside-contact">
-            <h2>Baudorf Immobilien GmbH</h2>
+            <h2>@Settings.Get("contact.company", "Baudorf Immobilien GmbH")</h2>
             <ul>
-                <li>Auf der Egge 68</li>
-                <li>42555 Velbert</li>
-                <li><a href="tel:+4901778387898">0177 – 838 78 98</a></li>
-                <li><a href="mailto:andrea.krueger@baudorf.de">andrea.krueger@baudorf.de</a></li>
-                <li>Mo–Fr · 09:00–18:00 Uhr</li>
+                <li>@Settings.Get("contact.street", "Auf der Egge 68")</li>
+                <li>@Settings.Get("contact.city", "42555 Velbert")</li>
+                <li><a href="tel:@Settings.PhoneLink">@Settings.Get("contact.phone", "0177 – 838 78 98")</a></li>
+                <li><a href="mailto:@Settings.Get("contact.email", "andrea.krueger@baudorf.de")">@Settings.Get("contact.email", "andrea.krueger@baudorf.de")</a></li>
+                <li>@Settings.Get("contact.hours", "Mo–Fr · 09:00–18:00 Uhr")</li>
             </ul>
             <div class="hx-aside-actions">
-                <a class="hx-btn hx-btn--outline-dark" href="tel:+4901778387898" style="padding:14px 22px">Anrufen</a>
+                <a class="hx-btn hx-btn--outline-dark" href="tel:@Settings.PhoneLink" style="padding:14px 22px">Anrufen</a>
                 <a class="hx-btn hx-btn--outline-dark" asp-controller="WhatsApp" asp-action="Chat" target="_blank" rel="noopener" style="padding:14px 22px">WhatsApp</a>
             </div>
             <p style="margin:1.4rem 0 0;font-size:13px;color:var(--muted)">Alle Anfragen werden streng vertraulich behandelt.</p>

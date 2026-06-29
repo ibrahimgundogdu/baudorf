@@ -16,14 +16,18 @@ public class SettingsController(ApplicationDbContext db) : Controller
         new("contact.company", "Firmenname", "Kontakt"),
         new("contact.street", "Straße", "Kontakt"),
         new("contact.city", "PLZ / Ort", "Kontakt"),
+        new("contact.cityShort", "Ort (kurz, für Footer)", "Kontakt"),
         new("contact.phone", "Telefon", "Kontakt"),
         new("contact.email", "E-Mail", "Kontakt"),
         new("contact.hours", "Öffnungszeiten", "Kontakt"),
-        new("brand.slogan", "Slogan", "Marke"),
+        new("brand.slogan", "Slogan", "Marke", Multiline: true),
         new("brand.claim", "Claim", "Marke"),
+        new("footer.intro", "Footer-Einleitungstext", "Footer", Multiline: true),
+        new("cookie.title", "Cookie-Banner — Titel", "Cookie-Banner"),
+        new("cookie.text", "Cookie-Banner — Text", "Cookie-Banner", Multiline: true),
         new("whatsapp.enabled", "WhatsApp-Button anzeigen (true/false)", "WhatsApp"),
         new("whatsapp.number", "WhatsApp-Nummer (international, ohne +)", "WhatsApp"),
-        new("whatsapp.message", "Vorausgefüllte Nachricht", "WhatsApp"),
+        new("whatsapp.message", "Vorausgefüllte Nachricht", "WhatsApp", Multiline: true),
         new("social.instagram", "Instagram-URL", "Social"),
         new("social.linkedin", "LinkedIn-URL", "Social"),
     ];
@@ -40,8 +44,9 @@ public class SettingsController(ApplicationDbContext db) : Controller
     public async Task<IActionResult> Save(Dictionary<string, string> settings)
     {
         var existing = await db.SiteSettings.ToDictionaryAsync(s => s.Key);
-        foreach (var (key, _, _) in Known)
+        foreach (var descriptor in Known)
         {
+            var key = descriptor.Key;
             var value = settings.TryGetValue(key, out var v) ? v?.Trim() ?? "" : "";
             if (existing.TryGetValue(key, out var setting))
                 setting.Value = value;
@@ -54,4 +59,4 @@ public class SettingsController(ApplicationDbContext db) : Controller
     }
 }
 
-public record SettingDescriptor(string Key, string Label, string Group);
+public record SettingDescriptor(string Key, string Label, string Group, bool Multiline = false);

@@ -90,7 +90,7 @@
             }
             else if (!string.IsNullOrWhiteSpace(p.Beschreibung))
             {
-                <p class="hx-dmain__lead">@p.Beschreibung</p>
+                <div class="hx-dmain__lead hx-prose">@Html.Raw(p.Beschreibung)</div>
             }
 
             <h2>Objektdaten</h2>

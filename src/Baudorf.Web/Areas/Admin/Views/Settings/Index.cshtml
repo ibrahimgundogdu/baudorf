@@ -18,9 +18,9 @@
                 var label = item.Label;
                 <div class="bd-form-field">
                     <label>@label</label>
-                    @if (key == "whatsapp.message" || key == "brand.slogan")
+                    @if (item.Multiline)
                     {
-                        <textarea name="settings[@key]" rows="2">@Val(key)</textarea>
+                        <textarea name="settings[@key]" rows="3">@Val(key)</textarea>
                     }
                     else
                     {

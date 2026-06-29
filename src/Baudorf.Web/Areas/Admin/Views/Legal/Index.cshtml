@@ -1,0 +1,35 @@
+@model List<LegalPage>
+@{
+    ViewData["Title"] = "Rechtstexte";
+}
+
+<div class="bd-toolbar">
+    <h1 class="bd-h1">Rechtstexte</h1>
+</div>
+
+@if (TempData["Success"] is string ok)
+{
+    <div class="bd-alert bd-alert--ok">@ok</div>
+}
+
+<table class="bd-table">
+    <thead>
+        <tr>
+            <th>Seite</th>
+            <th>URL</th>
+            <th>Zuletzt geändert</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td><strong>@p.Titel</strong></td>
+                <td class="bd-muted">/Legal/@(p.Slug == "agb" ? "Agb" : System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(p.Slug))</td>
+                <td class="bd-muted">@p.UpdatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                <td><a class="bd-btn bd-btn--plain bd-btn--xs" asp-action="Edit" asp-route-id="@p.Id">Bearbeiten</a></td>
+            </tr>
+        }
+    </tbody>
+</table>

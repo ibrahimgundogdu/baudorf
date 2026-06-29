@@ -51,6 +51,15 @@ public static class DisplayHelpers
     public static string FlaecheText(double? m2) =>
         m2 is { } v ? $"{v.ToString("N0", De)} m²" : "—";
 
+    /// <summary>Geschätzte Lesezeit in Minuten (~200 Wörter/Minute, HTML wird entfernt).</summary>
+    public static int LesezeitMinuten(this BlogPost p)
+    {
+        if (string.IsNullOrWhiteSpace(p.Body)) return 1;
+        var text = System.Text.RegularExpressions.Regex.Replace(p.Body, "<.*?>", " ");
+        var woerter = System.Text.RegularExpressions.Regex.Matches(text, @"[\p{L}\p{N}]+").Count;
+        return Math.Max(1, (int)Math.Ceiling(woerter / 200.0));
+    }
+
     /// <summary>Cover-URL oder null (View rendert dann einen Marken-Platzhalter).</summary>
     public static string? CoverUrl(this Property p)
     {

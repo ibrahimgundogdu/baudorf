@@ -1,0 +1,18 @@
+@model LegalPage
+@{
+    ViewData["Title"] = Model.Titel;
+}
+
+<section class="hx-pagehead">
+    <img class="hx-pagehead__emblem" src="~/img/brand/baudorf-emblem-gold.png" alt="" />
+    <div class="hx-wrap">
+        <div class="hx-eyebrow"><span>@(Model.Overline ?? "Rechtliches")</span></div>
+        <h1>@Model.Titel</h1>
+    </div>
+</section>
+
+<div class="hx-wrap">
+    <div class="hx-prose">
+        @Html.Raw(Model.BodyHtml)
+    </div>
+</div>

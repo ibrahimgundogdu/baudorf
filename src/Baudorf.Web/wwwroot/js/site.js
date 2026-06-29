@@ -22,4 +22,64 @@
     );
     revealEls.forEach((el) => io.observe(el));
   }
+
+  // ---------- Cookie-Consent ----------
+  const cc = document.getElementById("bd-cookie");
+  if (cc) {
+    const COOKIE = "bd_consent";
+    const prefs = cc.querySelector(".bd-cc__prefs");
+    const btnCustomize = cc.querySelector('[data-cc-action="customize"]');
+    const btnSave = cc.querySelector('[data-cc-action="save"]');
+
+    const readCookie = (name) => {
+      const m = document.cookie.match("(?:^|; )" + name + "=([^;]*)");
+      return m ? decodeURIComponent(m[1]) : null;
+    };
+    const setCookie = (name, value, days) => {
+      const d = new Date();
+      d.setTime(d.getTime() + days * 864e5);
+      document.cookie = name + "=" + encodeURIComponent(value) + "; expires=" + d.toUTCString() + "; path=/; SameSite=Lax";
+    };
+
+    const hide = () => { cc.hidden = true; };
+    const show = () => { cc.hidden = false; };
+    const openCustomize = () => {
+      prefs.hidden = false;
+      btnCustomize.hidden = true;
+      btnSave.hidden = false;
+    };
+
+    const save = (categories) => {
+      setCookie(COOKIE, categories.join(","), 180);
+      hide();
+      // Vorbereitet für künftiges Script-Gating:
+      window.dispatchEvent(new CustomEvent("bd-consent", { detail: categories }));
+    };
+
+    cc.querySelectorAll("[data-cc-action]").forEach((b) => {
+      b.addEventListener("click", () => {
+        const action = b.dataset.ccAction;
+        if (action === "accept") save(["necessary", "statistics", "marketing"]);
+        else if (action === "reject") save(["necessary"]);
+        else if (action === "customize") openCustomize();
+        else if (action === "save") {
+          const chosen = ["necessary"];
+          cc.querySelectorAll("[data-cc]").forEach((t) => { if (t.checked) chosen.push(t.dataset.cc); });
+          save(chosen);
+        }
+      });
+    });
+
+    // Beim erneuten Öffnen den gespeicherten Stand vorbelegen.
+    window.BaudorfCookie = {
+      open: () => {
+        const current = (readCookie(COOKIE) || "").split(",");
+        cc.querySelectorAll("[data-cc]").forEach((t) => { t.checked = current.includes(t.dataset.cc); });
+        openCustomize();
+        show();
+      },
+    };
+
+    if (!readCookie(COOKIE)) show();
+  }
 })();

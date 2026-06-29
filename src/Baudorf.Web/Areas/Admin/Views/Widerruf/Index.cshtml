@@ -1,0 +1,51 @@
+@model List<WiderrufAntrag>
+@{
+    ViewData["Title"] = "Widerrufe";
+}
+
+<div class="bd-toolbar">
+    <h1 class="bd-h1">Widerrufe</h1>
+    <span class="bd-muted">@Model.Count Eintrag/Einträge</span>
+</div>
+
+@if (Model.Count == 0)
+{
+    <p class="bd-muted">Noch keine Widerrufe eingegangen.</p>
+}
+else
+{
+    <table class="bd-table">
+        <thead>
+            <tr>
+                <th>Eingang</th>
+                <th>Name</th>
+                <th>E-Mail</th>
+                <th>Vertrag / Beschreibung</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var w in Model)
+            {
+                <tr style="@(w.Erledigt ? "opacity:.55" : "")">
+                    <td class="bd-muted">@w.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                    <td><strong>@w.Vorname @w.Nachname</strong>@if (!string.IsNullOrWhiteSpace(w.Strasse) || !string.IsNullOrWhiteSpace(w.PlzOrt)) { <br /><span class="bd-muted">@w.Strasse, @w.PlzOrt</span> }</td>
+                    <td><a href="mailto:@w.Email">@w.Email</a></td>
+                    <td><strong>@w.Vertragsidentifikation</strong><br /><span class="bd-muted">@w.DatumBeschreibung</span></td>
+                    <td>@(w.Erledigt ? "Erledigt" : "Neu")</td>
+                    <td class="bd-table__actions">
+                        <form method="post" asp-action="Erledigt" asp-route-id="@w.Id">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="bd-btn bd-btn--plain bd-btn--xs">@(w.Erledigt ? "Wieder öffnen" : "Erledigt")</button>
+                        </form>
+                        <form method="post" asp-action="Delete" asp-route-id="@w.Id" onsubmit="return confirm('Widerruf löschen?');">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="bd-btn bd-btn--danger bd-btn--xs">Löschen</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

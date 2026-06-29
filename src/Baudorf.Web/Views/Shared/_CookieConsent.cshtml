@@ -1,0 +1,34 @@
+@inject ISiteSettings Settings
+@{
+    var ccTitle = Settings.Get("cookie.title", "Wir schätzen Ihre Privatsphäre");
+    var ccText = Settings.Get("cookie.text", "Wir verwenden Cookies, um Ihr Surferlebnis zu verbessern, personalisierte Anzeigen oder Inhalte einzusetzen und unseren Datenverkehr zu analysieren.");
+}
+<div id="bd-cookie" class="bd-cc" hidden role="dialog" aria-label="Datenschutz-Einstellungen">
+    <div class="bd-cc__card">
+        <h2 class="bd-cc__title">@ccTitle</h2>
+        <p class="bd-cc__text">@ccText</p>
+
+        <div class="bd-cc__prefs" hidden>
+            <label class="bd-cc__pref">
+                <input type="checkbox" checked disabled />
+                <span><strong>Notwendig</strong> — technisch erforderlich (Sitzung, Sicherheit). Immer aktiv.</span>
+            </label>
+            <label class="bd-cc__pref">
+                <input type="checkbox" data-cc="statistics" />
+                <span><strong>Statistik</strong> — anonyme Reichweitenmessung zur Verbesserung des Angebots.</span>
+            </label>
+            <label class="bd-cc__pref">
+                <input type="checkbox" data-cc="marketing" />
+                <span><strong>Marketing</strong> — personalisierte Inhalte und Anzeigen.</span>
+            </label>
+        </div>
+
+        <div class="bd-cc__actions">
+            <button type="button" class="bd-cc__btn bd-cc__btn--ghost" data-cc-action="customize">Anpassen</button>
+            <button type="button" class="bd-cc__btn bd-cc__btn--ghost" data-cc-action="reject">Alles ablehnen</button>
+            <button type="button" class="bd-cc__btn bd-cc__btn--gold" data-cc-action="accept">Alle akzeptieren</button>
+            <button type="button" class="bd-cc__btn bd-cc__btn--gold" data-cc-action="save" hidden>Auswahl speichern</button>
+        </div>
+        <a class="bd-cc__link" asp-controller="Legal" asp-action="Datenschutz">Datenschutzerklärung</a>
+    </div>
+</div>

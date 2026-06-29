@@ -6,19 +6,23 @@
     <meta name="robots" content="noindex, nofollow" />
     <title>@ViewData["Title"] · Baudorf Admin</title>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" />
 </head>
 <body class="bd-admin">
     <aside class="bd-admin__nav">
         <a class="bd-admin__brand" asp-area="Admin" asp-controller="Home" asp-action="Index">
-            <img src="~/img/brand/baudorf-logo-cream.png" alt="Baudorf" height="28" />
+            <img src="~/img/brand/baudorf-logo-cream.png" alt="Baudorf" height="44" />
         </a>
         <nav>
             <a asp-area="Admin" asp-controller="Home" asp-action="Index">Dashboard</a>
             <a asp-area="Admin" asp-controller="Properties" asp-action="Index">Immobilien</a>
             <a asp-area="Admin" asp-controller="Blog" asp-action="Index">Aktuelles</a>
             <a asp-area="Admin" asp-controller="Leads" asp-action="Index">Anfragen</a>
+            <a asp-area="Admin" asp-controller="Widerruf" asp-action="Index">Widerrufe</a>
             <a asp-area="Admin" asp-controller="HomeContent" asp-action="Index">Startseite</a>
             <a asp-area="Admin" asp-controller="Team" asp-action="Index">Team</a>
+            <a asp-area="Admin" asp-controller="Media" asp-action="Index">Mediathek</a>
+            <a asp-area="Admin" asp-controller="Legal" asp-action="Index">Rechtstexte</a>
             <a asp-area="Admin" asp-controller="Users" asp-action="Index">Benutzer</a>
             <a asp-area="Admin" asp-controller="Activity" asp-action="Index">Aktivität</a>
             <a asp-area="Admin" asp-controller="Settings" asp-action="Index">Einstellungen</a>
@@ -42,7 +46,10 @@
             @RenderBody()
         </div>
     </main>
+    <partial name="_MediaPicker" />
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+    <script src="~/js/admin-media.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

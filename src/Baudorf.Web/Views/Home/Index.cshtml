@@ -363,24 +363,24 @@
                     <div class="hx-eyebrow"><span>@(insSec?.Overline ?? "Markt & Insights")</span></div>
                     <h2 class="hx-h2">@Html.Raw(insSec?.Titel ?? "Expertenwissen für <em class=\"hx-em\">kluge Investoren</em>")</h2>
                 </div>
-                <a class="hx-link" asp-controller="Home" asp-action="Index">Alle Beiträge &rarr;</a>
+                <a class="hx-link" asp-controller="Blog" asp-action="Index">Alle Beiträge &rarr;</a>
             </div>
             <div class="hx-insights">
                 @foreach (var a in Model.Insights)
                 {
-                    <div class="hx-art" data-reveal>
+                    <a class="hx-art" asp-controller="Blog" asp-action="Details" asp-route-slug="@a.Slug" data-reveal>
                         <div class="hx-art__media">
                             @if (!string.IsNullOrWhiteSpace(a.CoverUrl)) { <img src="@a.CoverUrl" alt="@a.Titel" loading="lazy" /> }
                         </div>
                         <div class="hx-art__body">
                             <div class="hx-art__meta">
                                 <span class="hx-art__cat">@(a.Kategorie ?? "Insight")</span>
-                                <span class="hx-art__read">5 Min.</span>
+                                <span class="hx-art__read">@a.LesezeitMinuten() Min.</span>
                             </div>
                             <h3>@a.Titel</h3>
-                            <span class="hx-art__date">@(a.PublishedAt?.ToString("dd.MM.yyyy"))</span>
+                            <span class="hx-art__date">@(a.PublishedAt?.ToString("dd. MMMM yyyy", new System.Globalization.CultureInfo("de-DE")))</span>
                         </div>
-                    </div>
+                    </a>
                 }
             </div>
         </div>

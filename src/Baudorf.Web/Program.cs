@@ -56,6 +56,8 @@ builder.Services.Configure<SiteOptions>(builder.Configuration.GetSection(SiteOpt
 // --- Anwendungsdienste ---
 builder.Services.AddScoped<IStorageService, LocalStorageService>();
 builder.Services.AddScoped<IEmailService, LoggingEmailService>();
+builder.Services.AddScoped<ISiteSettings, SiteSettingsService>();
+builder.Services.AddScoped<IMediaLibrary, MediaLibrary>();
 
 // --- Autorisierung ---
 builder.Services.AddAuthorization(options =>
