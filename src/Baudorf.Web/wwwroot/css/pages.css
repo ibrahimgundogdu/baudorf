@@ -151,3 +151,11 @@ main input.form-control:focus { outline: none; border-color: var(--accent); box-
 main .btn-primary, main button[type=submit].w-100 { background: var(--bd-gold); color: var(--on-accent); border: 0; padding: 14px 28px; font: 600 12px/1 var(--font); letter-spacing: .14em; text-transform: uppercase; cursor: pointer; transition: .35s; }
 main .btn-primary:hover { background: var(--accent-dk); color: #fff; }
 main section[role=alert] a, main a { color: var(--accent-dk); }
+
+/* Auth — markeneigene Login/Register-Seiten (überschreibt Default-UI) */
+.hx-auth { max-width: 520px; margin: 0 auto; padding: clamp(34px,5vw,60px) 0 clamp(70px,9vw,110px); }
+.hx-auth--center { text-align: center; }
+.hx-auth--center .hx-thanks__mark { margin: 0 auto 22px; }
+.hx-auth__alt { margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+.hx-auth__hint { margin-top: 18px; font-size: 13px; color: var(--muted); }
+.hx-auth__actions { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: 30px; }

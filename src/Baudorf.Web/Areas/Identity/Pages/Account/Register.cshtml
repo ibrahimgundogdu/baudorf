@@ -1,0 +1,66 @@
+@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Registrieren";
+    ViewData["MetaDescription"] = "Registrieren Sie sich für den diskreten Zugang zu Off-Market-Immobilien von Baudorf.";
+}
+
+<section class="hx-pagehead">
+    <img class="hx-pagehead__emblem" src="~/img/brand/baudorf-emblem-gold.png" alt="" />
+    <div class="hx-wrap">
+        <div class="hx-eyebrow"><span>Mein Konto</span></div>
+        <h1>Diskreter <em class="hx-em">Zugang.</em></h1>
+        <p>Registrieren Sie sich für den vertraulichen Zugang zu unseren Off-Market-Objekten. Nach einer kurzen Prüfung durch unser Team werden Sie freigeschaltet.</p>
+    </div>
+</section>
+
+<div class="hx-wrap">
+    <div class="hx-auth">
+        <form id="registerForm" method="post">
+            <div asp-validation-summary="ModelOnly" class="hx-vsum"></div>
+
+            <div class="hx-field">
+                <label asp-for="Input.AnzeigeName">Name</label>
+                <input asp-for="Input.AnzeigeName" autocomplete="name" aria-required="true" placeholder="Vor- und Nachname" />
+                <span asp-validation-for="Input.AnzeigeName"></span>
+            </div>
+
+            <div class="hx-field">
+                <label asp-for="Input.Email">E-Mail</label>
+                <input asp-for="Input.Email" type="email" autocomplete="username" aria-required="true" placeholder="name@beispiel.de" />
+                <span asp-validation-for="Input.Email"></span>
+            </div>
+
+            <div class="hx-frow">
+                <div class="hx-field">
+                    <label asp-for="Input.Password">Passwort</label>
+                    <input asp-for="Input.Password" autocomplete="new-password" aria-required="true" placeholder="Mind. 8 Zeichen" />
+                    <span asp-validation-for="Input.Password"></span>
+                </div>
+                <div class="hx-field">
+                    <label asp-for="Input.ConfirmPassword">Passwort bestätigen</label>
+                    <input asp-for="Input.ConfirmPassword" autocomplete="new-password" aria-required="true" placeholder="••••••••" />
+                    <span asp-validation-for="Input.ConfirmPassword"></span>
+                </div>
+            </div>
+
+            <p class="hx-auth__hint">
+                Mit der Registrierung stimmen Sie unserer
+                <a asp-controller="Legal" asp-action="Datenschutz" target="_blank">Datenschutzerklärung</a> zu.
+            </p>
+
+            <div style="margin-top:1.4rem">
+                <button type="submit" class="hx-btn hx-btn--gold">Registrieren &rarr;</button>
+            </div>
+        </form>
+
+        <p class="hx-auth__alt">
+            Bereits registriert? <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Model.ReturnUrl">Hier anmelden</a>
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+}

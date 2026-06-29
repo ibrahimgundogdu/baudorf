@@ -1,0 +1,30 @@
+@page
+@model RegisterConfirmationModel
+@{
+    ViewData["Title"] = "Registrierung erhalten";
+}
+
+<section class="hx-pagehead">
+    <img class="hx-pagehead__emblem" src="~/img/brand/baudorf-emblem-gold.png" alt="" />
+    <div class="hx-wrap">
+        <div class="hx-eyebrow"><span>Mein Konto</span></div>
+        <h1>Vielen Dank — <em class="hx-em">willkommen.</em></h1>
+    </div>
+</section>
+
+<div class="hx-wrap">
+    <div class="hx-auth hx-auth--center">
+        <span class="hx-thanks__mark">&#10003;</span>
+        <p>
+            Ihr Konto wurde erfolgreich angelegt. Aus Gründen der Diskretion wird der Zugang zu
+            unseren Off-Market-Objekten erst nach einer kurzen Prüfung durch unser Team freigeschaltet.
+        </p>
+        <p style="color:var(--muted)">
+            Sie erhalten eine Benachrichtigung, sobald Ihr Zugang freigegeben ist — in der Regel innerhalb von 24 Stunden.
+        </p>
+        <div class="hx-auth__actions">
+            <a class="hx-btn hx-btn--gold" asp-controller="Immobilien" asp-action="Index">Immobilien ansehen</a>
+            <a class="hx-btn hx-btn--outline-dark" asp-controller="Home" asp-action="Index">Zur Startseite</a>
+        </div>
+    </div>
+</div>

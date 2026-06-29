@@ -1,0 +1,53 @@
+@page
+@model LoginModel
+@{
+    ViewData["Title"] = "Anmelden";
+    ViewData["MetaDescription"] = "Melden Sie sich an, um Off-Market-Objekte von Baudorf Immobilien einzusehen.";
+}
+
+<section class="hx-pagehead">
+    <img class="hx-pagehead__emblem" src="~/img/brand/baudorf-emblem-gold.png" alt="" />
+    <div class="hx-wrap">
+        <div class="hx-eyebrow"><span>Mein Konto</span></div>
+        <h1>Will&shy;kommen <em class="hx-em">zurück.</em></h1>
+        <p>Melden Sie sich an, um Ihre gemerkten Objekte und freigegebene Off-Market-Angebote einzusehen.</p>
+    </div>
+</section>
+
+<div class="hx-wrap">
+    <div class="hx-auth">
+        <form id="account" method="post">
+            <div asp-validation-summary="ModelOnly" class="hx-vsum"></div>
+
+            <div class="hx-field">
+                <label asp-for="Input.Email">E-Mail</label>
+                <input asp-for="Input.Email" type="email" autocomplete="username" aria-required="true" placeholder="name@beispiel.de" />
+                <span asp-validation-for="Input.Email"></span>
+            </div>
+
+            <div class="hx-field">
+                <label asp-for="Input.Password">Passwort</label>
+                <input asp-for="Input.Password" autocomplete="current-password" aria-required="true" placeholder="••••••••" />
+                <span asp-validation-for="Input.Password"></span>
+            </div>
+
+            <div class="hx-check">
+                <input asp-for="Input.RememberMe" type="checkbox" value="true" />
+                <label asp-for="Input.RememberMe">Angemeldet bleiben</label>
+            </div>
+
+            <div style="margin-top:1.4rem">
+                <button type="submit" class="hx-btn hx-btn--gold">Anmelden &rarr;</button>
+            </div>
+        </form>
+
+        <p class="hx-auth__alt">
+            Noch kein Zugang? <a asp-area="Identity" asp-page="/Account/Register" asp-route-returnUrl="@Model.ReturnUrl">Jetzt registrieren</a>
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+}

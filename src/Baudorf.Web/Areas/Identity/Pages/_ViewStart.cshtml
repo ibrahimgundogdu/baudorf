@@ -1,3 +1,5 @@
 ﻿@{
     Layout = "/Views/Shared/_Layout.cshtml";
+    // Konto-/Auth-Seiten gehören nicht in den Suchindex.
+    ViewData["Robots"] = "noindex, nofollow";
 }

@@ -1,9 +1,29 @@
 @model PropertyDetailViewModel
+@inject Microsoft.Extensions.Options.IOptions<SiteOptions> SiteOpt
 @{
     var p = Model.Objekt;
     var bilder = p.Medien.Where(m => m.Typ == MediaType.Image).OrderBy(m => m.Reihenfolge).ToList();
     var cover = p.CoverUrl();
     var locked = Model.IstGesperrt;
+
+    // --- SEO ---
+    var site = SiteOpt.Value;
+    var req = ViewContext.HttpContext.Request;
+    var canonical = SeoUrls.Canonical(req, site);
+    var coverAbs = SeoUrls.Absolute(req, site, cover ?? site.DefaultOgImage);
+    ViewData["Title"] = string.IsNullOrWhiteSpace(p.MetaTitle) ? p.Titel : p.MetaTitle;
+    ViewData["MetaDescription"] = string.IsNullOrWhiteSpace(p.MetaDescription)
+        ? $"{p.Art.Label()} in {p.Region ?? "NRW"} — diskret vermittelt von Baudorf Immobilien."
+        : p.MetaDescription;
+    ViewData["OgType"] = "product";
+    ViewData["OgImage"] = cover;
+    // Off-Market-Objekte sind gated → nicht indexieren (Links dürfen aber gefolgt werden).
+    ViewData["Robots"] = p.IstOffMarket ? "noindex, follow" : "index, follow";
+    ViewData["JsonLd"] = new Microsoft.AspNetCore.Html.HtmlString(
+        "<script type=\"application/ld+json\">"
+        + PropertyJsonLd.Build(p, canonical, coverAbs, SeoUrls.Base(req, site),
+            SeoUrls.Absolute(req, site, Url.Action("Index", "Immobilien")), locked)
+        + "</script>");
 
     string BadgeBg(PropertyStatus s) => s switch
     {

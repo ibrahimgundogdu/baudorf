@@ -3,7 +3,7 @@
    Helvetica Neue, Gold/Ink/Creme, ruhige Luxus-Anmutung.
    ========================================================================== */
 
-.hx { overflow-x: hidden; }
+.hx { overflow-x: clip; }
 .hx-wrap { max-width: 1560px; margin: 0 auto; padding: 0 clamp(22px, 5vw, 48px); }
 .hx-sec { padding: clamp(90px, 12vw, 150px) 0; }
 .hx-sec--band { background: var(--band); }

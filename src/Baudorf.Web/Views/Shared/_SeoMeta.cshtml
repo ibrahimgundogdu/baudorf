@@ -1,0 +1,104 @@
+@using Baudorf.Web.Models
+@using Baudorf.Web.Services
+@inject Microsoft.Extensions.Options.IOptions<SiteOptions> SiteOpt
+@{
+    var site = SiteOpt.Value;
+    var req = ViewContext.HttpContext.Request;
+    var baseUrl = SeoUrls.Base(req, site);
+
+    var pageTitle = ViewData["Title"] as string;
+    var fullTitle = string.IsNullOrWhiteSpace(pageTitle)
+        ? $"{site.LegalName} — Off-Market-Immobilien in NRW"
+        : $"{pageTitle} · {site.Name}";
+
+    var desc = ViewData["MetaDescription"] as string
+        ?? "Baudorf Immobilien GmbH — diskrete, stille Vermarktung von Off-Market-Immobilien in NRW. Still, wirkungsvoll, mit Stil.";
+
+    var canonical = SeoUrls.Canonical(req, site, ViewData["Canonical"] as string);
+    var robots = ViewData["Robots"] as string ?? "index, follow";
+    var ogType = ViewData["OgType"] as string ?? "website";
+    var ogTitle = ViewData["OgTitle"] as string ?? fullTitle;
+    var ogImage = SeoUrls.Absolute(req, site, ViewData["OgImage"] as string ?? site.DefaultOgImage);
+    var logoUrl = SeoUrls.Absolute(req, site, "/img/brand/baudorf-logo-ink.png");
+
+    // --- Site-weites JSON-LD: RealEstateAgent (Organisation) + WebSite ---
+    var sameAs = site.SameAs?.Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+    var organization = new Dictionary<string, object?>
+    {
+        ["@context"] = "https://schema.org",
+        ["@type"] = "RealEstateAgent",
+        ["@id"] = baseUrl + "/#organization",
+        ["name"] = site.LegalName,
+        ["url"] = baseUrl + "/",
+        ["logo"] = logoUrl,
+        ["image"] = ogImage,
+        ["slogan"] = JsonLd.NullIfBlank(site.Slogan),
+        ["foundingDate"] = JsonLd.NullIfBlank(site.FoundingYear),
+        ["telephone"] = JsonLd.NullIfBlank(site.Contact.Phone),
+        ["email"] = JsonLd.NullIfBlank(site.Contact.Email),
+        ["areaServed"] = JsonLd.NullIfBlank(site.Contact.Region),
+        ["address"] = JsonLd.PostalAddress(site.Contact.Street, site.Contact.PostalCode, site.Contact.City, site.Contact.Region, site.Contact.Country),
+        ["geo"] = site.Contact.Lat.HasValue && site.Contact.Lng.HasValue
+            ? new Dictionary<string, object?>
+            {
+                ["@type"] = "GeoCoordinates",
+                ["latitude"] = site.Contact.Lat,
+                ["longitude"] = site.Contact.Lng
+            }
+            : null,
+        ["sameAs"] = sameAs is { Count: > 0 } ? sameAs : null
+    };
+
+    var website = new Dictionary<string, object?>
+    {
+        ["@context"] = "https://schema.org",
+        ["@type"] = "WebSite",
+        ["@id"] = baseUrl + "/#website",
+        ["url"] = baseUrl + "/",
+        ["name"] = site.Name,
+        ["inLanguage"] = "de-DE",
+        ["publisher"] = new Dictionary<string, object?> { ["@id"] = baseUrl + "/#organization" }
+    };
+
+    var pageJsonLd = ViewData["JsonLd"] as Microsoft.AspNetCore.Html.IHtmlContent;
+}
+<title>@fullTitle</title>
+<meta name="description" content="@desc" />
+<meta name="robots" content="@robots" />
+<link rel="canonical" href="@canonical" />
+
+<meta property="og:type" content="@ogType" />
+<meta property="og:site_name" content="@site.Name" />
+<meta property="og:locale" content="@site.Locale" />
+<meta property="og:title" content="@ogTitle" />
+<meta property="og:description" content="@desc" />
+<meta property="og:url" content="@canonical" />
+@if (!string.IsNullOrEmpty(ogImage))
+{
+    <meta property="og:image" content="@ogImage" />
+    <meta property="og:image:alt" content="@site.LegalName" />
+}
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="@ogTitle" />
+<meta name="twitter:description" content="@desc" />
+@if (!string.IsNullOrEmpty(ogImage))
+{
+    <meta name="twitter:image" content="@ogImage" />
+}
+@if (!string.IsNullOrWhiteSpace(site.TwitterHandle))
+{
+    <meta name="twitter:site" content="@site.TwitterHandle" />
+}
+
+<meta name="theme-color" content="#0C0C0C" />
+<link rel="icon" href="~/favicon.ico" sizes="any" />
+<link rel="icon" type="image/png" href="~/img/brand/baudorf-emblem-ink.png" />
+<link rel="apple-touch-icon" href="~/img/brand/baudorf-emblem-ink.png" />
+
+<script type="application/ld+json">@Html.Raw(JsonLd.Serialize(organization))</script>
+<script type="application/ld+json">@Html.Raw(JsonLd.Serialize(website))</script>
+@if (pageJsonLd is not null)
+{
+    @pageJsonLd
+}

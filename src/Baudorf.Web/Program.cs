@@ -1,5 +1,6 @@
 using System.Threading.RateLimiting;
 using Baudorf.Web.Data;
+using Baudorf.Web.Models;
 using Baudorf.Web.Models.Entities;
 using Baudorf.Web.Services;
 using Microsoft.AspNetCore.Identity;
@@ -25,6 +26,7 @@ builder.Services
     })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders()
+    .AddErrorDescriber<GermanIdentityErrorDescriber>()
     .AddDefaultUI();
 
 // Login-Protokoll: bei jeder Anmeldung einen LoginEvent speichern.
@@ -47,6 +49,9 @@ builder.Services.ConfigureApplicationCookie(options =>
         await dbx.SaveChangesAsync();
     };
 });
+
+// --- Site-/SEO-Konfiguration ---
+builder.Services.Configure<SiteOptions>(builder.Configuration.GetSection(SiteOptions.SectionName));
 
 // --- Anwendungsdienste ---
 builder.Services.AddScoped<IStorageService, LocalStorageService>();

@@ -1,0 +1,26 @@
+@page
+@model AccessDeniedModel
+@{
+    ViewData["Title"] = "Zugriff verweigert";
+}
+
+<section class="hx-pagehead">
+    <div class="hx-wrap">
+        <div class="hx-eyebrow"><span>Mein Konto</span></div>
+        <h1>Zugriff <em class="hx-em">verweigert.</em></h1>
+        <p>Für diesen Bereich fehlt Ihrem Konto die erforderliche Freigabe.</p>
+    </div>
+</section>
+
+<div class="hx-wrap">
+    <div class="hx-auth hx-auth--center">
+        <p>
+            Off-Market-Details sind ausschließlich für freigegebene Investoren zugänglich. Sobald unser Team
+            Ihren Zugang geprüft und freigeschaltet hat, stehen Ihnen alle Objekte zur Verfügung.
+        </p>
+        <div class="hx-auth__actions">
+            <a class="hx-btn hx-btn--gold" asp-controller="Kontakt" asp-action="Index">Kontakt aufnehmen</a>
+            <a class="hx-btn hx-btn--outline-dark" asp-controller="Home" asp-action="Index">Zur Startseite</a>
+        </div>
+    </div>
+</div>
