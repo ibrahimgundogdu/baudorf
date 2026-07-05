@@ -17,14 +17,14 @@
     <header class="bd-nav" id="siteNav">
         <div class="bd-nav__inner">
             <nav class="bd-nav__left" aria-label="Hauptnavigation">
-                <a asp-controller="Home" asp-action="Index">Baudorf</a>
-                <a asp-controller="Immobilien" asp-action="Index">Immobilien</a>
-                <a asp-controller="Home" asp-action="Index" asp-fragment="leistungen">Leistungen</a>
-                <a asp-controller="Home" asp-action="Index" asp-fragment="ueber">Über uns</a>
-                <a asp-controller="Kontakt" asp-action="Index">Kontakt</a>
+                <a asp-area="" asp-controller="Home" asp-action="Index">Baudorf</a>
+                <a asp-area="" asp-controller="Immobilien" asp-action="Index">Immobilien</a>
+                <a asp-area="" asp-controller="Home" asp-action="Index" asp-fragment="leistungen">Leistungen</a>
+                <a asp-area="" asp-controller="Home" asp-action="Index" asp-fragment="ueber">Über uns</a>
+                <a asp-area="" asp-controller="Kontakt" asp-action="Index">Kontakt</a>
             </nav>
 
-            <a class="bd-nav__brand" asp-controller="Home" asp-action="Index" aria-label="Baudorf Startseite">
+            <a class="bd-nav__brand" asp-area="" asp-controller="Home" asp-action="Index" aria-label="Baudorf Startseite">
                 <img src="~/img/brand/baudorf-logo-cream.png" alt="Baudorf Immobilien GmbH" />
             </a>
 
@@ -68,11 +68,11 @@
                 <button class="bd-mobile__close" data-menu-close aria-label="Menü schließen">&times;</button>
             </div>
             <nav class="bd-mobile__links">
-                <a asp-controller="Home" asp-action="Index">Baudorf</a>
-                <a asp-controller="Immobilien" asp-action="Index">Immobilien</a>
-                <a asp-controller="Home" asp-action="Index" asp-fragment="leistungen">Leistungen</a>
-                <a asp-controller="Home" asp-action="Index" asp-fragment="ueber">Über uns</a>
-                <a asp-controller="Kontakt" asp-action="Index">Kontakt</a>
+                <a asp-area="" asp-controller="Home" asp-action="Index">Baudorf</a>
+                <a asp-area="" asp-controller="Immobilien" asp-action="Index">Immobilien</a>
+                <a asp-area="" asp-controller="Home" asp-action="Index" asp-fragment="leistungen">Leistungen</a>
+                <a asp-area="" asp-controller="Home" asp-action="Index" asp-fragment="ueber">Über uns</a>
+                <a asp-area="" asp-controller="Kontakt" asp-action="Index">Kontakt</a>
             </nav>
             <div class="bd-mobile__actions">
                 @if (User.Identity?.IsAuthenticated == true)
@@ -111,19 +111,19 @@
             </div>
             <div class="bd-footer__col">
                 <span class="bd-footer__head">Immobilien</span>
-                <a asp-controller="Immobilien" asp-action="Index">Off-Market</a>
-                <a asp-controller="Immobilien" asp-action="Index">Kapitalanlagen</a>
-                <a asp-controller="Immobilien" asp-action="Index">Gewerbe</a>
-                <a asp-controller="Immobilien" asp-action="Index">Wohnimmobilien</a>
-                <a asp-controller="Immobilien" asp-action="Index">Auslandsimmobilien</a>
+                <a asp-area="" asp-controller="Immobilien" asp-action="Index">Off-Market</a>
+                <a asp-area="" asp-controller="Immobilien" asp-action="Index">Kapitalanlagen</a>
+                <a asp-area="" asp-controller="Immobilien" asp-action="Index">Gewerbe</a>
+                <a asp-area="" asp-controller="Immobilien" asp-action="Index">Wohnimmobilien</a>
+                <a asp-area="" asp-controller="Immobilien" asp-action="Index">Auslandsimmobilien</a>
             </div>
             <div class="bd-footer__col">
                 <span class="bd-footer__head">Unternehmen</span>
-                <a asp-controller="Home" asp-action="Index" asp-fragment="ueber">Über uns</a>
-                <a asp-controller="Home" asp-action="Index" asp-fragment="leistungen">Leistungen</a>
-                <a asp-controller="Blog" asp-action="Index">Aktuelles</a>
-                <a asp-controller="Kontakt" asp-action="Index">Karriere</a>
-                <a asp-controller="Kontakt" asp-action="Index">Tippgeber</a>
+                <a asp-area="" asp-controller="Home" asp-action="Index" asp-fragment="ueber">Über uns</a>
+                <a asp-area="" asp-controller="Home" asp-action="Index" asp-fragment="leistungen">Leistungen</a>
+                <a asp-area="" asp-controller="Blog" asp-action="Index">Aktuelles</a>
+                <a asp-area="" asp-controller="Kontakt" asp-action="Index">Karriere</a>
+                <a asp-area="" asp-controller="Kontakt" asp-action="Index">Tippgeber</a>
                 <a asp-area="Admin" asp-controller="Home" asp-action="Index">Admin-Login</a>
             </div>
             <div class="bd-footer__col">
@@ -137,10 +137,10 @@
         <div class="bd-footer__legal">
             <span>&copy; @DateTime.Now.Year @Settings.Get("contact.company", "Baudorf Immobilien GmbH") · @Settings.Get("contact.cityShort", "Velbert")</span>
             <nav>
-                <a asp-controller="Legal" asp-action="Impressum">Impressum</a>
-                <a asp-controller="Legal" asp-action="Datenschutz">Datenschutz</a>
-                <a asp-controller="Legal" asp-action="Agb">AGB</a>
-                <a asp-controller="Widerruf" asp-action="Index">Vertrag widerrufen</a>
+                <a asp-area="" asp-controller="Legal" asp-action="Impressum">Impressum</a>
+                <a asp-area="" asp-controller="Legal" asp-action="Datenschutz">Datenschutz</a>
+                <a asp-area="" asp-controller="Legal" asp-action="Agb">AGB</a>
+                <a asp-area="" asp-controller="Widerruf" asp-action="Index">Vertrag widerrufen</a>
                 <a href="#" onclick="if(window.BaudorfCookie){BaudorfCookie.open();}return false;">Cookie-Einstellungen</a>
             </nav>
         </div>
