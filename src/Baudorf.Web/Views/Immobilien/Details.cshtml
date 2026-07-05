@@ -34,14 +34,14 @@
     };
 }
 
-<div class="hx-wrap hx-dtop" x-data="{ lb: false, src: '' }">
+<div class="hx-wrap hx-dtop">
     <a class="hx-back" asp-controller="Immobilien" asp-action="Index">&larr; Zurück zum Portfolio</a>
 
     <!-- Galerie -->
     <div class="hx-dgallery @(locked ? "is-locked" : "")">
         @if (cover != null)
         {
-            <img src="@cover" alt="@p.Titel" @(locked ? "" : "@click=\"lb=true;src=$el.src\" style=cursor:zoom-in") />
+            <img src="@cover" alt="@p.Titel" @(locked ? "" : Html.Raw($"data-lightbox-src=\"{cover}\" style=\"cursor:zoom-in\"")) />
         }
         else
         {
@@ -58,12 +58,12 @@
         <div class="hx-thumbs">
             @foreach (var b in bilder.Take(8))
             {
-                <button type="button" class="hx-thumb" @@click="lb=true;src='@b.Url'"><img src="@(b.ThumbnailUrl ?? b.Url)" alt="@(b.Alt ?? p.Titel)" loading="lazy" /></button>
+                <button type="button" class="hx-thumb" data-lightbox-src="@b.Url"><img src="@(b.ThumbnailUrl ?? b.Url)" alt="@(b.Alt ?? p.Titel)" loading="lazy" /></button>
             }
         </div>
-        <div class="hx-lightbox" x-show="lb" x-cloak @@click="lb=false" @@keydown.escape.window="lb=false">
-            <img :src="src" alt="@p.Titel" />
-            <button @@click="lb=false" aria-label="Schließen">&times;</button>
+        <div class="hx-lightbox" id="hxLightbox">
+            <img src="" alt="@p.Titel" />
+            <button type="button" aria-label="Schließen">&times;</button>
         </div>
     }
 

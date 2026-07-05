@@ -74,12 +74,12 @@ public class HomeContentController(ApplicationDbContext db, IMediaLibrary media)
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> AddItem(int id, string? titel, string? text)
+    public async Task<IActionResult> AddItem(int id, string? titel, string? text, string? overline, string? bildUrl)
     {
         var s = await db.HomeSections.Include(x => x.Items).FirstOrDefaultAsync(x => x.Id == id);
         if (s is null) return NotFound();
         var max = s.Items.Count == 0 ? 0 : s.Items.Max(i => i.Reihenfolge);
-        s.Items.Add(new HomeSectionItem { Titel = titel, Text = text, Reihenfolge = max + 1 });
+        s.Items.Add(new HomeSectionItem { Titel = titel, Text = text, Overline = overline, BildUrl = bildUrl, Reihenfolge = max + 1 });
         await db.SaveChangesAsync();
         TempData["Success"] = "Element hinzugefügt.";
         return RedirectToAction(nameof(Edit), new { id });
@@ -87,11 +87,14 @@ public class HomeContentController(ApplicationDbContext db, IMediaLibrary media)
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdateItem(int id, int itemId, string? titel, string? text)
+    public async Task<IActionResult> UpdateItem(int id, int itemId, string? titel, string? text, string? overline, string? bildUrl)
     {
         var item = await db.HomeSectionItems.FirstOrDefaultAsync(i => i.Id == itemId && i.HomeSectionId == id);
         if (item is null) return NotFound();
         item.Titel = titel; item.Text = text;
+        // Overline/Bild nur überschreiben, wenn die Felder im Formular vorhanden sind (Hero-Slides).
+        if (overline is not null) item.Overline = overline;
+        if (bildUrl is not null) item.BildUrl = bildUrl;
         await db.SaveChangesAsync();
         TempData["Success"] = "Element gespeichert.";
         return RedirectToAction(nameof(Edit), new { id });

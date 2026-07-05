@@ -11,8 +11,8 @@
 <form method="post" asp-action="Upload" enctype="multipart/form-data" class="bd-media-upload">
     @Html.AntiForgeryToken()
     <label class="bd-media-drop">
-        <input type="file" name="dateien" accept="image/*" multiple onchange="this.form.submit()" />
-        <span>+ Bilder hochladen <small>(mehrere möglich · JPG/PNG/WebP, max. 12&nbsp;MB)</small></span>
+        <input type="file" name="dateien" accept="image/*,video/*" multiple onchange="this.form.submit()" />
+        <span>+ Medien hochladen <small>(Bilder · JPG/PNG/WebP max. 12&nbsp;MB · Videos MP4/WebM max. 80&nbsp;MB)</small></span>
     </label>
 </form>
 
@@ -26,7 +26,17 @@ else
         @foreach (var m in Model)
         {
             <figure class="bd-media-card">
-                <div class="bd-media-card__thumb" style="background-image:url('@m.Url')"></div>
+                @if (DisplayHelpers.IsVideoUrl(m.Url))
+                {
+                    <div class="bd-media-card__thumb bd-media-card__thumb--video">
+                        <video src="@m.Url" muted preload="metadata"></video>
+                        <span class="bd-media-card__play">▶</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="bd-media-card__thumb" style="background-image:url('@m.Url')"></div>
+                }
                 <figcaption>
                     <input class="bd-media-card__url" value="@m.Url" readonly onclick="this.select();document.execCommand('copy');" title="Klicken zum Kopieren" />
                     <form method="post" asp-action="UpdateAlt" asp-route-id="@m.Id" class="bd-media-card__alt">

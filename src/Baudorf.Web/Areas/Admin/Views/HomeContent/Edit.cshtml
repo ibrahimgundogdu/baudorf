@@ -51,31 +51,74 @@
     </div>
 </form>
 
-<fieldset class="bd-aform" style="margin-top:2rem;">
-    <legend>Listenelemente (@Model.Items.Count)</legend>
-    <p class="bd-muted" style="font-size:0.85rem;">Z. B. Leistungs-Karten, Vorgehens-Schritte, Zahlen (Titel = Zahl), Klientel-Einträge.</p>
+@if (Model.Key == "hero")
+{
+    <fieldset class="bd-aform" style="margin-top:2rem;">
+        <legend>Hero-Slides (@Model.Items.Count)</legend>
+        <p class="bd-muted" style="font-size:0.85rem;">Jeder Slide hat eigenes Bild, Overline, Titel und Untertitel. Die Buttons (CTA) oben gelten für alle Slides.</p>
 
-    @foreach (var item in Model.Items.OrderBy(i => i.Reihenfolge))
-    {
-        <form method="post" asp-action="UpdateItem" asp-route-id="@Model.Id" class="bd-item-row">
+        @foreach (var item in Model.Items.OrderBy(i => i.Reihenfolge))
+        {
+            <div class="bd-slide-card">
+                <form method="post" asp-action="UpdateItem" asp-route-id="@Model.Id">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="itemId" value="@item.Id" />
+                    <div class="bd-slide-card__grid">
+                        <div class="bd-slide-card__media">
+                            <img id="slide_@(item.Id)_prev" class="bd-thumb" style="width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:6px;display:@(string.IsNullOrWhiteSpace(item.BildUrl) ? "none" : "block");" src="@item.BildUrl" alt="" />
+                            <input type="hidden" name="bildUrl" id="slide_@(item.Id)_url" value="@item.BildUrl" />
+                            <button type="button" class="bd-btn bd-btn--plain bd-btn--xs" style="margin-top:.5rem;width:100%;" data-media-pick data-media-target="#slide_@(item.Id)_url" data-media-preview="#slide_@(item.Id)_prev">Bild wählen</button>
+                        </div>
+                        <div class="bd-slide-card__fields">
+                            <div class="bd-form-field"><label>Overline</label><input name="overline" value="@item.Overline" placeholder="z. B. Off-Market · NRW" /></div>
+                            <div class="bd-form-field"><label>Titel (HTML &lt;em&gt; = Gold-Kursiv)</label><input name="titel" value="@item.Titel" placeholder="Diskret. &lt;em&gt;Exklusiv.&lt;/em&gt; Direkt." /></div>
+                            <div class="bd-form-field"><label>Untertitel</label><textarea name="text" rows="2">@item.Text</textarea></div>
+                            <div class="bd-slide-card__actions">
+                                <button type="submit" class="bd-btn bd-btn--gold bd-btn--xs">Speichern</button>
+                                <button formaction="@Url.Action("MoveItem", new { id = Model.Id })" name="direction" value="-1" class="bd-btn bd-btn--plain bd-btn--xs">↑</button>
+                                <button formaction="@Url.Action("MoveItem", new { id = Model.Id })" name="direction" value="1" class="bd-btn bd-btn--plain bd-btn--xs">↓</button>
+                                <button formaction="@Url.Action("DeleteItem", new { id = Model.Id })" class="bd-btn bd-btn--danger bd-btn--xs" onclick="return confirm('Slide löschen?');">Löschen</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        }
+
+        <form method="post" asp-action="AddItem" asp-route-id="@Model.Id" style="margin-top:1rem;">
             @Html.AntiForgeryToken()
-            <input type="hidden" name="itemId" value="@item.Id" />
-            <input name="titel" value="@item.Titel" placeholder="Titel / Zahl" />
-            <input name="text" value="@item.Text" placeholder="Text" />
-            <button type="submit" class="bd-btn bd-btn--plain bd-btn--xs">Speichern</button>
-            <span class="bd-item-row__btns">
-                <button formaction="@Url.Action("MoveItem", new { id = Model.Id })" name="direction" value="-1" class="bd-btn bd-btn--plain bd-btn--xs">↑</button>
-                <button formaction="@Url.Action("MoveItem", new { id = Model.Id })" name="direction" value="1" class="bd-btn bd-btn--plain bd-btn--xs">↓</button>
-                <button formaction="@Url.Action("DeleteItem", new { id = Model.Id })" class="bd-btn bd-btn--danger bd-btn--xs" onclick="return confirm('Element löschen?');">×</button>
-            </span>
+            <button type="submit" class="bd-btn bd-btn--ink bd-btn--sm">+ Neuen Slide hinzufügen</button>
         </form>
-    }
+    </fieldset>
+}
+else
+{
+    <fieldset class="bd-aform" style="margin-top:2rem;">
+        <legend>Listenelemente (@Model.Items.Count)</legend>
+        <p class="bd-muted" style="font-size:0.85rem;">Z. B. Leistungs-Karten, Vorgehens-Schritte, Zahlen (Titel = Zahl), Klientel-Einträge.</p>
 
-    <form method="post" asp-action="AddItem" asp-route-id="@Model.Id" class="bd-item-row bd-item-row--add">
-        @Html.AntiForgeryToken()
-        <input name="titel" placeholder="Neuer Titel / Zahl" />
-        <input name="text" placeholder="Neuer Text" />
-        <button type="submit" class="bd-btn bd-btn--ink bd-btn--xs">+ Hinzufügen</button>
-        <span></span>
-    </form>
-</fieldset>
+        @foreach (var item in Model.Items.OrderBy(i => i.Reihenfolge))
+        {
+            <form method="post" asp-action="UpdateItem" asp-route-id="@Model.Id" class="bd-item-row">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="itemId" value="@item.Id" />
+                <input name="titel" value="@item.Titel" placeholder="Titel / Zahl" />
+                <input name="text" value="@item.Text" placeholder="Text" />
+                <button type="submit" class="bd-btn bd-btn--plain bd-btn--xs">Speichern</button>
+                <span class="bd-item-row__btns">
+                    <button formaction="@Url.Action("MoveItem", new { id = Model.Id })" name="direction" value="-1" class="bd-btn bd-btn--plain bd-btn--xs">↑</button>
+                    <button formaction="@Url.Action("MoveItem", new { id = Model.Id })" name="direction" value="1" class="bd-btn bd-btn--plain bd-btn--xs">↓</button>
+                    <button formaction="@Url.Action("DeleteItem", new { id = Model.Id })" class="bd-btn bd-btn--danger bd-btn--xs" onclick="return confirm('Element löschen?');">×</button>
+                </span>
+            </form>
+        }
+
+        <form method="post" asp-action="AddItem" asp-route-id="@Model.Id" class="bd-item-row bd-item-row--add">
+            @Html.AntiForgeryToken()
+            <input name="titel" placeholder="Neuer Titel / Zahl" />
+            <input name="text" placeholder="Neuer Text" />
+            <button type="submit" class="bd-btn bd-btn--ink bd-btn--xs">+ Hinzufügen</button>
+            <span></span>
+        </form>
+    </fieldset>
+}

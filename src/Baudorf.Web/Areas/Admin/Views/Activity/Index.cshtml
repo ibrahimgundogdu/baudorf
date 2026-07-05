@@ -3,14 +3,14 @@
     ViewData["Title"] = "Aktivität";
 }
 
-<div x-data="{ tab: 'logins' }">
+<div data-tabs>
     <div class="bd-filter-pills" style="margin-bottom:1.4rem;">
-        <button class="bd-btn bd-btn--xs" :class="tab==='logins' ? 'bd-btn--ink' : 'bd-btn--plain'" @@click="tab='logins'">Anmeldungen (@Model.Logins.Count)</button>
-        <button class="bd-btn bd-btn--xs" :class="tab==='views' ? 'bd-btn--ink' : 'bd-btn--plain'" @@click="tab='views'">Objektaufrufe (@Model.Aufrufe.Count)</button>
-        <button class="bd-btn bd-btn--xs" :class="tab==='wa' ? 'bd-btn--ink' : 'bd-btn--plain'" @@click="tab='wa'">WhatsApp-Klicks (@Model.WhatsApp.Count)</button>
+        <button type="button" class="bd-btn bd-btn--xs bd-btn--ink" data-tab="logins">Anmeldungen (@Model.Logins.Count)</button>
+        <button type="button" class="bd-btn bd-btn--xs bd-btn--plain" data-tab="views">Objektaufrufe (@Model.Aufrufe.Count)</button>
+        <button type="button" class="bd-btn bd-btn--xs bd-btn--plain" data-tab="wa">WhatsApp-Klicks (@Model.WhatsApp.Count)</button>
     </div>
 
-    <div x-show="tab==='logins'">
+    <div data-tab-panel="logins">
         <table class="bd-table bd-table--compact">
             <thead><tr><th>Zeitpunkt</th><th>E-Mail</th><th>IP</th><th>User-Agent</th></tr></thead>
             <tbody>
@@ -28,7 +28,7 @@
         </table>
     </div>
 
-    <div x-show="tab==='views'" x-cloak>
+    <div data-tab-panel="views" hidden>
         <table class="bd-table bd-table--compact">
             <thead><tr><th>Zeitpunkt</th><th>Objekt</th><th>Benutzer</th><th>IP</th></tr></thead>
             <tbody>
@@ -46,7 +46,7 @@
         </table>
     </div>
 
-    <div x-show="tab==='wa'" x-cloak>
+    <div data-tab-panel="wa" hidden>
         <table class="bd-table bd-table--compact">
             <thead><tr><th>Zeitpunkt</th><th>Benutzer</th><th>Objekt</th><th>Quelle</th></tr></thead>
             <tbody>

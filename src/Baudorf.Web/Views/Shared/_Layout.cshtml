@@ -12,28 +12,27 @@
     <link rel="stylesheet" href="~/css/pages.css" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
     <noscript><style>[data-reveal]{opacity:1!important;transform:none!important}</style></noscript>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body>
-    <header class="bd-nav" x-data="{ open: false, scrolled: false }"
-            @@scroll.window="scrolled = (window.scrollY > 30)"
-            :class="{ 'is-scrolled': scrolled }">
+    <header class="bd-nav" id="siteNav">
         <div class="bd-nav__inner">
-            <a class="bd-nav__brand" asp-controller="Home" asp-action="Index" aria-label="Baudorf Startseite">
-                <img src="~/img/brand/baudorf-logo-mark.png" alt="Baudorf Immobilien GmbH" />
-            </a>
-
-            <a class="bd-nav__phone" href="tel:@Settings.PhoneLink">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                <span>@Settings.Get("contact.phone", "0177 – 838 78 98")</span>
-            </a>
-
-            <nav class="bd-nav__links" aria-label="Hauptnavigation">
-                <a asp-controller="Home" asp-action="Index">Startseite</a>
+            <nav class="bd-nav__left" aria-label="Hauptnavigation">
+                <a asp-controller="Home" asp-action="Index">Baudorf</a>
                 <a asp-controller="Immobilien" asp-action="Index">Immobilien</a>
                 <a asp-controller="Home" asp-action="Index" asp-fragment="leistungen">Leistungen</a>
                 <a asp-controller="Home" asp-action="Index" asp-fragment="ueber">Über uns</a>
                 <a asp-controller="Kontakt" asp-action="Index">Kontakt</a>
+            </nav>
+
+            <a class="bd-nav__brand" asp-controller="Home" asp-action="Index" aria-label="Baudorf Startseite">
+                <img src="~/img/brand/baudorf-logo-cream.png" alt="Baudorf Immobilien GmbH" />
+            </a>
+
+            <div class="bd-nav__right">
+                <a class="bd-nav__phone" href="tel:@Settings.PhoneLink">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    <span>@Settings.Get("contact.phone", "0177 – 838 78 98")</span>
+                </a>
                 @if (User.Identity?.IsAuthenticated == true)
                 {
                     var anzeige = User.FindFirst("AnzeigeName")?.Value ?? User.Identity!.Name;
@@ -55,32 +54,32 @@
                     </a>
                     <a class="bd-nav__register" asp-area="Identity" asp-page="/Account/Register">Registrieren</a>
                 }
-            </nav>
+            </div>
 
-            <button class="bd-nav__burger" @@click="open = true" aria-label="Menü öffnen">
+            <button class="bd-nav__burger" data-menu-open aria-label="Menü öffnen">
                 <span></span><span></span><span></span>
             </button>
         </div>
 
         <!-- Mobile menu -->
-        <div class="bd-mobile" x-show="open" x-cloak @@keydown.escape.window="open = false">
+        <div class="bd-mobile" id="mobileMenu">
             <div class="bd-mobile__head">
                 <img src="~/img/brand/baudorf-logo-mark.png" alt="Baudorf" height="34" />
-                <button class="bd-mobile__close" @@click="open = false" aria-label="Menü schließen">&times;</button>
+                <button class="bd-mobile__close" data-menu-close aria-label="Menü schließen">&times;</button>
             </div>
             <nav class="bd-mobile__links">
-                <a asp-controller="Home" asp-action="Index" @@click="open = false">Startseite</a>
-                <a asp-controller="Immobilien" asp-action="Index" @@click="open = false">Immobilien</a>
-                <a asp-controller="Home" asp-action="Index" asp-fragment="leistungen" @@click="open = false">Leistungen</a>
-                <a asp-controller="Home" asp-action="Index" asp-fragment="ueber" @@click="open = false">Über uns</a>
-                <a asp-controller="Kontakt" asp-action="Index" @@click="open = false">Kontakt</a>
+                <a asp-controller="Home" asp-action="Index">Baudorf</a>
+                <a asp-controller="Immobilien" asp-action="Index">Immobilien</a>
+                <a asp-controller="Home" asp-action="Index" asp-fragment="leistungen">Leistungen</a>
+                <a asp-controller="Home" asp-action="Index" asp-fragment="ueber">Über uns</a>
+                <a asp-controller="Kontakt" asp-action="Index">Kontakt</a>
             </nav>
             <div class="bd-mobile__actions">
                 @if (User.Identity?.IsAuthenticated == true)
                 {
                     @if (User.IsInRole("Admin") || User.IsInRole("Redakteur"))
                     {
-                        <a class="bd-mobile__login" asp-area="Admin" asp-controller="Home" asp-action="Index" @@click="open = false">Admin</a>
+                        <a class="bd-mobile__login" asp-area="Admin" asp-controller="Home" asp-action="Index">Admin</a>
                     }
                     <form method="post" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/">
                         <button type="submit" class="bd-mobile__register" style="border:0;cursor:pointer;">Abmelden</button>
@@ -88,11 +87,11 @@
                 }
                 else
                 {
-                    <a class="bd-mobile__login" asp-area="Identity" asp-page="/Account/Login" @@click="open = false">Login</a>
-                    <a class="bd-mobile__register" asp-area="Identity" asp-page="/Account/Register" @@click="open = false">Registrieren</a>
+                    <a class="bd-mobile__login" asp-area="Identity" asp-page="/Account/Login">Login</a>
+                    <a class="bd-mobile__register" asp-area="Identity" asp-page="/Account/Register">Registrieren</a>
                 }
             </div>
-            <a class="bd-mobile__phone" href="tel:@Settings.PhoneLink" @@click="open = false">
+            <a class="bd-mobile__phone" href="tel:@Settings.PhoneLink">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                 @Settings.Get("contact.phone", "0177 – 838 78 98")
             </a>

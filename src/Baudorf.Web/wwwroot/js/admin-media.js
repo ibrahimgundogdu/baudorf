@@ -25,11 +25,17 @@
         const items = await res.json();
         if (!items.length) { grid.innerHTML = '<p class="bd-muted">Noch keine Medien. Wechsle zu „Hochladen".</p>'; return; }
         grid.innerHTML = "";
+        const isVideo = (u) => /\.(mp4|webm|ogg|ogv|mov)(\?|$)/i.test(u || "");
         items.forEach((it) => {
           const b = document.createElement("button");
           b.type = "button";
           b.className = "bd-mp__item";
-          b.style.backgroundImage = "url('" + it.url + "')";
+          if (isVideo(it.url)) {
+            b.classList.add("bd-mp__item--video");
+            b.innerHTML = '<video src="' + it.url + '" muted preload="metadata"></video><span class="bd-mp__play">▶</span>';
+          } else {
+            b.style.backgroundImage = "url('" + it.url + "')";
+          }
           b.title = it.fileName || it.url;
           b.addEventListener("click", () => choose(it.url, it));
           grid.appendChild(b);

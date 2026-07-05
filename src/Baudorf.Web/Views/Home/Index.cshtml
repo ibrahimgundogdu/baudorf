@@ -16,33 +16,60 @@
 @{ var hero = Model.Sec("hero"); }
 @if (hero is not null)
 {
-    <section class="hx-hero" x-data="{ i: 0, n: 4 }" x-init="setInterval(() => i = (i + 1) % n, 5500)">
-        @{ var heroImgs = new[] { "/img/design/hero1.jpg", "/img/design/hero2.jpg", "/img/design/hero3.jpg", "/img/design/hero4.jpg" }; }
-        @for (var hi = 0; hi < heroImgs.Length; hi++)
+    var slides = hero.Items.OrderBy(s => s.Reihenfolge).ToList();
+    if (slides.Count == 0)
+    {
+        slides.Add(new HomeSectionItem { Overline = hero.Overline, Titel = hero.Titel, Text = hero.Text, BildUrl = "/img/design/hero1.jpg" });
+    }
+    var slidesJson = System.Text.Json.JsonSerializer.Serialize(
+        slides.Select(s => new { o = s.Overline ?? "", t = s.Titel ?? "", x = s.Text ?? "", video = DisplayHelpers.IsVideoUrl(s.BildUrl) }));
+
+    <section class="hx-hero" id="heroCarousel" data-duration="6000">
+        <script type="application/json" id="heroSlidesData">@Html.Raw(slidesJson)</script>
+        @for (var idx = 0; idx < slides.Count; idx++)
         {
-            <img class="hx-hero__bg" :class="{ 'is-on': i === @hi }" src="@heroImgs[hi]" alt="" @(hi == 0 ? "fetchpriority=high" : "loading=lazy") />
+            var url = slides[idx].BildUrl;
+            @if (DisplayHelpers.IsVideoUrl(url))
+            {
+                <video class="hx-hero__bg @(idx == 0 ? "is-on" : "")" data-slide="@idx" muted autoplay playsinline preload="auto">
+                    <source src="@url" type="@(url!.EndsWith(".webm", StringComparison.OrdinalIgnoreCase) ? "video/webm" : "video/mp4")" />
+                </video>
+            }
+            else
+            {
+                <img class="hx-hero__bg @(idx == 0 ? "is-on" : "")" data-slide="@idx" src="@url" alt="" @(idx == 0 ? "fetchpriority=high" : "loading=lazy") />
+            }
         }
         <span class="hx-hero__veil hx-hero__veil--side"></span>
         <span class="hx-hero__veil hx-hero__veil--bottom"></span>
         <img class="hx-hero__emblem" src="~/img/brand/baudorf-emblem-cream.png" alt="" />
+        @if (slides.Count > 1)
+        {
+            <button type="button" class="hx-hero__nav hx-hero__nav--prev" data-hero-prev aria-label="Vorheriger Slide">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <button type="button" class="hx-hero__nav hx-hero__nav--next" data-hero-next aria-label="Nächster Slide">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+        }
         <div class="hx-hero__inner">
-            @if (!string.IsNullOrWhiteSpace(hero.Overline))
-            {
-                <div class="hx-eyebrow hx-hero__eyebrow"><span>@hero.Overline</span></div>
-            }
-            <h1 class="hx-h1">@Html.Raw(hero.Titel)</h1>
-            <p class="hx-hero__lead">@hero.Text</p>
+            <div class="hx-eyebrow hx-hero__eyebrow" data-hero-overline><span>@slides[0].Overline</span></div>
+            <h1 class="hx-h1" data-hero-title>@Html.Raw(slides[0].Titel)</h1>
+            <p class="hx-hero__lead" data-hero-lead>@slides[0].Text</p>
             <div class="hx-hero__cta">
                 @if (!string.IsNullOrWhiteSpace(hero.CtaText)) { <a class="hx-btn hx-btn--gold" href="@Url(hero.CtaUrl)">@hero.CtaText <span>&rarr;</span></a> }
                 @if (!string.IsNullOrWhiteSpace(hero.Cta2Text)) { <a class="hx-btn hx-btn--outline-light" href="@Url(hero.Cta2Url)">@hero.Cta2Text</a> }
             </div>
         </div>
-        <div class="hx-hero__dots">
-            @for (var hi = 0; hi < heroImgs.Length; hi++)
-            {
-                <button type="button" :class="{ 'is-on': i === @hi }" @@click="i = @hi" aria-label="Bild @(hi + 1)"></button>
-            }
-        </div>
+        @if (slides.Count > 1)
+        {
+            <div class="hx-hero__dots">
+                @for (var idx = 0; idx < slides.Count; idx++)
+                {
+                    <button type="button" class="@(idx == 0 ? "is-on" : "")" data-hero-dot="@idx" aria-label="Slide @(idx + 1)"></button>
+                }
+            </div>
+        }
         <div class="hx-hero__scroll"><span>Scrollen</span><span></span></div>
     </section>
 }

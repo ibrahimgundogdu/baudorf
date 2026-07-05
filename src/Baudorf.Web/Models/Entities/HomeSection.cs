@@ -39,7 +39,8 @@ public class HomeSectionItem
     public int HomeSectionId { get; set; }
     public HomeSection? HomeSection { get; set; }
 
-    [MaxLength(160)] public string? Titel { get; set; }   // z. B. Zahl "1994" oder Kartentitel
+    [MaxLength(200)] public string? Overline { get; set; } // Hero-Slide-Overline (nur bei Hero genutzt)
+    [MaxLength(160)] public string? Titel { get; set; }   // z. B. Zahl "1994", Kartentitel oder Hero-Slogan
     public string? Text { get; set; }
     [MaxLength(500)] public string? BildUrl { get; set; }
 

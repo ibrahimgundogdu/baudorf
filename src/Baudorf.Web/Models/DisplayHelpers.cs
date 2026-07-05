@@ -51,6 +51,18 @@ public static class DisplayHelpers
     public static string FlaecheText(double? m2) =>
         m2 is { } v ? $"{v.ToString("N0", De)} m²" : "—";
 
+    /// <summary>Ist die URL ein Video (nach Dateiendung)?</summary>
+    public static bool IsVideoUrl(string? url)
+    {
+        if (string.IsNullOrWhiteSpace(url)) return false;
+        var q = url.Split('?')[0];
+        return q.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase)
+            || q.EndsWith(".webm", StringComparison.OrdinalIgnoreCase)
+            || q.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase)
+            || q.EndsWith(".ogv", StringComparison.OrdinalIgnoreCase)
+            || q.EndsWith(".mov", StringComparison.OrdinalIgnoreCase);
+    }
+
     /// <summary>Geschätzte Lesezeit in Minuten (~200 Wörter/Minute, HTML wird entfernt).</summary>
     public static int LesezeitMinuten(this BlogPost p)
     {

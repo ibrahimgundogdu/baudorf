@@ -26,6 +26,8 @@ public class MediaController(ApplicationDbContext db, IMediaLibrary media, IStor
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [RequestSizeLimit(90_000_000)]
+    [RequestFormLimits(MultipartBodyLengthLimit = 90_000_000)]
     public async Task<IActionResult> Upload(List<IFormFile> dateien)
     {
         var saved = new List<object>();
@@ -33,7 +35,7 @@ public class MediaController(ApplicationDbContext db, IMediaLibrary media, IStor
 
         foreach (var file in dateien.Where(f => f.Length > 0))
         {
-            if (!UploadValidation.IsValidImage(file.FileName, file.ContentType, file.Length, out var err))
+            if (!UploadValidation.IsValidMedia(file.FileName, file.ContentType, file.Length, out var err))
             {
                 fehler.Add($"{file.FileName}: {err}");
                 continue;

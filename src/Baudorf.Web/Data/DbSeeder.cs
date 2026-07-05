@@ -468,7 +468,7 @@ public static class DbSeeder
             db.HomeSections.AddRange(neue);
     }
 
-    private const string DesignVersion = "4";
+    private const string DesignVersion = "6";
 
     /// <summary>
     /// Einmalige Aktualisierung der Startseiten-Inhalte auf den freigegebenen Entwurf.
@@ -495,12 +495,26 @@ public static class DbSeeder
             return s;
         }
 
+        // Hero mit mehreren Slides — jeder Slide (HomeSectionItem) trägt eigenes Overline/Titel/Text/Bild.
+        var heroSektion = Sec("hero", 1, null, null, null, "Objekte anfragen", "/Kontakt", "Über uns", "/#ueber");
+        void HeroSlide(string ov, string ti, string tx, string bild) =>
+            heroSektion.Items.Add(new HomeSectionItem { Overline = ov, Titel = ti, Text = tx, BildUrl = bild, Reihenfolge = heroSektion.Items.Count });
+        HeroSlide("Off-Market-Immobilien · NRW · seit 1994", "Diskret. <em>Exklusiv.</em> Direkt.",
+            "Wir vermitteln Wohn-, Gewerbe- und Kapitalanlageobjekte abseits des öffentlichen Marktes — vertraulich, fundiert und auf Augenhöhe mit Family Offices und institutionellen Investoren.",
+            "/uploads/video/hero01.mp4");
+        HeroSlide("Diskretion · Substanz · Vertrauen", "Werte, die <em>Bestand</em> haben.",
+            "Wohn- und Geschäftshäuser, Kapitalanlagen und Projektentwicklungen — sorgfältig geprüft und ausschließlich vertraulich vermittelt.",
+            "/uploads/video/hero02.mp4");
+        HeroSlide("Family Offices · Institutionelle Investoren", "Zugang statt <em>Zufall.</em>",
+            "Passende Objekte erreichen unsere vorgemerkten Investoren oft, bevor überhaupt über eine öffentliche Vermarktung nachgedacht wird.",
+            "/img/design/hero3.jpg");
+        HeroSlide("Velbert · Nordrhein-Westfalen", "Regional verwurzelt, <em>diskret vernetzt.</em>",
+            "Seit 1994 begleiten wir Eigentümer und Investoren bei Transaktionen, die nicht für die Öffentlichkeit bestimmt sind.",
+            "/img/design/hero4.jpg");
+
         var sektionen = new List<HomeSection>
         {
-            Sec("hero", 1, "Off-Market-Immobilien · NRW · seit 1994",
-                "Diskret. <em>Exklusiv.</em> Direkt.",
-                "Wir vermitteln Wohn-, Gewerbe- und Kapitalanlageobjekte abseits des öffentlichen Marktes — vertraulich, fundiert und auf Augenhöhe mit Family Offices und institutionellen Investoren.",
-                "Objekte anfragen", "/Kontakt", "Über uns", "/#ueber"),
+            heroSektion,
             Sec("philosophie", 2, "Philosophie",
                 "Wir vermitteln nicht.<br><em>Wir verbinden.</em>",
                 "Seit 1994 begleiten wir Eigentümer und Investoren bei Transaktionen, die nicht für die Öffentlichkeit bestimmt sind. Was als Architekturbüro begann, ist heute ein spezialisiertes Maklerhaus für die diskrete Vermarktung anspruchsvoller Immobilien in NRW und darüber hinaus.\n\nStille ist kein Mangel an Lautstärke — sie ist eine Haltung. <strong>Still, wirkungsvoll, mit Stil.</strong>"),

@@ -81,8 +81,8 @@
       document.cookie = name + "=" + encodeURIComponent(value) + "; expires=" + d.toUTCString() + "; path=/; SameSite=Lax";
     };
 
-    const hide = () => { cc.hidden = true; };
-    const show = () => { cc.hidden = false; };
+    const hide = () => { cc.hidden = true; document.body.style.overflow = ""; };
+    const show = () => { cc.hidden = false; document.body.style.overflow = "hidden"; };
     const openCustomize = () => {
       prefs.hidden = false;
       btnCustomize.hidden = true;
@@ -122,4 +122,115 @@
 
     if (!readCookie(COOKIE)) show();
   }
+
+  // ---------- Hero-Carousel (vanilla, CSP-sicher — kein eval/Alpine nötig) ----------
+  const hero = document.getElementById("heroCarousel");
+  if (hero) {
+    const dataEl = document.getElementById("heroSlidesData");
+    let slides = [];
+    try { slides = JSON.parse(dataEl.textContent); } catch (e) { slides = []; }
+    const n = slides.length;
+    if (n > 0) {
+      const bgs = hero.querySelectorAll(".hx-hero__bg");
+      const dots = hero.querySelectorAll("[data-hero-dot]");
+      const overlineWrap = hero.querySelector("[data-hero-overline]");
+      const overlineSpan = hero.querySelector("[data-hero-overline] span");
+      const titleEl = hero.querySelector("[data-hero-title]");
+      const leadEl = hero.querySelector("[data-hero-lead]");
+      const imageDuration = parseInt(hero.dataset.duration, 10) || 6000;
+      let i = 0;
+      let timer = null;
+
+      const setText = (s) => {
+        if (overlineSpan) overlineSpan.textContent = s.o || "";
+        if (overlineWrap) overlineWrap.style.display = s.o ? "" : "none";
+        if (titleEl) titleEl.innerHTML = s.t || "";
+        if (leadEl) leadEl.textContent = s.x || "";
+      };
+
+      const activate = () => {
+        clearTimeout(timer);
+        bgs.forEach((b) => b.classList.toggle("is-on", Number(b.dataset.slide) === i));
+        dots.forEach((d) => d.classList.toggle("is-on", Number(d.dataset.heroDot) === i));
+        setText(slides[i]);
+        hero.querySelectorAll("video.hx-hero__bg").forEach((v) => {
+          if (Number(v.dataset.slide) !== i) { v.pause(); }
+        });
+        const s = slides[i];
+        if (s && s.video) {
+          const v = hero.querySelector('video.hx-hero__bg[data-slide="' + i + '"]');
+          if (v) {
+            v.muted = true;
+            try { v.currentTime = 0; } catch (e) { }
+            const p = v.play();
+            if (p && p.catch) { p.catch(() => { if (n > 1) timer = setTimeout(next, imageDuration); }); }
+          } else if (n > 1) {
+            timer = setTimeout(next, imageDuration);
+          }
+        } else if (n > 1) {
+          timer = setTimeout(next, imageDuration);
+        }
+      };
+
+      function go(idx) { i = ((idx % n) + n) % n; activate(); }
+      function next() { go(i + 1); }
+      function prev() { go(i - 1); }
+
+      const nextBtn = hero.querySelector("[data-hero-next]");
+      const prevBtn = hero.querySelector("[data-hero-prev]");
+      if (nextBtn) nextBtn.addEventListener("click", next);
+      if (prevBtn) prevBtn.addEventListener("click", prev);
+      dots.forEach((d) => d.addEventListener("click", () => go(Number(d.dataset.heroDot))));
+      hero.querySelectorAll("video.hx-hero__bg").forEach((v) =>
+        v.addEventListener("ended", () => { if (Number(v.dataset.slide) === i) next(); })
+      );
+
+      activate();
+    }
+  }
+
+  // ---------- Nav: Scroll-Verkleinerung + Mobile-Menü (vanilla) ----------
+  const nav = document.getElementById("siteNav");
+  if (nav) {
+    const onScroll = () => nav.classList.toggle("is-scrolled", window.scrollY > 30);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+  }
+  const mobileMenu = document.getElementById("mobileMenu");
+  if (mobileMenu) {
+    const openBtn = document.querySelector("[data-menu-open]");
+    const openMenu = () => { mobileMenu.classList.add("is-open"); document.body.style.overflow = "hidden"; };
+    const closeMenu = () => { mobileMenu.classList.remove("is-open"); document.body.style.overflow = ""; };
+    if (openBtn) openBtn.addEventListener("click", openMenu);
+    mobileMenu.querySelectorAll("a, [data-menu-close]").forEach((el) => el.addEventListener("click", closeMenu));
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeMenu(); });
+  }
+
+  // ---------- Lightbox (Objektdetail-Galerie, vanilla) ----------
+  const lightbox = document.getElementById("hxLightbox");
+  if (lightbox) {
+    const lbImg = lightbox.querySelector("img");
+    const openLb = (src) => { if (lbImg) lbImg.src = src; lightbox.classList.add("is-open"); document.body.style.overflow = "hidden"; };
+    const closeLb = () => { lightbox.classList.remove("is-open"); document.body.style.overflow = ""; };
+    document.querySelectorAll("[data-lightbox-src]").forEach((el) =>
+      el.addEventListener("click", () => openLb(el.getAttribute("data-lightbox-src")))
+    );
+    lightbox.addEventListener("click", closeLb);
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeLb(); });
+  }
+
+  // ---------- Tabs (Admin-Aktivität u. Ä., vanilla) ----------
+  document.querySelectorAll("[data-tabs]").forEach((group) => {
+    const btns = group.querySelectorAll("[data-tab]");
+    const panels = group.querySelectorAll("[data-tab-panel]");
+    const select = (name) => {
+      btns.forEach((b) => {
+        const on = b.dataset.tab === name;
+        b.classList.toggle("bd-btn--ink", on);
+        b.classList.toggle("bd-btn--plain", !on);
+      });
+      panels.forEach((p) => { p.hidden = p.dataset.tabPanel !== name; });
+    };
+    btns.forEach((b) => b.addEventListener("click", () => select(b.dataset.tab)));
+  });
 })();
