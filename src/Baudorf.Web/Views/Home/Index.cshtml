@@ -57,7 +57,7 @@
             <h1 class="hx-h1" data-hero-title>@Html.Raw(slides[0].Titel)</h1>
             <p class="hx-hero__lead" data-hero-lead>@slides[0].Text</p>
             <div class="hx-hero__cta">
-                @if (!string.IsNullOrWhiteSpace(hero.CtaText)) { <a class="hx-btn hx-btn--gold" href="@Url(hero.CtaUrl)">@hero.CtaText <span>&rarr;</span></a> }
+                @if (!string.IsNullOrWhiteSpace(hero.CtaText)) { <a class="hx-btn hx-btn--gold" href="@Url(hero.CtaUrl)">@hero.CtaText</a> }
                 @if (!string.IsNullOrWhiteSpace(hero.Cta2Text)) { <a class="hx-btn hx-btn--outline-light" href="@Url(hero.Cta2Url)">@hero.Cta2Text</a> }
             </div>
         </div>
@@ -125,12 +125,12 @@
                         <span class="hx-card__no">0@(++ln)</span>
                         <h3>@item.Titel</h3>
                         <p>@item.Text</p>
-                        <span class="hx-card__more">Mehr erfahren &rarr;</span>
+                        <span class="hx-card__more">Mehr erfahren</span>
                     </div>
                 }
                 <a class="hx-card hx-card--dark" data-reveal asp-controller="Kontakt" asp-action="Index">
                     <span>Sprechen wir über Ihr Vorhaben.</span>
-                    <span class="hx-card__more">Kontakt aufnehmen &rarr;</span>
+                    <span class="hx-card__more">Kontakt aufnehmen</span>
                 </a>
             </div>
         </div>
@@ -193,7 +193,7 @@
                                     {
                                         <span class="hx-tile__faktor"><small>Kaufpreis</small><b style="font-size:17px">@p.PreisText()</b></span>
                                     }
-                                    <span class="hx-tile__det">Details &rarr;</span>
+                                    <span class="hx-tile__det">Details</span>
                                 </div>
                             </div>
                         </div>
@@ -201,7 +201,7 @@
                 }
             </div>
             <div class="hx-mosaic-more">
-                <a class="hx-link" asp-controller="Immobilien" asp-action="Index">Alle Objekte ansehen &rarr;</a>
+                <a class="hx-link" asp-controller="Immobilien" asp-action="Index">Alle Objekte ansehen</a>
             </div>
         </div>
     </section>
@@ -218,7 +218,7 @@
             <div class="hx-eyebrow hx-eyebrow--light hx-eyebrow--center"><span>@stmt.Overline</span></div>
             <h2>@Html.Raw(stmt.Titel)</h2>
             @if (!string.IsNullOrWhiteSpace(stmt.Text)) { <p>@stmt.Text</p> }
-            @if (!string.IsNullOrWhiteSpace(stmt.CtaText)) { <a class="hx-btn hx-btn--gold hx-btn--gold-lt" href="@Url(stmt.CtaUrl)">@stmt.CtaText &rarr;</a> }
+            @if (!string.IsNullOrWhiteSpace(stmt.CtaText)) { <a class="hx-btn hx-btn--gold hx-btn--gold-lt" href="@Url(stmt.CtaUrl)">@stmt.CtaText</a> }
         </div>
     </section>
 }
@@ -360,7 +360,7 @@
                             <h3>@Html.Raw(tipp.Titel)</h3>
                             <p>@tipp.Text</p>
                         </div>
-                        @if (!string.IsNullOrWhiteSpace(tipp.CtaText)) { <a class="hx-btn hx-btn--gold" href="@Url(tipp.CtaUrl)">@tipp.CtaText &rarr;</a> }
+                        @if (!string.IsNullOrWhiteSpace(tipp.CtaText)) { <a class="hx-btn hx-btn--gold" href="@Url(tipp.CtaUrl)">@tipp.CtaText</a> }
                     </div>
                 }
                 @if (karriere is not null)
@@ -371,7 +371,7 @@
                             <h3>@Html.Raw(karriere.Titel)</h3>
                             <p>@karriere.Text</p>
                         </div>
-                        @if (!string.IsNullOrWhiteSpace(karriere.CtaText)) { <a class="hx-btn hx-btn--outline-light" href="@Url(karriere.CtaUrl)">@karriere.CtaText &rarr;</a> }
+                        @if (!string.IsNullOrWhiteSpace(karriere.CtaText)) { <a class="hx-btn hx-btn--outline-light" href="@Url(karriere.CtaUrl)">@karriere.CtaText</a> }
                     </div>
                 }
             </div>
@@ -390,7 +390,7 @@
                     <div class="hx-eyebrow"><span>@(insSec?.Overline ?? "Markt & Insights")</span></div>
                     <h2 class="hx-h2">@Html.Raw(insSec?.Titel ?? "Expertenwissen für <em class=\"hx-em\">kluge Investoren</em>")</h2>
                 </div>
-                <a class="hx-link" asp-controller="Blog" asp-action="Index">Alle Beiträge &rarr;</a>
+                <a class="hx-link" asp-controller="Blog" asp-action="Index">Alle Beiträge</a>
             </div>
             <div class="hx-insights">
                 @foreach (var a in Model.Insights)
@@ -427,7 +427,7 @@
                 <h2>@Html.Raw(kontakt.Titel)</h2>
                 <p>@kontakt.Text</p>
                 <div class="hx-kontakt__cta">
-                    @if (!string.IsNullOrWhiteSpace(kontakt.CtaText)) { <a class="hx-btn hx-btn--gold hx-btn--gold-lt" href="@Url(kontakt.CtaUrl)">@kontakt.CtaText &rarr;</a> }
+                    @if (!string.IsNullOrWhiteSpace(kontakt.CtaText)) { <a class="hx-btn hx-btn--gold hx-btn--gold-lt" href="@Url(kontakt.CtaUrl)">@kontakt.CtaText</a> }
                     <a class="hx-btn hx-btn--outline-light" href="tel:+4901778387898">Anrufen</a>
                 </div>
             </div>

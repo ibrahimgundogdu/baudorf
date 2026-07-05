@@ -18,12 +18,12 @@
 .hx-eyebrow--center::after { display: none; }
 
 .hx-h2 { margin: 0; font: 400 clamp(32px, 4.5vw, 56px)/1.05 var(--font); letter-spacing: -.02em; color: var(--ink); }
-.hx-em { font-style: italic; color: var(--bd-gold); }
-/* Alle <em> in Design-Überschriften sind goldene Kursiv-Akzente (wie im Entwurf) */
+.hx-em { font-style: normal; font-weight: 500; color: var(--bd-gold); }
+/* Akzentwörter: aufrechtes Gold (kein Kursiv) — ruhiger, edler; Emphase trägt allein die Farbe + minimal mehr Gewicht */
 .hx-h1 em, .hx-h2 em, .hx-philo__text h2 em, .hx-band__inner h2 em,
 .hx-kontakt__box h2 em, .hx-tk__cell h3 em, .hx-ueber__intro h2 em,
 .hx-klientel__intro h2 em, .hx-vorgehen__head h2 em, .hx-pagehead h1 em,
-.hx-dmain h1 em, .hx-similar h2 em { font-style: italic; color: var(--bd-gold); }
+.hx-dmain h1 em, .hx-similar h2 em { font-style: normal; font-weight: 500; color: var(--bd-gold); }
 
 .hx-btn { display: inline-flex; align-items: center; gap: 12px; padding: 17px 32px; cursor: pointer; font: 600 12px/1 var(--font); letter-spacing: .16em; text-transform: uppercase; transition: .35s var(--ease); border: 1px solid transparent; border-radius: 9px; text-decoration: none; }
 .hx-btn--gold { background: var(--bd-gold); color: var(--on-accent); box-shadow: 0 10px 26px -12px rgba(150,119,58,.6); }
