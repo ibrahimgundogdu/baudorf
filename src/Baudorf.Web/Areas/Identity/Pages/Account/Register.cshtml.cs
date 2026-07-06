@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Baudorf.Web.Data;
 using Baudorf.Web.Models;
 using Baudorf.Web.Models.Entities;
+using Baudorf.Web.Models.Validation;
 using Baudorf.Web.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -76,7 +77,7 @@ public class RegisterModel(
         [Compare(nameof(Password), ErrorMessage = "Die Passwörter stimmen nicht überein.")]
         public string ConfirmPassword { get; set; } = string.Empty;
 
-        [Range(typeof(bool), "true", "true", ErrorMessage = "Bitte akzeptieren Sie die AGB und Datenschutzerklärung.")]
+        [MustBeTrue(ErrorMessage = "Bitte akzeptieren Sie die AGB und Datenschutzerklärung.")]
         [Display(Name = "AGB & Datenschutz akzeptieren")]
         public bool AgbAkzeptiert { get; set; }
     }

@@ -96,6 +96,12 @@
                     </div>
                     <span asp-validation-for="DsgvoAkzeptiert" class="field-validation-error"></span>
 
+                    @{ var turnstileSiteKey = ViewData["TurnstileSiteKey"] as string; }
+                    @if (!string.IsNullOrEmpty(turnstileSiteKey))
+                    {
+                        <div class="cf-turnstile" data-sitekey="@turnstileSiteKey" style="margin-top:1.4rem"></div>
+                    }
+
                     <div style="margin-top:1.4rem">
                         <button type="submit" class="hx-btn hx-btn--gold">Anfrage senden</button>
                     </div>
@@ -124,4 +130,8 @@
 @section Scripts {
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <partial name="_ValidationScriptsPartial" />
+    @if (!string.IsNullOrEmpty(ViewData["TurnstileSiteKey"] as string))
+    {
+        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    }
 }

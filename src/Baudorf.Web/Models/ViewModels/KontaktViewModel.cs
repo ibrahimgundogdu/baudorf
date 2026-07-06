@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Baudorf.Web.Models.Validation;
 
 namespace Baudorf.Web.Models.ViewModels;
 
@@ -35,7 +36,7 @@ public class KontaktViewModel
     [Display(Name = "Ihr Anliegen")]
     public string Nachricht { get; set; } = string.Empty;
 
-    [Range(typeof(bool), "true", "true", ErrorMessage = "Bitte stimmen Sie der Datenschutzerklärung zu.")]
+    [MustBeTrue(ErrorMessage = "Bitte stimmen Sie der Datenschutzerklärung zu.")]
     [Display(Name = "Datenschutz")]
     public bool DsgvoAkzeptiert { get; set; }
 

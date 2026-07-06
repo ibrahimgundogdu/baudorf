@@ -7,17 +7,24 @@ using Baudorf.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Baudorf.Web.Controllers;
 
 public class KontaktController(
     ApplicationDbContext db,
     IEmailService email,
+    ITurnstileVerifier turnstile,
+    IOptions<TurnstileOptions> turnstileOptions,
     ILogger<KontaktController> logger) : Controller
 {
+    /// <summary>Site-Key fürs Turnstile-Widget; null = CAPTCHA deaktiviert (z. B. lokal ohne Keys).</summary>
+    private string? TurnstileSiteKey => turnstileOptions.Value.Enabled ? turnstileOptions.Value.SiteKey : null;
+
     [HttpGet]
     public async Task<IActionResult> Index(string? objekt)
     {
+        ViewData["TurnstileSiteKey"] = TurnstileSiteKey;
         var vm = new KontaktViewModel();
 
         if (!string.IsNullOrWhiteSpace(objekt))
@@ -41,12 +48,25 @@ public class KontaktController(
     [EnableRateLimiting("kontakt")]
     public async Task<IActionResult> Senden(KontaktViewModel vm)
     {
+        ViewData["TurnstileSiteKey"] = TurnstileSiteKey;
+
         // Honeypot: ausgefülltes verstecktes Feld → Bot. Stillschweigend "Erfolg" zeigen, nichts speichern.
         if (!string.IsNullOrWhiteSpace(vm.Website))
         {
             logger.LogWarning("Honeypot ausgelöst — Anfrage verworfen.");
             ViewData["Gesendet"] = true;
             return View(nameof(Index), new KontaktViewModel());
+        }
+
+        // CAPTCHA (nur wenn konfiguriert) — Bots aussperren.
+        if (turnstile.Enabled)
+        {
+            var token = Request.Form["cf-turnstile-response"].ToString();
+            var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
+            if (!await turnstile.VerifyAsync(token, ip))
+            {
+                ModelState.AddModelError(string.Empty, "Die Sicherheitsprüfung ist fehlgeschlagen. Bitte versuchen Sie es erneut.");
+            }
         }
 
         if (!ModelState.IsValid)
