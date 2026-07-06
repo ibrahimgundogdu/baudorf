@@ -12,6 +12,18 @@ public class ImmobilienController(ApplicationDbContext db, UserManager<Applicati
 {
     private const int PageSize = 9;
 
+    /// <summary>
+    /// Off-Market-Freigabe: angemeldet UND (Admin/Redakteur ODER als Investor freigegeben).
+    /// Erstbesucher sehen Off-Market nur verschleiert; freigegebene Nutzer klar.
+    /// </summary>
+    private async Task<bool> CanViewOffMarketAsync()
+    {
+        if (User.Identity?.IsAuthenticated != true) return false;
+        if (User.IsInRole("Admin") || User.IsInRole("Redakteur")) return true;
+        var user = await userMgr.GetUserAsync(User);
+        return user?.IstFreigegeben == true;
+    }
+
     [HttpGet]
     public async Task<IActionResult> Index([FromQuery] ImmobilienFilter filter)
     {
@@ -59,7 +71,8 @@ public class ImmobilienController(ApplicationDbContext db, UserManager<Applicati
             Filter = filter,
             Page = page,
             TotalPages = totalPages,
-            TotalCount = total
+            TotalCount = total,
+            CanViewOffMarket = await CanViewOffMarketAsync()
         });
     }
 
@@ -76,14 +89,7 @@ public class ImmobilienController(ApplicationDbContext db, UserManager<Applicati
         if (objekt is null) return NotFound();
 
         var istAngemeldet = User.Identity?.IsAuthenticated == true;
-        var istFreigegeben = false;
-        if (istAngemeldet)
-        {
-            var user = await userMgr.GetUserAsync(User);
-            istFreigegeben = user?.IstFreigegeben == true;
-        }
-
-        var gesperrt = objekt.IstOffMarket && !istFreigegeben;
+        var gesperrt = objekt.IstOffMarket && !await CanViewOffMarketAsync();
 
         // Objekt-Aufruf protokollieren (für Admin-Aktivität).
         db.PropertyViews.Add(new PropertyView

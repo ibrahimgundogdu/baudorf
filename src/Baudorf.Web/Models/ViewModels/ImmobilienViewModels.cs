@@ -22,6 +22,9 @@ public class ImmobilienListViewModel
     public int TotalPages { get; set; } = 1;
     public int TotalCount { get; set; }
 
+    /// <summary>Angemeldeter, freigegebener Nutzer (oder Staff) → Off-Market-Eckdaten sichtbar.</summary>
+    public bool CanViewOffMarket { get; set; }
+
     public bool HatVorige => Page > 1;
     public bool HatNaechste => Page < TotalPages;
 }

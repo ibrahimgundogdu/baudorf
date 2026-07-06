@@ -38,10 +38,10 @@
     <a class="hx-back" asp-controller="Immobilien" asp-action="Index">&larr; Zurück zum Portfolio</a>
 
     <!-- Galerie -->
-    <div class="hx-dgallery @(locked ? "is-locked" : "")">
+    <div class="hx-dgallery @(locked ? "is-locked" : "")" data-gallery>
         @if (cover != null)
         {
-            <img src="@cover" alt="@p.Titel" @(locked ? "" : Html.Raw($"data-lightbox-src=\"{cover}\" style=\"cursor:zoom-in\"")) />
+            <img src="@cover" alt="@p.Titel" data-gallery-main @(locked ? "" : Html.Raw("style=\"cursor:zoom-in\"")) />
         }
         else
         {
@@ -52,18 +52,38 @@
         {
             <div class="hx-dgallery__lock"><span style="font-size:1.6rem">&#128274;</span><span>Off-Market — Bilder nach Freigabe</span></div>
         }
+        else if (bilder.Count > 1)
+        {
+            <button type="button" class="hx-dgallery__expand" data-gallery-open aria-label="Galerie in Vollansicht öffnen">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" /></svg>
+            </button>
+
+            <div class="hx-dgallery__strip">
+                @for (var i = 0; i < bilder.Count; i++)
+                {
+                    var b = bilder[i];
+                    <button type="button" class="hx-dgallery__thumb @(i == 0 ? "is-active" : "")" data-gallery-thumb="@i" data-full="@b.Url">
+                        <img src="@(b.ThumbnailUrl ?? b.Url)" alt="@(b.Alt ?? p.Titel)" loading="lazy" />
+                    </button>
+                }
+            </div>
+
+            <div class="hx-dgallery__dots">
+                @for (var i = 0; i < bilder.Count; i++)
+                {
+                    <span class="hx-dgallery__dot @(i == 0 ? "is-on" : "")" data-gallery-dot="@i"></span>
+                }
+            </div>
+        }
     </div>
     @if (!locked && bilder.Count > 1)
     {
-        <div class="hx-thumbs">
-            @foreach (var b in bilder.Take(8))
-            {
-                <button type="button" class="hx-thumb" data-lightbox-src="@b.Url"><img src="@(b.ThumbnailUrl ?? b.Url)" alt="@(b.Alt ?? p.Titel)" loading="lazy" /></button>
-            }
-        </div>
-        <div class="hx-lightbox" id="hxLightbox">
+        <div class="hx-lightbox" id="hxLightbox" aria-hidden="true">
+            <button type="button" class="hx-lightbox__close" data-lb-close aria-label="Schließen">&times;</button>
+            <button type="button" class="hx-lightbox__nav hx-lightbox__nav--prev" data-lb-prev aria-label="Vorheriges Bild">&#8249;</button>
             <img src="" alt="@p.Titel" />
-            <button type="button" aria-label="Schließen">&times;</button>
+            <button type="button" class="hx-lightbox__nav hx-lightbox__nav--next" data-lb-next aria-label="Nächstes Bild">&#8250;</button>
+            <span class="hx-lightbox__count" data-lb-count></span>
         </div>
     }
 

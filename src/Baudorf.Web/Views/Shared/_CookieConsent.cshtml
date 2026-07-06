@@ -2,8 +2,12 @@
 @{
     var ccTitle = Settings.Get("cookie.title", "Wir schätzen Ihre Privatsphäre");
     var ccText = Settings.Get("cookie.text", "Wir verwenden Cookies, um Ihr Surferlebnis zu verbessern, personalisierte Anzeigen oder Inhalte einzusetzen und unseren Datenverkehr zu analysieren.");
+    // Textstand des Banners: bei inhaltlicher Änderung erhöhen → Einwilligung wird erneut eingeholt.
+    var ccVersion = Settings.Get("cookie.version", "2026-07-05");
 }
-<div id="bd-cookie" class="bd-cc" hidden role="dialog" aria-label="Datenschutz-Einstellungen">
+<div id="bd-cookie" class="bd-cc" hidden role="dialog" aria-label="Datenschutz-Einstellungen"
+     data-cc-version="@ccVersion" data-cc-url="@Url.Action("Consent", "Cookie")">
+    @Html.AntiForgeryToken()
     <div class="bd-cc__card">
         <h2 class="bd-cc__title">@ccTitle</h2>
         <p class="bd-cc__text">@ccText</p>

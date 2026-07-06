@@ -67,6 +67,10 @@
   const cc = document.getElementById("bd-cookie");
   if (cc) {
     const COOKIE = "bd_consent";
+    const COOKIE_V = "bd_consent_v";
+    const VERSION = cc.dataset.ccVersion || "";
+    const POST_URL = cc.dataset.ccUrl || "";
+    const token = cc.querySelector('input[name="__RequestVerificationToken"]')?.value || "";
     const prefs = cc.querySelector(".bd-cc__prefs");
     const btnCustomize = cc.querySelector('[data-cc-action="customize"]');
     const btnSave = cc.querySelector('[data-cc-action="save"]');
@@ -89,9 +93,21 @@
       btnSave.hidden = false;
     };
 
-    const save = (categories) => {
+    const save = (categories, how) => {
       setCookie(COOKIE, categories.join(","), 180);
+      setCookie(COOKIE_V, VERSION, 180);
       hide();
+      // Serverseitiger Nachweis (DSGVO Rechenschaftspflicht) — fire-and-forget.
+      if (POST_URL) {
+        try {
+          fetch(POST_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "RequestVerificationToken": token },
+            body: JSON.stringify({ categories, version: VERSION, action: how }),
+            keepalive: true,
+          }).catch(() => {});
+        } catch (e) { /* Nachweis optional; UI nie blockieren */ }
+      }
       // Vorbereitet für künftiges Script-Gating:
       window.dispatchEvent(new CustomEvent("bd-consent", { detail: categories }));
     };
@@ -99,13 +115,13 @@
     cc.querySelectorAll("[data-cc-action]").forEach((b) => {
       b.addEventListener("click", () => {
         const action = b.dataset.ccAction;
-        if (action === "accept") save(["necessary", "statistics", "marketing"]);
-        else if (action === "reject") save(["necessary"]);
+        if (action === "accept") save(["necessary", "statistics", "marketing"], "accept");
+        else if (action === "reject") save(["necessary"], "reject");
         else if (action === "customize") openCustomize();
         else if (action === "save") {
           const chosen = ["necessary"];
           cc.querySelectorAll("[data-cc]").forEach((t) => { if (t.checked) chosen.push(t.dataset.cc); });
-          save(chosen);
+          save(chosen, "custom");
         }
       });
     });
@@ -120,7 +136,8 @@
       },
     };
 
-    if (!readCookie(COOKIE)) show();
+    // Erneut einholen, wenn noch keine Einwilligung ODER der Textstand sich geändert hat.
+    if (!readCookie(COOKIE) || readCookie(COOKIE_V) !== VERSION) show();
   }
 
   // ---------- Hero-Carousel (vanilla, CSP-sicher — kein eval/Alpine nötig) ----------
@@ -206,17 +223,53 @@
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeMenu(); });
   }
 
-  // ---------- Lightbox (Objektdetail-Galerie, vanilla) ----------
-  const lightbox = document.getElementById("hxLightbox");
-  if (lightbox) {
-    const lbImg = lightbox.querySelector("img");
-    const openLb = (src) => { if (lbImg) lbImg.src = src; lightbox.classList.add("is-open"); document.body.style.overflow = "hidden"; };
-    const closeLb = () => { lightbox.classList.remove("is-open"); document.body.style.overflow = ""; };
-    document.querySelectorAll("[data-lightbox-src]").forEach((el) =>
-      el.addEventListener("click", () => openLb(el.getAttribute("data-lightbox-src")))
-    );
-    lightbox.addEventListener("click", closeLb);
-    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeLb(); });
+  // ---------- Objekt-Galerie + Lightbox (vanilla) ----------
+  const gallery = document.querySelector("[data-gallery]");
+  if (gallery) {
+    const main = gallery.querySelector("[data-gallery-main]");
+    const thumbs = Array.from(gallery.querySelectorAll("[data-gallery-thumb]"));
+    const dots = Array.from(gallery.querySelectorAll("[data-gallery-dot]"));
+    const srcs = thumbs.length
+      ? thumbs.map((t) => t.dataset.full || t.querySelector("img")?.src)
+      : (main ? [main.getAttribute("src")] : []);
+    let idx = 0;
+
+    const sync = () => {
+      if (main && srcs[idx]) main.setAttribute("src", srcs[idx]);
+      thumbs.forEach((t, k) => t.classList.toggle("is-active", k === idx));
+      dots.forEach((d, k) => d.classList.toggle("is-on", k === idx));
+    };
+    const goTo = (i) => { idx = (i + srcs.length) % srcs.length; sync(); };
+
+    thumbs.forEach((t, k) => t.addEventListener("click", (e) => { e.stopPropagation(); goTo(k); }));
+    dots.forEach((d, k) => d.addEventListener("click", (e) => { e.stopPropagation(); goTo(k); }));
+
+    // Lightbox (Vollansicht mit Navigation)
+    const lightbox = document.getElementById("hxLightbox");
+    if (lightbox && srcs.length) {
+      const lbImg = lightbox.querySelector("img");
+      const lbCount = lightbox.querySelector("[data-lb-count]");
+      const paint = () => {
+        if (lbImg && srcs[idx]) lbImg.src = srcs[idx];
+        if (lbCount) lbCount.textContent = (idx + 1) + " / " + srcs.length;
+      };
+      const openLb = () => { paint(); lightbox.classList.add("is-open"); lightbox.setAttribute("aria-hidden", "false"); document.body.style.overflow = "hidden"; };
+      const closeLb = () => { lightbox.classList.remove("is-open"); lightbox.setAttribute("aria-hidden", "true"); document.body.style.overflow = ""; };
+      const nav = (delta) => { idx = (idx + delta + srcs.length) % srcs.length; sync(); paint(); };
+
+      if (main) main.addEventListener("click", openLb);
+      gallery.querySelector("[data-gallery-open]")?.addEventListener("click", (e) => { e.stopPropagation(); openLb(); });
+      lightbox.querySelector("[data-lb-prev]")?.addEventListener("click", (e) => { e.stopPropagation(); nav(-1); });
+      lightbox.querySelector("[data-lb-next]")?.addEventListener("click", (e) => { e.stopPropagation(); nav(1); });
+      lightbox.querySelector("[data-lb-close]")?.addEventListener("click", closeLb);
+      lightbox.addEventListener("click", (e) => { if (e.target === lightbox) closeLb(); });
+      document.addEventListener("keydown", (e) => {
+        if (!lightbox.classList.contains("is-open")) return;
+        if (e.key === "Escape") closeLb();
+        else if (e.key === "ArrowLeft") nav(-1);
+        else if (e.key === "ArrowRight") nav(1);
+      });
+    }
   }
 
   // ---------- Tabs (Admin-Aktivität u. Ä., vanilla) ----------

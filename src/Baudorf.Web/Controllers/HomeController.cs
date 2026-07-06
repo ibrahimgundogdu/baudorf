@@ -1,13 +1,15 @@
 using System.Diagnostics;
 using Baudorf.Web.Data;
 using Baudorf.Web.Models;
+using Baudorf.Web.Models.Entities;
 using Baudorf.Web.Models.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Baudorf.Web.Controllers;
 
-public class HomeController(ApplicationDbContext db) : Controller
+public class HomeController(ApplicationDbContext db, UserManager<ApplicationUser> userMgr) : Controller
 {
     public async Task<IActionResult> Index()
     {
@@ -55,9 +57,19 @@ public class HomeController(ApplicationDbContext db) : Controller
             Insights = insights,
             Leistungen = leistungen,
             Settings = settings,
-            Sections = sections
+            Sections = sections,
+            CanViewOffMarket = await CanViewOffMarketAsync()
         };
         return View(vm);
+    }
+
+    /// <summary>Off-Market-Freigabe: angemeldet UND (Admin/Redakteur ODER als Investor freigegeben).</summary>
+    private async Task<bool> CanViewOffMarketAsync()
+    {
+        if (User.Identity?.IsAuthenticated != true) return false;
+        if (User.IsInRole("Admin") || User.IsInRole("Redakteur")) return true;
+        var user = await userMgr.GetUserAsync(User);
+        return user?.IstFreigegeben == true;
     }
 
     public IActionResult Privacy() => View();

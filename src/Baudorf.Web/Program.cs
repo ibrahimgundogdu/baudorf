@@ -88,6 +88,9 @@ builder.Services.AddRateLimiter(options =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
+// Antiforgery-Token auch per Header (für den JS-Consent-POST).
+builder.Services.AddAntiforgery(o => o.HeaderName = "RequestVerificationToken");
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

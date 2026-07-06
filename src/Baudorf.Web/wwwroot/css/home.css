@@ -122,10 +122,14 @@
 .hx-tile__cap { position: absolute; left: 24px; right: 24px; bottom: 22px; z-index: 1; }
 .hx-tile__ort { display: block; font: 500 11px/1 var(--font); letter-spacing: .16em; text-transform: uppercase; color: var(--accent-lt); margin-bottom: 9px; }
 .hx-tile__name { margin: 0; font: 500 clamp(19px,1.5vw,25px)/1.18 var(--font); color: #FDFCFA; }
-.hx-tile__slide { position: absolute; inset: 0; z-index: 2; background: linear-gradient(180deg, rgba(18,16,14,.95), rgba(18,16,14,.9)); display: flex; flex-direction: column; justify-content: space-between; padding: 26px 26px 28px; transform: translateY(-101%); transition: transform .55s var(--ease); }
+/* Info-Leiste steigt bei Hover von unten herein; oberer Bildbereich bleibt klar. */
+.hx-tile__slide { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; background: linear-gradient(180deg, rgba(12,12,12,.28) 0%, rgba(12,12,12,.62) 46%, rgba(12,12,12,.72) 100%); backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%); border-top: 1px solid rgba(245,242,236,.16); display: flex; flex-direction: column; gap: 4px; padding: 20px 24px 22px; transform: translateY(100%); transition: transform .55s var(--ease); }
 .hx-tile:hover .hx-tile__slide { transform: translateY(0); }
-.hx-tile__slide .hx-tile__name { font-size: clamp(20px,1.7vw,26px); }
-.hx-tile__specs { display: flex; gap: 18px; flex-wrap: wrap; padding: 15px 0; border-top: 1px solid rgba(255,255,255,.16); border-bottom: 1px solid rgba(255,255,255,.16); margin: 18px 0 16px; }
+.hx-tile__cap { transition: opacity .4s var(--ease); }
+.hx-tile:hover .hx-tile__cap { opacity: 0; }
+.hx-tile__slide .hx-tile__badge { display: none; }
+.hx-tile__slide .hx-tile__name { font-size: clamp(19px,1.6vw,25px); }
+.hx-tile__specs { display: flex; gap: 18px; flex-wrap: wrap; padding: 13px 0; border-top: 1px solid rgba(255,255,255,.16); border-bottom: 1px solid rgba(255,255,255,.16); margin: 14px 0 14px; }
 .hx-tile__specs span { font: 300 12px/1.4 var(--font); color: rgba(245,242,236,.6); }
 .hx-tile__specs b { color: #FDFCFA; font-weight: 400; }
 .hx-tile__foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }

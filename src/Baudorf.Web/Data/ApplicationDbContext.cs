@@ -21,6 +21,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<LoginEvent> LoginEvents => Set<LoginEvent>();
     public DbSet<PropertyView> PropertyViews => Set<PropertyView>();
     public DbSet<WhatsAppClick> WhatsAppClicks => Set<WhatsAppClick>();
+    public DbSet<ConsentLog> ConsentLogs => Set<ConsentLog>();
     public DbSet<LegalPage> LegalPages => Set<LegalPage>();
     public DbSet<MediaAsset> MediaAssets => Set<MediaAsset>();
     public DbSet<WiderrufAntrag> WiderrufAntraege => Set<WiderrufAntrag>();

@@ -10,6 +10,9 @@ public class HomeViewModel
     public IReadOnlyList<Leistung> Leistungen { get; set; } = [];
     public IDictionary<string, string> Settings { get; set; } = new Dictionary<string, string>();
 
+    /// <summary>Angemeldeter, freigegebener Nutzer (oder Staff) → Off-Market-Eckdaten sichtbar.</summary>
+    public bool CanViewOffMarket { get; set; }
+
     /// <summary>Sichtbare Startseiten-Abschnitte nach Key (z. B. "hero", "philosophie").</summary>
     public IDictionary<string, HomeSection> Sections { get; set; } = new Dictionary<string, HomeSection>();
 

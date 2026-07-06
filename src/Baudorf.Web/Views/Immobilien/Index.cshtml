@@ -80,7 +80,7 @@
             @foreach (var p in Model.Objekte)
             {
                 var cover = p.CoverUrl();
-                var locked = p.IstOffMarket;
+                var locked = p.IstOffMarket && !Model.CanViewOffMarket;
                 <article class="hx-lcard @(locked ? "is-locked" : "")">
                     <a class="hx-lcard__media" asp-controller="Immobilien" asp-action="Details" asp-route-slug="@p.Slug">
                         @if (cover != null)

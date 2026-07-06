@@ -573,7 +573,7 @@ public static class DbSeeder
             db.HomeSections.AddRange(neue);
     }
 
-    private const string DesignVersion = "6";
+    private const string DesignVersion = "7";
 
     /// <summary>
     /// Einmalige Aktualisierung der Startseiten-Inhalte auf den freigegebenen Entwurf.
@@ -679,26 +679,34 @@ public static class DbSeeder
 
         db.HomeSections.AddRange(sektionen);
 
-        // Objekt-Titelbilder aus dem Entwurf (nur wenn das Objekt noch kein Bild hat).
-        var objektBilder = new Dictionary<string, string>
+        // Objekt-Galerien aus dem Entwurf (erstes Bild = Titelbild). Idempotent per URL.
+        var objektGalerie = new Dictionary<string, string[]>
         {
-            ["faktor-20-7-40-wohneinheiten-kfw40-qng"] = "/img/design/obj1.jpg",
-            ["neubau-senioreneinrichtung-80-plaetze-herne"] = "/img/design/obj2.jpg",
-            ["wohn-geschaeftshaus-wuppertal-zentrum"] = "/img/design/obj3.jpg",
-            ["exklusive-wohnanlage-24-einheiten-duesseldorf"] = "/img/design/obj4.jpg",
-            ["baugrundstueck-projektentwicklung-essen"] = "/img/design/obj5.jpg",
-            ["ferienresort-mittelmeer-bestandsobjekt"] = "/img/design/obj6.jpg"
+            ["faktor-20-7-40-wohneinheiten-kfw40-qng"] = ["/img/design/obj1.jpg", "/img/design/obj2.jpg", "/img/design/hero3.jpg", "/img/design/philo.jpg"],
+            ["neubau-senioreneinrichtung-80-plaetze-herne"] = ["/img/design/obj2.jpg", "/img/design/obj5.jpg", "/img/design/hero2.jpg", "/img/design/kontakt.jpg"],
+            ["wohn-geschaeftshaus-wuppertal-zentrum"] = ["/img/design/obj3.jpg", "/img/design/obj6.jpg", "/img/design/hero1.jpg", "/img/design/philo.jpg"],
+            ["exklusive-wohnanlage-24-einheiten-duesseldorf"] = ["/img/design/obj4.jpg", "/img/design/obj1.jpg", "/img/design/hero4.jpg", "/img/design/kontakt.jpg"],
+            ["baugrundstueck-projektentwicklung-essen"] = ["/img/design/obj5.jpg", "/img/design/obj3.jpg", "/img/design/philo.jpg", "/img/design/hero2.jpg"],
+            ["ferienresort-mittelmeer-bestandsobjekt"] = ["/img/design/obj6.jpg", "/img/design/obj4.jpg", "/img/design/hero1.jpg", "/img/design/kontakt.jpg"]
         };
         var objekte = await db.Properties.Include(p => p.Medien)
-            .Where(p => objektBilder.Keys.Contains(p.Slug)).ToListAsync();
+            .Where(p => objektGalerie.Keys.Contains(p.Slug)).ToListAsync();
         foreach (var p in objekte)
         {
             p.IstFeatured = true; // 6er-Mosaik auf der Startseite wie im Entwurf
-            if (!p.Medien.Any())
+            var urls = objektGalerie[p.Slug];
+            for (var i = 0; i < urls.Length; i++)
+            {
+                if (p.Medien.Any(m => m.Url == urls[i])) continue; // schon vorhanden → überspringen
                 p.Medien.Add(new PropertyMedia
                 {
-                    Typ = MediaType.Image, Url = objektBilder[p.Slug], IstCover = true, Reihenfolge = 0, Alt = p.Titel
+                    Typ = MediaType.Image,
+                    Url = urls[i],
+                    IstCover = i == 0 && !p.Medien.Any(m => m.IstCover),
+                    Reihenfolge = i,
+                    Alt = p.Titel
                 });
+            }
         }
 
         // Team-Texte auf Entwurf setzen.

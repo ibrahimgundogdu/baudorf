@@ -32,6 +32,34 @@ public class PropertyView
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
 
+/// <summary>
+/// Cookie-Einwilligung (Nachweis nach Art. 5 Abs. 2 / Art. 7 DSGVO — Rechenschaftspflicht).
+/// Datenminimierung: IP wird anonymisiert gespeichert (letztes Oktett/Suffix genullt).
+/// </summary>
+public class ConsentLog
+{
+    public int Id { get; set; }
+
+    /// <summary>Zufalls-Referenz, die auch im Browser-Cookie liegt (Korrelation ohne Personenbezug).</summary>
+    public Guid Referenz { get; set; }
+
+    /// <summary>Gewählte Kategorien, z. B. "necessary,statistics,marketing".</summary>
+    [MaxLength(200)] public string Kategorien { get; set; } = "necessary";
+
+    /// <summary>Textstand/Version des Banners — bei Änderung wird erneut eingeholt.</summary>
+    [MaxLength(40)] public string Version { get; set; } = "";
+
+    /// <summary>accept | reject | custom — wie die Einwilligung erteilt wurde.</summary>
+    [MaxLength(20)] public string Aktion { get; set; } = "";
+
+    /// <summary>Anonymisierte IP (z. B. 203.0.113.0).</summary>
+    [MaxLength(64)] public string? IpAnonymisiert { get; set; }
+
+    [MaxLength(400)] public string? UserAgent { get; set; }
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+}
+
 /// <summary>WhatsApp-Klick: Klick auf den Click-to-Chat-Button (Lead-Indikator).</summary>
 public class WhatsAppClick
 {

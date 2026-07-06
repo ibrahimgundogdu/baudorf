@@ -169,7 +169,6 @@
                         </div>
                         <div class="hx-tile__slide">
                             <div>
-                                <span class="hx-tile__badge" style="position:static;display:inline-block;background:@BadgeBg(p.Status);margin-bottom:16px">@p.Status.Label()</span>
                                 <span class="hx-tile__ort">@(string.IsNullOrWhiteSpace(p.Region) ? p.Land : p.Region)</span>
                                 <h3 class="hx-tile__name">@p.Titel</h3>
                             </div>
@@ -180,7 +179,7 @@
                                     @if (p.Baujahr.HasValue) { <span>BJ <b>@p.Baujahr</b></span> }
                                 </div>
                                 <div class="hx-tile__foot">
-                                    @if (p.IstOffMarket)
+                                    @if (p.IstOffMarket && !Model.CanViewOffMarket)
                                     {
                                         <span class="hx-tile__lock">&#128274; Für vorgemerkte Investoren</span>
                                     }
