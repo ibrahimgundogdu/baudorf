@@ -24,6 +24,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<LegalPage> LegalPages => Set<LegalPage>();
     public DbSet<MediaAsset> MediaAssets => Set<MediaAsset>();
     public DbSet<WiderrufAntrag> WiderrufAntraege => Set<WiderrufAntrag>();
+    public DbSet<Leistung> Leistungen => Set<Leistung>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -46,6 +47,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         builder.Entity<SiteSetting>().HasIndex(s => s.Key).IsUnique();
 
         builder.Entity<LegalPage>().HasIndex(l => l.Slug).IsUnique();
+
+        builder.Entity<Leistung>().HasIndex(l => l.Slug).IsUnique();
 
         builder.Entity<Lead>()
             .HasOne(l => l.Property)

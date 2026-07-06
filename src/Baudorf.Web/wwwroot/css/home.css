@@ -73,12 +73,24 @@
 .hx-philo__text p { margin: 30px 0 0; max-width: 560px; font: 300 clamp(16px,1.2vw,18px)/1.8 var(--font); color: var(--muted); }
 .hx-philo__text p + p { margin-top: 20px; }
 .hx-philo__text strong { color: var(--ink); font-weight: 500; }
-.hx-media { flex: 0 0 auto; width: min(440px, 90vw); position: relative; aspect-ratio: 1; overflow: hidden; border-radius: 26px; background: linear-gradient(150deg, var(--graph), var(--ink)); }
-.hx-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.hx-media__veil { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(18,16,14,.62) 0%, transparent 52%); }
+.hx-media { flex: 0 0 auto; width: min(500px, 92vw); position: relative; aspect-ratio: 4 / 5; overflow: hidden; border-radius: 14px; background: linear-gradient(150deg, var(--graph), var(--ink)); box-shadow: 0 46px 92px -44px rgba(18,16,14,.62), 0 10px 26px -16px rgba(18,16,14,.4); transition: transform .7s var(--ease), box-shadow .7s var(--ease); }
+.hx-media:hover { transform: translateY(-6px); box-shadow: 0 64px 112px -46px rgba(18,16,14,.66), 0 12px 30px -16px rgba(18,16,14,.42); }
+.hx-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(.85) sepia(.10) contrast(1.03) brightness(1.01); }
+/* Warmer Duoton-Wash: kühles Blau in die warme Luxus-Palette holen + Boden fürs Zitat abdunkeln */
+.hx-media__veil { position: absolute; inset: 0; background:
+  linear-gradient(160deg, rgba(196,164,107,.22) 0%, rgba(150,119,58,.05) 34%, transparent 55%),
+  linear-gradient(0deg, rgba(12,12,12,.92) 0%, rgba(18,16,14,.34) 36%, transparent 64%); }
+/* Feine Gold-Haarlinie als edler Rahmen */
+.hx-media::after { content: ""; position: absolute; inset: 0; border-radius: inherit; border: 1px solid rgba(196,164,107,.32); pointer-events: none; }
 .hx-media__emblem { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: .12; }
 .hx-media__emblem img { width: 46%; height: auto; position: static; }
-.hx-media__quote { position: absolute; left: 28px; right: 28px; bottom: 26px; margin: 0; font: 300 italic clamp(20px,2.4vw,28px)/1.3 var(--font); color: var(--surface); }
+.hx-media__quote { position: absolute; left: 32px; right: 32px; bottom: 32px; margin: 0; font: 400 italic clamp(21px,2.3vw,29px)/1.34 var(--font); color: var(--surface); text-shadow: 0 2px 20px rgba(0,0,0,.45); z-index: 1; }
+.hx-media__quote::before { content: "\201C"; display: block; font: 500 italic 56px/.5 Georgia, serif; color: var(--accent-lt); margin-bottom: 18px; }
+
+/* Philosophie-Sektion: dezente Emblem-Textur füllt die rechte Leere (Tiefe + Markenpräsenz) */
+#philosophie { position: relative; overflow: hidden; }
+#philosophie::before { content: ""; position: absolute; top: 50%; right: 3%; transform: translateY(-50%); width: min(760px, 56vw); aspect-ratio: 1; background: url(/img/brand/baudorf-emblem-gold.png) center / contain no-repeat; opacity: .07; pointer-events: none; z-index: 0; }
+#philosophie > .hx-wrap { position: relative; z-index: 1; }
 
 /* ---------- LEISTUNGEN ---------- */
 .hx-head-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 30px; flex-wrap: wrap; margin-bottom: 56px; }
@@ -93,10 +105,14 @@
 .hx-card--dark { background: var(--ink); justify-content: space-between; }
 .hx-card--dark span:first-child { font: italic 26px/1.2 var(--font); color: var(--surface); }
 .hx-card--dark .hx-card__more { color: var(--accent-lt); }
+/* Dunkle CTA-Karte: Hover in dunkles Gold (heller Text bleibt lesbar) statt hellem Creme */
+.hx-card--dark:hover { background: var(--accent-dk); }
+.hx-card--dark:hover span:first-child { color: #FDFCFA; }
+.hx-card--dark:hover .hx-card__more { color: #FDFCFA; }
 
 /* ---------- OBJEKTE MOSAIK ---------- */
 .hx-mosaic { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.hx-tile { position: relative; aspect-ratio: 1; border-radius: 22px; overflow: hidden; cursor: pointer; transition: box-shadow .5s ease; display: block; background: var(--band); }
+.hx-tile { position: relative; aspect-ratio: 1; border-radius: 12px; overflow: hidden; cursor: pointer; transition: box-shadow .5s ease; display: block; background: var(--band); }
 .hx-tile:hover { box-shadow: 0 32px 60px -28px rgba(18,16,14,.5); }
 .hx-tile__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .hx-tile__ph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: linear-gradient(150deg, var(--band), var(--line)); }
@@ -160,7 +176,7 @@
 .hx-ueber__stats { display: flex; gap: 50px; margin-top: 40px; flex-wrap: wrap; }
 .hx-ueber__stats b { font: 400 42px/1 var(--font); color: var(--bd-gold); }
 .hx-ueber__stats small { display: block; font: 500 11px/1 var(--font); letter-spacing: .16em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
-.hx-ueber__photo { flex: 0 0 auto; width: min(420px,90vw); position: relative; aspect-ratio: 1; overflow: hidden; border-radius: 26px; background: var(--band); }
+.hx-ueber__photo { flex: 0 0 auto; width: min(420px,90vw); position: relative; aspect-ratio: 1; overflow: hidden; border-radius: 14px; background: var(--band); }
 .hx-ueber__photo img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
 .hx-ueber__photo-veil { position: absolute; left: 0; right: 0; bottom: 0; height: 42%; background: linear-gradient(0deg, rgba(18,16,14,.55), transparent); }
 .hx-ueber__photo-cap { position: absolute; left: 26px; bottom: 24px; }
@@ -203,13 +219,16 @@
 /* ---------- INSIGHTS ---------- */
 .hx-insights { display: grid; grid-template-columns: repeat(3, 1fr); gap: 34px; }
 .hx-art { cursor: pointer; }
-.hx-art__media { position: relative; aspect-ratio: 1; border-radius: 18px; overflow: hidden; margin-bottom: 22px; background: var(--band); }
+.hx-art__media { position: relative; aspect-ratio: 1; border-radius: 10px; overflow: hidden; margin-bottom: 22px; background: var(--band); }
 .hx-art__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .85s var(--ease); }
 .hx-art:hover .hx-art__media img { transform: scale(1.06); }
-.hx-art__body { border-top: 1px solid var(--ink); padding-top: 22px; }
-.hx-art__meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-.hx-art__cat { font: 600 11px/1 var(--font); letter-spacing: .16em; text-transform: uppercase; color: var(--bd-gold); }
-.hx-art__read { font: 400 12px/1 var(--font); color: #9a948d; }
+/* Frosted-glass Info-Leiste: gleitet bei Hover von unten herein */
+.hx-art__glass { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 13px 18px; background: rgba(12,12,12,.4); backdrop-filter: blur(16px) saturate(150%); -webkit-backdrop-filter: blur(16px) saturate(150%); border-top: 1px solid rgba(245,242,236,.16); transform: translateY(101%); opacity: 0; transition: transform .55s var(--ease), opacity .4s var(--ease); }
+.hx-art:hover .hx-art__glass { transform: translateY(0); opacity: 1; }
+@media (hover: none) { .hx-art__glass { transform: none; opacity: 1; } }
+.hx-art__body { padding-top: 2px; }
+.hx-art__cat { font: 600 11px/1 var(--font); letter-spacing: .16em; text-transform: uppercase; color: var(--accent-lt); }
+.hx-art__read { font: 400 12px/1 var(--font); color: rgba(245,242,236,.82); white-space: nowrap; }
 .hx-art h3 { margin: 0 0 26px; font: 500 clamp(22px,2.4vw,28px)/1.22 var(--font); color: var(--ink); }
 .hx-art__date { font: 400 12px/1 var(--font); color: #9a948d; }
 
@@ -243,3 +262,5 @@
   .hx-grid-cards, .hx-mosaic, .hx-insights, .hx-zahlen, .hx-steps { grid-template-columns: 1fr; }
   .hx-testi > div { flex-direction: column; gap: 24px; }
 }
+
+

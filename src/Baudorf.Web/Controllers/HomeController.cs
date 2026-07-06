@@ -32,6 +32,12 @@ public class HomeController(ApplicationDbContext db) : Controller
             .Take(3)
             .ToListAsync();
 
+        var leistungen = await db.Leistungen
+            .AsNoTracking()
+            .Where(l => l.IstVeroeffentlicht)
+            .OrderBy(l => l.Reihenfolge)
+            .ToListAsync();
+
         var settings = await db.SiteSettings
             .AsNoTracking()
             .ToDictionaryAsync(s => s.Key, s => s.Value ?? string.Empty);
@@ -47,6 +53,7 @@ public class HomeController(ApplicationDbContext db) : Controller
             FeaturedObjekte = featured,
             Team = team,
             Insights = insights,
+            Leistungen = leistungen,
             Settings = settings,
             Sections = sections
         };

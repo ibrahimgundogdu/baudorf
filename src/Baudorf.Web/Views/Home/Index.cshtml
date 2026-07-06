@@ -98,7 +98,7 @@
                         <span class="hx-media__emblem"><img src="~/img/brand/baudorf-emblem-gold.png" alt="" /></span>
                     }
                     <span class="hx-media__veil"></span>
-                    <p class="hx-media__quote">„Still, wirkungsvoll,<br>mit Stil."</p>
+                    <p class="hx-media__quote">Still, wirkungsvoll,<br>mit Stil.</p>
                 </div>
             </div>
         </div>
@@ -118,15 +118,14 @@
                 @if (!string.IsNullOrWhiteSpace(leist.Text)) { <p class="hx-head-row__desc">@leist.Text</p> }
             </div>
             <div class="hx-grid-cards">
-                @{ var ln = 0; }
-                @foreach (var item in leist.Items)
+                @foreach (var l in Model.Leistungen)
                 {
-                    <div class="hx-card" data-reveal>
-                        <span class="hx-card__no">0@(++ln)</span>
-                        <h3>@item.Titel</h3>
-                        <p>@item.Text</p>
+                    <a class="hx-card" data-reveal asp-controller="Leistung" asp-action="Details" asp-route-slug="@l.Slug">
+                        <span class="hx-card__no">@l.Reihenfolge.ToString("D2")</span>
+                        <h3>@l.Titel</h3>
+                        <p>@l.Teaser</p>
                         <span class="hx-card__more">Mehr erfahren</span>
-                    </div>
+                    </a>
                 }
                 <a class="hx-card hx-card--dark" data-reveal asp-controller="Kontakt" asp-action="Index">
                     <span>Sprechen wir über Ihr Vorhaben.</span>
@@ -398,12 +397,12 @@
                     <a class="hx-art" asp-controller="Blog" asp-action="Details" asp-route-slug="@a.Slug" data-reveal>
                         <div class="hx-art__media">
                             @if (!string.IsNullOrWhiteSpace(a.CoverUrl)) { <img src="@a.CoverUrl" alt="@a.Titel" loading="lazy" /> }
+                            <div class="hx-art__glass">
+                                <span class="hx-art__cat">@(a.Kategorie ?? "Insight")</span>
+                                <span class="hx-art__read">@a.LesezeitMinuten() Min. Lesezeit</span>
+                            </div>
                         </div>
                         <div class="hx-art__body">
-                            <div class="hx-art__meta">
-                                <span class="hx-art__cat">@(a.Kategorie ?? "Insight")</span>
-                                <span class="hx-art__read">@a.LesezeitMinuten() Min.</span>
-                            </div>
                             <h3>@a.Titel</h3>
                             <span class="hx-art__date">@(a.PublishedAt?.ToString("dd. MMMM yyyy", new System.Globalization.CultureInfo("de-DE")))</span>
                         </div>

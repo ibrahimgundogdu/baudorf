@@ -1,0 +1,88 @@
+@model Leistung
+@inject Microsoft.Extensions.Options.IOptions<SiteOptions> SiteOpt
+@{
+    var alle = ViewData["Alle"] as List<Leistung> ?? new();
+
+    // --- SEO ---
+    var site = SiteOpt.Value;
+    var req = ViewContext.HttpContext.Request;
+    var canonical = SeoUrls.Canonical(req, site);
+    var baseUrl = SeoUrls.Base(req, site);
+    ViewData["Title"] = string.IsNullOrWhiteSpace(Model.MetaTitle) ? Model.Titel : Model.MetaTitle;
+    ViewData["MetaDescription"] = string.IsNullOrWhiteSpace(Model.MetaDescription) ? Model.Teaser : Model.MetaDescription;
+
+    var service = new Dictionary<string, object?>
+    {
+        ["@context"] = "https://schema.org",
+        ["@type"] = "Service",
+        ["name"] = Model.Titel,
+        ["description"] = JsonLd.NullIfBlank(Model.Teaser),
+        ["serviceType"] = Model.Titel,
+        ["provider"] = new Dictionary<string, object?> { ["@id"] = baseUrl + "/#organization" },
+        ["areaServed"] = "Nordrhein-Westfalen",
+        ["url"] = canonical
+    };
+    var breadcrumb = new Dictionary<string, object?>
+    {
+        ["@context"] = "https://schema.org",
+        ["@type"] = "BreadcrumbList",
+        ["itemListElement"] = new object[]
+        {
+            new Dictionary<string, object?> { ["@type"] = "ListItem", ["position"] = 1, ["name"] = "Startseite", ["item"] = baseUrl + "/" },
+            new Dictionary<string, object?> { ["@type"] = "ListItem", ["position"] = 2, ["name"] = "Leistungen", ["item"] = SeoUrls.Absolute(req, site, Url.Action("Index", "Leistung")) },
+            new Dictionary<string, object?> { ["@type"] = "ListItem", ["position"] = 3, ["name"] = Model.Titel, ["item"] = canonical }
+        }
+    };
+    ViewData["JsonLd"] = new Microsoft.AspNetCore.Html.HtmlString(
+        $"<script type=\"application/ld+json\">{JsonLd.Serialize(service)}</script>" +
+        $"<script type=\"application/ld+json\">{JsonLd.Serialize(breadcrumb)}</script>");
+}
+
+<section class="hx-pagehead">
+    <img class="hx-pagehead__emblem" src="~/img/brand/baudorf-emblem-gold.png" alt="" />
+    <div class="hx-wrap">
+        <div class="hx-eyebrow"><span>@(Model.Overline ?? "Leistung")</span></div>
+        <h1>@Model.Titel</h1>
+        @if (!string.IsNullOrWhiteSpace(Model.Teaser)) { <p>@Model.Teaser</p> }
+    </div>
+</section>
+
+@if (!string.IsNullOrWhiteSpace(Model.CoverUrl))
+{
+    <div class="hx-wrap">
+        <img class="hx-artcover" src="@Model.CoverUrl" alt="@Model.Titel" />
+    </div>
+}
+
+<div class="hx-wrap hx-detailpad">
+    <article class="hx-prose hx-article hx-article--full">
+        @Html.Raw(Model.Body)
+    </article>
+
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin:2.8rem 0 0">
+        <a class="hx-btn hx-btn--gold" asp-controller="Kontakt" asp-action="Index">Unverbindlich anfragen</a>
+        <a class="hx-btn hx-btn--outline-dark" asp-controller="Leistung" asp-action="Index">Alle Leistungen</a>
+    </div>
+
+    @if (alle.Count > 0)
+    {
+        <div class="hx-similar">
+            <h2 class="hx-h2">Unsere <em class="hx-em">Leistungen</em></h2>
+            <div class="hx-grid-cards">
+                @foreach (var w in alle)
+                {
+                    <a class="hx-card @(w.Id == Model.Id ? "hx-card--active" : "")" asp-controller="Leistung" asp-action="Details" asp-route-slug="@w.Slug">
+                        <span class="hx-card__no">@w.Reihenfolge.ToString("D2")</span>
+                        <h3>@w.Titel</h3>
+                        <p>@w.Teaser</p>
+                        <span class="hx-card__more">@(w.Id == Model.Id ? "Aktuelle Seite" : "Mehr erfahren")</span>
+                    </a>
+                }
+                <a class="hx-card hx-card--dark" asp-controller="Kontakt" asp-action="Index">
+                    <span>Sprechen wir über Ihr Vorhaben.</span>
+                    <span class="hx-card__more">Kontakt aufnehmen</span>
+                </a>
+            </div>
+        </div>
+    }
+</div>

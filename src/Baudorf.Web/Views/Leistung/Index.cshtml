@@ -1,0 +1,34 @@
+@model List<Leistung>
+@{
+    ViewData["Title"] = "Leistungen";
+    ViewData["MetaDescription"] = "Fünf Disziplinen, ein Anspruch: stille Vermarktung, klassische Vermarktung, Immobilienbewertung, Kaufbegleitung und ein kuratiertes Dienstleisternetzwerk.";
+}
+
+<section class="hx-pagehead">
+    <img class="hx-pagehead__emblem" src="~/img/brand/baudorf-emblem-gold.png" alt="" />
+    <div class="hx-wrap">
+        <div class="hx-eyebrow"><span>Leistungen</span></div>
+        <h1>Was wir für Sie <em class="hx-em">tun</em></h1>
+        <p>Fünf Disziplinen, ein Anspruch: die richtige Immobilie für den richtigen Investor — diskret zusammengeführt.</p>
+    </div>
+</section>
+
+<section class="hx-sec hx-sec--bg">
+    <div class="hx-wrap">
+        <div class="hx-grid-cards">
+            @foreach (var l in Model)
+            {
+                <a class="hx-card" asp-controller="Leistung" asp-action="Details" asp-route-slug="@l.Slug">
+                    <span class="hx-card__no">@l.Reihenfolge.ToString("D2")</span>
+                    <h3>@l.Titel</h3>
+                    <p>@l.Teaser</p>
+                    <span class="hx-card__more">Mehr erfahren</span>
+                </a>
+            }
+            <a class="hx-card hx-card--dark" asp-controller="Kontakt" asp-action="Index">
+                <span>Sprechen wir über Ihr Vorhaben.</span>
+                <span class="hx-card__more">Kontakt aufnehmen</span>
+            </a>
+        </div>
+    </div>
+</section>

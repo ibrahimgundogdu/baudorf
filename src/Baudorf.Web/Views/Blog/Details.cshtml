@@ -66,8 +66,8 @@
     </div>
 }
 
-<div class="hx-wrap">
-    <article class="hx-prose hx-article">
+<div class="hx-wrap hx-detailpad">
+    <article class="hx-prose hx-article hx-article--full">
         @if (!string.IsNullOrWhiteSpace(Model.Excerpt))
         {
             <p class="hx-article__lead">@Model.Excerpt</p>
@@ -75,7 +75,7 @@
         @Html.Raw(Model.Body)
     </article>
 
-    <div class="hx-article__back">
+    <div class="hx-article__back hx-article__back--full">
         <a class="hx-link" asp-controller="Blog" asp-action="Index">&larr; Alle Beiträge</a>
     </div>
 
@@ -92,12 +92,12 @@
                             {
                                 <img src="@a.CoverUrl" alt="@a.Titel" loading="lazy" />
                             }
+                            <div class="hx-art__glass">
+                                <span class="hx-art__cat">@(a.Kategorie ?? "Insight")</span>
+                                <span class="hx-art__read">@a.LesezeitMinuten() Min. Lesezeit</span>
+                            </div>
                         </div>
                         <div class="hx-art__body">
-                            <div class="hx-art__meta">
-                                <span class="hx-art__cat">@(a.Kategorie ?? "Insight")</span>
-                                <span class="hx-art__read">@a.LesezeitMinuten() Min.</span>
-                            </div>
                             <h3>@a.Titel</h3>
                             <span class="hx-art__date">@(a.PublishedAt?.ToString("dd. MMMM yyyy", de))</span>
                         </div>

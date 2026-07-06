@@ -28,7 +28,7 @@ main { padding-top: 84px; }
 
 /* Listen-Grid (Karten) */
 .hx-list { display: grid; grid-template-columns: repeat(3,1fr); gap: 34px; padding: 46px 0 clamp(70px,9vw,110px); }
-.hx-lcard { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; transition: .5s var(--ease); }
+.hx-lcard { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; transition: .5s var(--ease); }
 .hx-lcard:hover { transform: translateY(-6px); border-color: var(--accent-dk); box-shadow: 0 24px 50px -28px rgba(24,22,20,.4); }
 .hx-lcard__media { position: relative; aspect-ratio: 1; overflow: hidden; display: block; background: var(--band); }
 .hx-lcard__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
@@ -60,7 +60,7 @@ main { padding-top: 84px; }
 .hx-back { display: inline-flex; align-items: center; gap: 8px; font: 500 12px/1 var(--font); letter-spacing: .1em; text-transform: uppercase; color: var(--accent-dk); transition: .3s; }
 .hx-back:hover { color: var(--ink); }
 .hx-dtop { padding-top: 30px; }
-.hx-dgallery { aspect-ratio: 16/9; width: 100%; background: var(--band); overflow: hidden; border-radius: 24px; position: relative; margin-top: 26px; }
+.hx-dgallery { aspect-ratio: 16/9; width: 100%; background: var(--band); overflow: hidden; border-radius: 12px; position: relative; margin-top: 26px; }
 .hx-dgallery > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .hx-dgallery.is-locked > img { filter: blur(16px); }
 .hx-dgallery__ph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
@@ -68,7 +68,7 @@ main { padding-top: 84px; }
 .hx-dgallery__badge { position: absolute; top: 20px; left: 20px; z-index: 2; color: #fff; font: 600 11px/1 var(--font); letter-spacing: .14em; text-transform: uppercase; padding: 10px 16px; }
 .hx-dgallery__lock { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: #fff; background: rgba(18,16,14,.4); z-index: 2; }
 .hx-thumbs { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-top: 16px; }
-.hx-thumb { position: relative; aspect-ratio: 1; border-radius: 14px; overflow: hidden; background: var(--band); cursor: pointer; border: 0; padding: 0; }
+.hx-thumb { position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; background: var(--band); cursor: pointer; border: 0; padding: 0; }
 .hx-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .hx-lightbox { position: fixed; inset: 0; z-index: 120; background: rgba(12,12,12,.92); display: none; align-items: center; justify-content: center; padding: 2rem; }
 .hx-lightbox.is-open { display: flex; }
@@ -166,11 +166,20 @@ main section[role=alert] a, main a { color: var(--accent-dk); }
 .hx-art__excerpt { margin: 0 0 18px; color: var(--muted); font: 300 15px/1.6 var(--font); }
 .hx-muted { color: var(--muted); }
 .hx-artmeta { display: flex; gap: 12px; align-items: center; color: var(--muted); font: 400 13px/1 var(--font); margin: 18px 0 0; }
-.hx-artcover { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 14px; margin: 10px 0 4px; }
+.hx-artcover { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 10px; margin: 10px 0 4px; }
 .hx-article { max-width: 760px; margin: clamp(36px,5vw,56px) auto 0; }
 .hx-article__lead { font: 300 clamp(18px,1.5vw,21px)/1.6 var(--font); color: var(--ink); margin: 0 0 1.4em; }
 .hx-article__back { max-width: 760px; margin: 44px auto 0; }
 .hx-article + .hx-article__back { border-top: 1px solid var(--line); padding-top: 28px; }
+/* Leistung-Detail: Fließtext auf volle Sektionsbreite (bündig mit Cover + Raster) */
+.hx-article--full { max-width: none; margin-left: 0; margin-right: 0; }
+.hx-article--full p, .hx-article--full li { font-size: 16px; }
+.hx-article__back--full { max-width: none; margin-left: 0; margin-right: 0; }
+/* Abstand zum Footer, damit das Raster nicht klebt */
+.hx-detailpad { padding-bottom: clamp(80px, 10vw, 130px); }
+/* Aktuelle Leistung im 6-Feld-Raster dezent markieren */
+.hx-card--active { background: #F1ECE2; box-shadow: inset 3px 0 0 var(--bd-gold); }
+.hx-card--active .hx-card__more { color: var(--accent-dk); }
 
 /* ==========================================================================
    Auth — Split-Screen (Registrierung, originalgetreu zum Entwurf)

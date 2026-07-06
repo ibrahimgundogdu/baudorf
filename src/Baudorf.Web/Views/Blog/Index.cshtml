@@ -13,7 +13,7 @@
     </div>
 </section>
 
-<div class="hx-wrap" style="padding-bottom:clamp(70px,9vw,110px)">
+<div class="hx-wrap" style="padding-top:clamp(48px,6vw,80px);padding-bottom:clamp(70px,9vw,110px)">
     @if (Model.Count == 0)
     {
         <p class="hx-muted">Derzeit sind keine Beiträge veröffentlicht.</p>
@@ -29,12 +29,12 @@
                         {
                             <img src="@a.CoverUrl" alt="@a.Titel" loading="lazy" />
                         }
+                        <div class="hx-art__glass">
+                            <span class="hx-art__cat">@(a.Kategorie ?? "Insight")</span>
+                            <span class="hx-art__read">@a.LesezeitMinuten() Min. Lesezeit</span>
+                        </div>
                     </div>
                     <div class="hx-art__body">
-                        <div class="hx-art__meta">
-                            <span class="hx-art__cat">@(a.Kategorie ?? "Insight")</span>
-                            <span class="hx-art__read">@a.LesezeitMinuten() Min.</span>
-                        </div>
                         <h3>@a.Titel</h3>
                         @if (!string.IsNullOrWhiteSpace(a.Excerpt))
                         {

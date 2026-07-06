@@ -50,6 +50,7 @@ public static class DbSeeder
         await SeedSettingsAsync(db);
         await SeedLegalPagesAsync(db);
         await SeedBlogPostsAsync(db);
+        await SeedLeistungenAsync(db);
         await SeedPropertiesAsync(db);
         await SeedHomeSectionsAsync(db);
         await db.SaveChangesAsync();
@@ -260,6 +261,110 @@ public static class DbSeeder
             <h2>QNG — Nachhaltigkeit wird messbar</h2>
             <p>Das Qualitätssiegel Nachhaltiges Gebäude (QNG) macht ökologische und soziale Qualität nachweisbar. Für institutionelle Investoren mit ESG-Vorgaben ist es oft die Voraussetzung für einen Ankauf — und damit ein konkreter Werttreiber im Portfolio.</p>
             <p>Wir bewerten Neubau-Portfolios mit Blick auf genau diese Faktoren — vorausschauend statt rückwärtsgewandt.</p>
+            """);
+    }
+
+    private static async Task SeedLeistungenAsync(ApplicationDbContext db)
+    {
+        // Idempotent pro Slug: die fünf Kern-Disziplinen mit eigener Detailseite.
+        var vorhanden = await db.Leistungen.Select(l => l.Slug).ToListAsync();
+        void Add(int ord, string slug, string overline, string titel, string teaser, string cover, string body)
+        {
+            if (!vorhanden.Contains(slug))
+            {
+                db.Leistungen.Add(new Leistung
+                {
+                    Reihenfolge = ord,
+                    Slug = slug,
+                    Overline = overline,
+                    Titel = titel,
+                    Teaser = teaser,
+                    CoverUrl = cover,
+                    Body = body.Trim(),
+                    IstVeroeffentlicht = true,
+                    MetaDescription = teaser
+                });
+            }
+        }
+
+        Add(1, "stille-vermarktung", "Off-Market", "Stille Vermarktung",
+            "Diskret, ohne Inserat — die Immobilie wird vertraut, nicht ausgeschrieben.",
+            "/img/design/hero1.jpg",
+            """
+            <p>Manche Objekte gehören nicht in ein Schaufenster. Bei der stillen Vermarktung verzichten wir bewusst auf öffentliche Inserate und sprechen ausschließlich einen sorgfältig vorgemerkten, geprüften Interessentenkreis an — vertraulich, gezielt und ohne Aufsehen.</p>
+            <h2>Warum diskret vermarkten?</h2>
+            <p>Ein öffentlich gelistetes Objekt, das über Monate sichtbar bleibt, verliert an Attraktivität — der Markt liest jede Preisanpassung mit. Die stille Vermarktung schützt Wert und Verhandlungsposition beider Seiten und bewahrt die Privatsphäre von Eigentümern und Mietern.</p>
+            <h2>So arbeiten wir</h2>
+            <ul>
+                <li>Vertrauliche Aufnahme und realistische Preiseinordnung Ihres Objekts</li>
+                <li>Ansprache ausschließlich vorgemerkter, geprüfter Investoren</li>
+                <li>Diskrete Besichtigungen und begleitete Verhandlung bis zum Notartermin</li>
+            </ul>
+            <p>So bewegen wir Werte, ohne Aufsehen zu erregen — still, wirkungsvoll, mit Stil.</p>
+            """);
+
+        Add(2, "klassische-vermarktung", "Reichweite", "Klassische Vermarktung",
+            "Wenn Reichweite zählt: professionell aufbereitet und zielgerichtet platziert.",
+            "/img/design/obj3.jpg",
+            """
+            <p>Nicht jedes Objekt verlangt nach Diskretion — manche profitieren von maximaler Sichtbarkeit. Dann setzen wir die volle Klaviatur der modernen Vermarktung ein: hochwertig aufbereitet, kanalübergreifend platziert und präzise auf die richtige Zielgruppe ausgerichtet.</p>
+            <h2>Auftritt, der überzeugt</h2>
+            <p>Professionelle Fotografie, aussagekräftige Exposés und eine klare Objektgeschichte entscheiden über den ersten Eindruck. Wir inszenieren Ihre Immobilie so, dass ihr wahrer Wert sofort erkennbar wird.</p>
+            <h2>So arbeiten wir</h2>
+            <ul>
+                <li>Professionelle Aufbereitung: Fotografie, Grundrisse, Exposé</li>
+                <li>Platzierung auf den relevanten Portalen und in unserem Netzwerk</li>
+                <li>Qualifizierung der Anfragen und strukturierte Besichtigungen</li>
+            </ul>
+            <p>Reichweite mit Anspruch — damit die richtigen Interessenten schnell zusammenfinden.</p>
+            """);
+
+        Add(3, "immobilienbewertung", "Analyse", "Immobilienbewertung",
+            "Fundierte Markt- und Ertragswertanalyse als Basis Ihrer Entscheidung.",
+            "/img/design/obj5.jpg",
+            """
+            <p>Eine belastbare Entscheidung beginnt mit einer belastbaren Zahl. Wir ermitteln den realistischen Marktwert Ihrer Immobilie — nachvollziehbar hergeleitet, frei von Wunschdenken und tragfähig gegenüber Käufern, Banken und Gutachtern.</p>
+            <h2>Mehr als ein Preisschild</h2>
+            <p>Lage, Zustand, Mietermix, Restnutzungsdauer und Entwicklungspotenzial fließen in unsere Analyse ein. Bei Kapitalanlagen ergänzen wir die Betrachtung um Faktor, Brutto- und Nettorendite — im richtigen Kontext gelesen.</p>
+            <h2>So arbeiten wir</h2>
+            <ul>
+                <li>Objektaufnahme und Sichtung der relevanten Unterlagen</li>
+                <li>Markt-, Vergleichs- und Ertragswertbetrachtung</li>
+                <li>Verständliche Einordnung als Grundlage Ihrer Entscheidung</li>
+            </ul>
+            <p>Aus einer Zahl wird so eine fundierte Entscheidung.</p>
+            """);
+
+        Add(4, "kaufbegleitung", "Begleitung", "Kaufbegleitung",
+            "Von der Prüfung bis zum Notar — an Ihrer Seite, Schritt für Schritt.",
+            "/img/design/kontakt.jpg",
+            """
+            <p>Ein Immobilienkauf ist eine Entscheidung mit Tragweite. Wir begleiten Sie durch den gesamten Prozess — sachlich, vorausschauend und stets in Ihrem Interesse, von der ersten Prüfung bis zur Unterschrift beim Notar.</p>
+            <h2>Sicherheit in jedem Schritt</h2>
+            <p>Wir prüfen Objekt und Unterlagen, ordnen Chancen und Risiken ein und behalten den Überblick über Fristen, Finanzierung und Vertragsdetails. So treffen Sie Entscheidungen mit Klarheit statt unter Druck.</p>
+            <h2>So arbeiten wir</h2>
+            <ul>
+                <li>Prüfung von Objekt, Unterlagen und Kaufvertrag</li>
+                <li>Einordnung von Preis, Zustand und Potenzial</li>
+                <li>Begleitung von Finanzierung, Verhandlung und Notartermin</li>
+            </ul>
+            <p>An Ihrer Seite — Schritt für Schritt bis zum sicheren Abschluss.</p>
+            """);
+
+        Add(5, "dienstleisternetzwerk", "Netzwerk", "Dienstleisternetzwerk",
+            "Architekten, Gutachter, Finanzierer — kuratiert und verlässlich.",
+            "/img/design/obj6.jpg",
+            """
+            <p>Gute Transaktionen brauchen gute Partner. Über drei Jahrzehnte haben wir ein belastbares Netzwerk aufgebaut — Fachleute, die unseren Anspruch an Diskretion und Qualität teilen und die wir persönlich empfehlen können.</p>
+            <h2>Der richtige Partner zur richtigen Zeit</h2>
+            <p>Ob Bewertung, Finanzierung, rechtliche Prüfung oder Sanierung: Wir vermitteln den passenden Ansprechpartner und stimmen die Beteiligten aufeinander ab — damit aus vielen Gewerken ein reibungsloser Ablauf wird.</p>
+            <h2>Unser Netzwerk umfasst u. a.</h2>
+            <ul>
+                <li>Architekten, Sachverständige und Gutachter</li>
+                <li>Finanzierungspartner und Steuerberater</li>
+                <li>Notare, Fachanwälte und Handwerksbetriebe</li>
+            </ul>
+            <p>Kuratiert und verlässlich — auf Wunsch koordiniert aus einer Hand.</p>
             """);
     }
 
