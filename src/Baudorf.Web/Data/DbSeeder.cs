@@ -21,30 +21,43 @@ public static class DbSeeder
         var cfg = sp.GetRequiredService<IConfiguration>();
         var userMgr = sp.GetRequiredService<UserManager<ApplicationUser>>();
         var logger = sp.GetRequiredService<ILogger<ApplicationDbContext>>();
-        var adminEmail = cfg["Seed:AdminEmail"] ?? "andrea.krueger@baudorf.de";
-        var adminPwd = cfg["Seed:AdminPassword"];
 
-        // Kein Default-Passwort im Quellcode: fehlt es, wird der Admin nicht angelegt.
-        if (string.IsNullOrWhiteSpace(adminPwd))
+        // Admin-Benutzer aus Konfiguration anlegen (kein Passwort im Quellcode).
+        // Bestehendes Konto? → Admin-Rolle sicherstellen (idempotent).
+        async Task SeedAdminAsync(string? email, string? pwd, string name)
         {
-            logger.LogWarning("Seed:AdminPassword fehlt — Admin-Benutzer wird nicht angelegt. " +
-                              "Setze ihn in appsettings.Development.json oder via Umgebungsvariable.");
-        }
-        else if (await userMgr.FindByEmailAsync(adminEmail) is null)
-        {
-            var admin = new ApplicationUser
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(pwd))
             {
-                UserName = adminEmail,
-                Email = adminEmail,
-                EmailConfirmed = true,
-                AnzeigeName = "Andrea Krüger",
-                IstFreigegeben = true,
-                FreigegebenAm = DateTime.UtcNow
-            };
-            var res = await userMgr.CreateAsync(admin, adminPwd);
-            if (res.Succeeded)
-                await userMgr.AddToRoleAsync(admin, Roles.Admin);
+                logger.LogWarning("Seed-Admin-Zugangsdaten fehlen ({Email}) — Konto wird nicht angelegt.", email ?? "—");
+                return;
+            }
+
+            var user = await userMgr.FindByEmailAsync(email);
+            if (user is null)
+            {
+                user = new ApplicationUser
+                {
+                    UserName = email,
+                    Email = email,
+                    EmailConfirmed = true,
+                    AnzeigeName = name,
+                    IstFreigegeben = true,
+                    FreigegebenAm = DateTime.UtcNow
+                };
+                var res = await userMgr.CreateAsync(user, pwd);
+                if (!res.Succeeded)
+                {
+                    logger.LogWarning("Admin {Email} konnte nicht angelegt werden: {Fehler}",
+                        email, string.Join("; ", res.Errors.Select(e => e.Description)));
+                    return;
+                }
+            }
+            if (!await userMgr.IsInRoleAsync(user, Roles.Admin))
+                await userMgr.AddToRoleAsync(user, Roles.Admin);
         }
+
+        await SeedAdminAsync(cfg["Seed:AdminEmail"] ?? "andrea.krueger@baudorf.de", cfg["Seed:AdminPassword"], "Andrea Krüger");
+        await SeedAdminAsync(cfg["Seed:Admin2Email"], cfg["Seed:Admin2Password"], cfg["Seed:Admin2Name"] ?? "Administrator");
 
         await SeedTeamAsync(db);
         await SeedSettingsAsync(db);

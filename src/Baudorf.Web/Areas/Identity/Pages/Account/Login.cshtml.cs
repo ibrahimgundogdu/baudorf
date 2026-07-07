@@ -1,18 +1,30 @@
 using System.ComponentModel.DataAnnotations;
+using Baudorf.Web.Models;
 using Baudorf.Web.Models.Entities;
+using Baudorf.Web.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Options;
 
 namespace Baudorf.Web.Areas.Identity.Pages.Account;
 
-public class LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger) : PageModel
+[EnableRateLimiting("login")]
+public class LoginModel(
+    SignInManager<ApplicationUser> signInManager,
+    ITurnstileVerifier turnstile,
+    IOptions<TurnstileOptions> turnstileOptions,
+    ILogger<LoginModel> logger) : PageModel
 {
     [BindProperty]
     public InputModel Input { get; set; } = new();
 
     public string? ReturnUrl { get; set; }
+
+    /// <summary>Site-Key fürs Turnstile-Widget; null = CAPTCHA deaktiviert.</summary>
+    public string? TurnstileSiteKey => turnstileOptions.Value.Enabled ? turnstileOptions.Value.SiteKey : null;
 
     [TempData]
     public string? ErrorMessage { get; set; }
@@ -57,8 +69,21 @@ public class LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<Lo
             return Page();
         }
 
+        // CAPTCHA (nur wenn konfiguriert) — automatisierte Anmeldeversuche aussperren.
+        if (turnstile.Enabled)
+        {
+            var token = Request.Form["cf-turnstile-response"].ToString();
+            var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
+            if (!await turnstile.VerifyAsync(token, ip))
+            {
+                ModelState.AddModelError(string.Empty, "Die Sicherheitsprüfung ist fehlgeschlagen. Bitte versuchen Sie es erneut.");
+                return Page();
+            }
+        }
+
+        // lockoutOnFailure: true → nach 5 Fehlversuchen wird das Konto gesperrt.
         var result = await signInManager.PasswordSignInAsync(
-            Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+            Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: true);
 
         if (result.Succeeded)
         {
@@ -66,9 +91,14 @@ public class LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<Lo
             return LocalRedirect(returnUrl);
         }
 
+        if (result.RequiresTwoFactor)
+        {
+            return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, Input.RememberMe });
+        }
+
         if (result.IsLockedOut)
         {
-            logger.LogWarning("Benutzerkonto gesperrt.");
+            logger.LogWarning("Benutzerkonto gesperrt (zu viele Fehlversuche).");
             return RedirectToPage("./Lockout");
         }
 

@@ -1,0 +1,73 @@
+@page
+@model EnableAuthenticatorModel
+@{
+    ViewData["Title"] = "Zwei-Faktor-Authentifizierung einrichten";
+    ViewData["MetaDescription"] = "Richten Sie die Zwei-Faktor-Authentifizierung für Ihr Baudorf-Konto ein.";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<section class="hx-pagehead">
+    <img class="hx-pagehead__emblem" src="~/img/brand/baudorf-emblem-gold.png" alt="" />
+    <div class="hx-wrap">
+        <div class="hx-eyebrow"><span>Sicherheit</span></div>
+        <h1>Zwei-Faktor-<em class="hx-em">Schutz</em> einrichten</h1>
+        <p>Für den Zugang zum Verwaltungsbereich ist die Zwei-Faktor-Authentifizierung erforderlich. Verbinden Sie einmalig eine Authenticator-App.</p>
+    </div>
+</section>
+
+<div class="hx-wrap hx-2fa">
+    @if (!string.IsNullOrEmpty(Model.StatusMessage))
+    {
+        <div class="hx-2fa__status">@Model.StatusMessage</div>
+    }
+    <div class="hx-2fa__grid">
+        <div class="hx-2fa__main">
+            <ol class="hx-2fa__steps">
+                <li>
+                    <strong>App installieren.</strong>
+                    Laden Sie eine Authenticator-App wie <em class="hx-em">Google Authenticator</em> oder
+                    <em class="hx-em">Microsoft Authenticator</em> auf Ihr Smartphone.
+                </li>
+                <li>
+                    <strong>Konto hinzufügen.</strong>
+                    Öffnen Sie die App, wählen Sie <em class="hx-em">Konto hinzufügen → QR-Code scannen</em> und
+                    scannen Sie den Code rechts. Alternativ diesen Schlüssel manuell eingeben:
+                    <div class="hx-2fa__key"><kbd>@Model.SharedKey</kbd></div>
+                </li>
+                <li>
+                    <strong>Code bestätigen.</strong>
+                    Die App zeigt einen 6-stelligen Code. Geben Sie ihn hier ein, um die Einrichtung abzuschließen.
+                </li>
+            </ol>
+
+            <form method="post" class="hx-2fa__form">
+                <div asp-validation-summary="ModelOnly" class="hx-vsum"></div>
+                <div class="hx-field">
+                    <label asp-for="Input.Code">Bestätigungscode</label>
+                    <input asp-for="Input.Code" autocomplete="off" inputmode="numeric" placeholder="123456" autofocus />
+                    <span asp-validation-for="Input.Code"></span>
+                </div>
+                <button type="submit" class="hx-btn hx-btn--gold">Aktivieren</button>
+            </form>
+
+            <div class="hx-2fa__reset">
+                <p>Code wird nicht akzeptiert, Gerät verloren oder falsch gekoppelt?</p>
+                <form method="post" asp-page-handler="ResetKey">
+                    <button type="submit" class="hx-btn hx-btn--outline-dark">Authenticator zurücksetzen</button>
+                </form>
+                <span>Erzeugt einen neuen Schlüssel. Der bisherige Eintrag in Ihrer App wird ungültig — danach neu scannen.</span>
+            </div>
+        </div>
+
+        <aside class="hx-2fa__qr">
+            <div id="qrCode"></div>
+            <div id="qrCodeData" data-url="@Model.AuthenticatorUri"></div>
+            <p class="hx-2fa__hint">In der Authenticator-App scannen — nicht mit der Kamera-App.</p>
+        </aside>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+}

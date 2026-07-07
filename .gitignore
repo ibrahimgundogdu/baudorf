@@ -44,3 +44,7 @@ node_modules/
 Thumbs.db
 .DS_Store
 .gstack/
+
+# Data-Protection keys (secrets — never commit)
+keys/
+src/Baudorf.Web/keys/

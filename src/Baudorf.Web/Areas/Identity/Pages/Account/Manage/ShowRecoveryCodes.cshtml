@@ -1,0 +1,49 @@
+@page
+@model ShowRecoveryCodesModel
+@{
+    ViewData["Title"] = "Wiederherstellungscodes";
+    ViewData["MetaDescription"] = "Ihre Wiederherstellungscodes für die Zwei-Faktor-Authentifizierung.";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<section class="hx-pagehead">
+    <img class="hx-pagehead__emblem" src="~/img/brand/baudorf-emblem-gold.png" alt="" />
+    <div class="hx-wrap">
+        <div class="hx-eyebrow"><span>Sicherheit</span></div>
+        <h1>Ihre <em class="hx-em">Wiederherstellungscodes</em></h1>
+        <p>Bewahren Sie diese Codes an einem sicheren Ort auf. Verlieren Sie den Zugang zu Ihrer Authenticator-App, melden Sie sich mit einem dieser Codes an. Jeder Code ist nur einmal gültig.</p>
+    </div>
+</section>
+
+<div class="hx-wrap hx-reco">
+    <div class="hx-reco__warn">
+        <strong>Einmalig sichtbar.</strong> Diese Codes werden nicht erneut angezeigt. Notieren oder drucken Sie sie jetzt.
+    </div>
+
+    @if (Model.RecoveryCodes is { Length: > 0 })
+    {
+        <div class="hx-reco__grid">
+            @foreach (var code in Model.RecoveryCodes)
+            {
+                <code>@code</code>
+            }
+        </div>
+    }
+
+    <div class="hx-reco__actions">
+        <a class="hx-btn hx-btn--gold" asp-page="./TwoFactorAuthentication">Ich habe die Codes gesichert</a>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Kleiner Komfort: Codes in die Zwischenablage kopieren per Klick auf ein Code-Feld.
+        document.querySelectorAll('.hx-reco__grid code').forEach(function (el) {
+            el.addEventListener('click', function () {
+                navigator.clipboard && navigator.clipboard.writeText(el.textContent.trim());
+                el.classList.add('is-copied');
+                setTimeout(function () { el.classList.remove('is-copied'); }, 900);
+            });
+        });
+    </script>
+}

@@ -1,0 +1,50 @@
+@page
+@model LoginWith2faModel
+@{
+    ViewData["Title"] = "Zwei-Faktor-Bestätigung";
+    ViewData["MetaDescription"] = "Bestätigen Sie Ihre Anmeldung mit Ihrem Authenticator-Code.";
+}
+
+<section class="hx-pagehead">
+    <img class="hx-pagehead__emblem" src="~/img/brand/baudorf-emblem-gold.png" alt="" />
+    <div class="hx-wrap">
+        <div class="hx-eyebrow"><span>Sicherheit</span></div>
+        <h1>Zwei-Faktor-<em class="hx-em">Bestätigung</em></h1>
+        <p>Geben Sie den 6-stelligen Code aus Ihrer Authenticator-App ein, um die Anmeldung abzuschließen.</p>
+    </div>
+</section>
+
+<div class="hx-wrap">
+    <div class="hx-auth">
+        <form method="post" asp-route-returnUrl="@Model.ReturnUrl">
+            <input type="hidden" name="rememberMe" value="@Model.RememberMe" />
+            <div asp-validation-summary="ModelOnly" class="hx-vsum"></div>
+
+            <div class="hx-field">
+                <label asp-for="Input.TwoFactorCode">Authenticator-Code</label>
+                <input asp-for="Input.TwoFactorCode" autocomplete="one-time-code" inputmode="numeric"
+                       placeholder="123456" autofocus aria-required="true" />
+                <span asp-validation-for="Input.TwoFactorCode"></span>
+            </div>
+
+            <div class="hx-check">
+                <input asp-for="Input.RememberMachine" type="checkbox" value="true" />
+                <label asp-for="Input.RememberMachine">Diesen Browser merken (kein Code mehr auf diesem Gerät)</label>
+            </div>
+
+            <div style="margin-top:1.4rem">
+                <button type="submit" class="hx-btn hx-btn--gold">Anmelden</button>
+            </div>
+        </form>
+
+        <p class="hx-auth__alt">
+            Kein Zugriff auf Ihr Gerät?
+            <a asp-page="./LoginWithRecoveryCode" asp-route-returnUrl="@Model.ReturnUrl">Wiederherstellungscode verwenden</a>
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+}

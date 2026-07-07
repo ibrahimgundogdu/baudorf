@@ -1,4 +1,5 @@
 using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.DataProtection;
 using Baudorf.Web.Data;
 using Baudorf.Web.Models;
 using Baudorf.Web.Models.Entities;
@@ -23,6 +24,11 @@ builder.Services
         options.SignIn.RequireConfirmedAccount = false; // TODO: prod'da e-posta doğrulama açılacak
         options.Password.RequiredLength = 8;
         options.User.RequireUniqueEmail = true;
+
+        // Brute-Force-Schutz: Konto nach 5 Fehlversuchen 15 Min. sperren.
+        options.Lockout.MaxFailedAccessAttempts = 5;
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+        options.Lockout.AllowedForNewUsers = true;
     })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders()
@@ -83,6 +89,17 @@ builder.Services.AddRateLimiter(options =>
                 Window = TimeSpan.FromMinutes(10),
                 QueueLimit = 0
             }));
+
+    // Login: Brute-Force zusätzlich pro IP drosseln.
+    options.AddPolicy("login", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 8,
+                Window = TimeSpan.FromMinutes(5),
+                QueueLimit = 0
+            }));
 });
 
 builder.Services.AddControllersWithViews();
@@ -90,6 +107,12 @@ builder.Services.AddRazorPages();
 
 // Antiforgery-Token auch per Header (für den JS-Consent-POST).
 builder.Services.AddAntiforgery(o => o.HeaderName = "RequestVerificationToken");
+
+// Data-Protection-Schlüssel dauerhaft ablegen — sonst werden Auth-Cookies bei
+// jedem App-Neustart ungültig (Nutzer wird ausgeloggt). Ordner "keys" ist gitignored.
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, "keys")))
+    .SetApplicationName("Baudorf");
 
 var app = builder.Build();
 
@@ -110,6 +133,40 @@ app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// 2FA-Pflicht für Staff: angemeldete Admins/Redakteure ohne aktivierte
+// Zwei-Faktor-Authentifizierung werden zur Einrichtung geleitet. Nur echte
+// Seitenaufrufe (GET/HTML), Manage-/Logout-Pfade bleiben frei (kein Loop).
+// In Development deaktiviert: lokale Maschinen haben oft eine falsche Uhr/Zeitzone,
+// wodurch TOTP-Codes nie passen. In Produktion (korrekte Zeit) voll aktiv.
+if (!app.Environment.IsDevelopment())
+{
+app.Use(async (context, next) =>
+{
+    var user = context.User;
+    if (user.Identity?.IsAuthenticated == true &&
+        (user.IsInRole(Roles.Admin) || user.IsInRole(Roles.Redakteur)) &&
+        HttpMethods.IsGet(context.Request.Method) &&
+        context.Request.Headers.Accept.ToString().Contains("text/html", StringComparison.OrdinalIgnoreCase))
+    {
+        var path = context.Request.Path.Value ?? string.Empty;
+        var frei = path.StartsWith("/Identity/Account/Manage", StringComparison.OrdinalIgnoreCase)
+                || path.StartsWith("/Identity/Account/Logout", StringComparison.OrdinalIgnoreCase)
+                || path.StartsWith("/Identity/Account/LoginWith2fa", StringComparison.OrdinalIgnoreCase);
+        if (!frei)
+        {
+            var userMgr = context.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
+            var appUser = await userMgr.GetUserAsync(user);
+            if (appUser is not null && !await userMgr.GetTwoFactorEnabledAsync(appUser))
+            {
+                context.Response.Redirect("/Identity/Account/Manage/EnableAuthenticator");
+                return;
+            }
+        }
+    }
+    await next();
+});
+}
 
 app.MapStaticAssets();
 

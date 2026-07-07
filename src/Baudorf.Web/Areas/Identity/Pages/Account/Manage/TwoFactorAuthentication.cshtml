@@ -1,0 +1,91 @@
+@page
+@model TwoFactorAuthenticationModel
+@{
+    ViewData["Title"] = "Zwei-Faktor-Authentifizierung";
+    ViewData["MetaDescription"] = "Verwalten Sie die Zwei-Faktor-Authentifizierung Ihres Baudorf-Kontos.";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<section class="hx-pagehead">
+    <img class="hx-pagehead__emblem" src="~/img/brand/baudorf-emblem-gold.png" alt="" />
+    <div class="hx-wrap">
+        <div class="hx-eyebrow"><span>Sicherheit</span></div>
+        <h1>Zwei-Faktor-<em class="hx-em">Authentifizierung</em></h1>
+        <p>Die zusätzliche Sicherheitsebene für Ihr Konto: Neben dem Passwort wird beim Login ein Einmal-Code aus Ihrer Authenticator-App verlangt.</p>
+    </div>
+</section>
+
+<div class="hx-wrap hx-2fahub">
+    @if (!string.IsNullOrEmpty(Model.StatusMessage))
+    {
+        <div class="hx-2fahub__status">@Model.StatusMessage</div>
+    }
+
+    <!-- Aktueller Status -->
+    <div class="hx-2fahub__state @(Model.Is2faEnabled ? "is-on" : "is-off")">
+        <span class="hx-2fahub__dot"></span>
+        <div>
+            <strong>@(Model.Is2faEnabled ? "2FA ist aktiv" : "2FA ist nicht aktiv")</strong>
+            <span>
+                @if (Model.Is2faEnabled)
+                {
+                    @:Ihr Konto ist durch einen zweiten Faktor geschützt.
+                }
+                else
+                {
+                    @:Richten Sie eine Authenticator-App ein, um Ihr Konto zu schützen. Für den Verwaltungsbereich ist dies erforderlich.
+                }
+            </span>
+        </div>
+    </div>
+
+    <div class="hx-2fahub__cards">
+        @if (!Model.HasAuthenticator)
+        {
+            <div class="hx-2fahub__card">
+                <h3>Authenticator einrichten</h3>
+                <p>Verbinden Sie eine App wie Google oder Microsoft Authenticator. Sie scannen einen QR-Code und bestätigen einen Code — danach ist 2FA aktiv.</p>
+                <a class="hx-btn hx-btn--gold" asp-page="./EnableAuthenticator">Jetzt einrichten</a>
+            </div>
+        }
+        else
+        {
+            <div class="hx-2fahub__card">
+                <h3>Authenticator-App</h3>
+                <p>Ihre App ist gekoppelt. Neues Telefon, verlorener Zugang oder Codes werden nicht akzeptiert? Koppeln Sie mit einem frischen QR-Code neu — der alte Eintrag wird ungültig.</p>
+                <a class="hx-btn hx-btn--outline-dark" asp-page="./EnableAuthenticator">Neu koppeln / QR anzeigen</a>
+            </div>
+
+            <div class="hx-2fahub__card">
+                <h3>Wiederherstellungscodes</h3>
+                <p>
+                    Einmal-Codes für den Notfall, falls Sie keinen Zugriff auf Ihre App haben.
+                    <strong>Noch @Model.RecoveryCodesLeft Code@(Model.RecoveryCodesLeft == 1 ? "" : "s") übrig.</strong>
+                    Beim Neugenerieren werden alle alten Codes ungültig.
+                </p>
+                <a class="hx-btn hx-btn--outline-dark" asp-page="./GenerateRecoveryCodes">Neue Codes generieren</a>
+            </div>
+
+            <div class="hx-2fahub__card hx-2fahub__card--danger">
+                <h3>2FA deaktivieren</h3>
+                <p>Entfernt den zweiten Faktor — Ihr Konto ist dann nur noch durch das Passwort geschützt. Für Admin-Konten wird beim nächsten Aufruf erneut zur Einrichtung aufgefordert.</p>
+                <a class="hx-btn hx-btn--danger" asp-page="./Disable2fa">2FA deaktivieren</a>
+            </div>
+        }
+
+        @if (Model.IsMachineRemembered)
+        {
+            <div class="hx-2fahub__card">
+                <h3>Dieser Browser</h3>
+                <p>Dieser Browser ist als vertrauenswürdig gespeichert und fragt beim Login keinen Code ab. An einem fremden oder öffentlichen Gerät sollten Sie das rückgängig machen.</p>
+                <form method="post">
+                    <button type="submit" class="hx-btn hx-btn--outline-dark">Diesen Browser vergessen</button>
+                </form>
+            </div>
+        }
+    </div>
+
+    <p class="hx-auth__alt">
+        <a asp-page="./ChangePassword">Passwort ändern</a>
+    </p>
+</div>

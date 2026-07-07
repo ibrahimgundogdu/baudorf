@@ -7,6 +7,9 @@
 
     <partial name="_SeoMeta" />
 
+    <link rel="icon" type="image/png" href="~/img/brand/baudorf-emblem-ink.png" />
+    <link rel="apple-touch-icon" href="~/img/brand/baudorf-emblem-ink.png" />
+
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/pages.css" asp-append-version="true" />
@@ -26,7 +29,7 @@
             </nav>
 
             <a class="bd-nav__brand" asp-area="" asp-controller="Home" asp-action="Index" aria-label="Baudorf Startseite">
-                <img src="~/img/brand/baudorf-logo-cream.png" alt="Baudorf Immobilien GmbH" />
+                <img src="~/img/brand/baudorf-logo-full.png" alt="Baudorf Immobilien GmbH" />
             </a>
 
             <div class="bd-nav__right">
@@ -152,6 +155,11 @@
     <partial name="_CookieConsent" />
 
     <script src="~/js/site.js" asp-append-version="true"></script>
+    @if ((Context.Request.Path.Value ?? "").Contains("/Account/Manage/EnableAuthenticator", StringComparison.OrdinalIgnoreCase))
+    {
+        <script src="~/lib/qrcodejs/qrcode.min.js"></script>
+        <script src="~/js/qr-init.js" asp-append-version="true"></script>
+    }
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
