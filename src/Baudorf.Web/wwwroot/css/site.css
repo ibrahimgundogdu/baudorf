@@ -87,7 +87,7 @@ h1, h2, h3 {
   font-size: 0.92rem;
   font-weight: 500;
   border: 1px solid transparent;
-  border-radius: 2px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s var(--ease);
 }
@@ -238,7 +238,7 @@ h1, h2, h3 {
 .bd-form-field select,
 .bd-form-field textarea {
   font-family: inherit; font-size: 0.95rem; padding: 0.75rem 0.85rem;
-  border: 1px solid var(--line2, #DCD5C8); border-radius: 3px; background: var(--white); color: var(--ink);
+  border: 1px solid var(--line2, #DCD5C8); border-radius: 8px; background: var(--white); color: var(--ink);
   width: 100%; transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
 }
 .bd-form-field textarea { resize: vertical; min-height: 120px; }
@@ -353,7 +353,11 @@ h1, h2, h3 {
 .bd-table th { background: var(--linen); font-weight: 600; font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--stone); }
 .bd-table tr:last-child td { border-bottom: none; }
 .bd-table tr:hover td { background: var(--parch); }
-.bd-table__actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
+/* Actions bleiben eine echte Tabellenzelle (kein display:flex am <td>),
+   damit die Zeilen-Unterlinie exakt mit den übrigen Spalten fluchtet. */
+.bd-table__actions { text-align: right; white-space: nowrap; }
+.bd-table__actions a, .bd-table__actions form { display: inline-flex; vertical-align: middle; }
+.bd-table__actions > * + * { margin-left: 0.4rem; }
 .bd-table .bd-thumb { width: 56px; height: 42px; object-fit: cover; border-radius: 3px; border: 1px solid var(--line); }
 .bd-table--compact td, .bd-table--compact th { padding: 0.55rem 0.8rem; }
 
@@ -414,10 +418,10 @@ h1, h2, h3 {
 
 /* Admin: inline search, item rows */
 .bd-inline-search { display: flex; gap: 0.5rem; }
-.bd-inline-search input { font-family: inherit; font-size: 0.9rem; padding: 0.5rem 0.7rem; border: 1px solid var(--line2, #DCD5C8); border-radius: 3px; background: var(--surface); }
+.bd-inline-search input { font-family: inherit; font-size: 0.9rem; padding: 0.5rem 0.7rem; border: 1px solid var(--line2, #DCD5C8); border-radius: 8px; background: var(--surface); }
 .bd-filter-pills { display: flex; gap: 0.4rem; flex-wrap: wrap; }
 .bd-item-row { display: grid; grid-template-columns: 1fr 1.6fr auto auto; gap: 0.6rem; align-items: center; margin-bottom: 0.6rem; }
-.bd-item-row input { font-family: inherit; font-size: 0.88rem; padding: 0.5rem 0.6rem; border: 1px solid var(--line2, #DCD5C8); border-radius: 3px; background: var(--white); }
+.bd-item-row input { font-family: inherit; font-size: 0.88rem; padding: 0.5rem 0.6rem; border: 1px solid var(--line2, #DCD5C8); border-radius: 8px; background: var(--white); }
 .bd-item-row__btns { display: flex; gap: 0.3rem; }
 .bd-item-row--add { border-top: 1px dashed var(--line2, #DCD5C8); padding-top: 0.8rem; margin-top: 0.4rem; }
 @media (max-width: 760px) { .bd-item-row { grid-template-columns: 1fr; } }

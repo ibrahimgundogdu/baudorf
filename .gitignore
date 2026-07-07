@@ -48,3 +48,7 @@ Thumbs.db
 # Data-Protection keys (secrets — never commit)
 keys/
 src/Baudorf.Web/keys/
+
+# Publish output (manuel deploy)
+/publish/
+publish/
