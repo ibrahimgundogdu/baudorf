@@ -127,6 +127,12 @@ else
 }
 
 app.UseHttpsRedirection();
+
+// Zur Laufzeit hochgeladene Dateien (wwwroot/uploads) von der Festplatte ausliefern.
+// MapStaticAssets() bedient nur die zur Build-Zeit bekannten Assets — Uploads sind
+// dort nicht enthalten und würden sonst 404 liefern.
+app.UseStaticFiles();
+
 app.UseRouting();
 
 app.UseRateLimiter();
