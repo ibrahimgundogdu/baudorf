@@ -1,0 +1,19 @@
+[Unit]
+Description=Baudorf Immobilien (ASP.NET Core)
+After=network.target
+
+[Service]
+WorkingDirectory=/var/www/baudorf
+ExecStart=/usr/local/bin/dotnet /var/www/baudorf/Baudorf.Web.dll
+Restart=always
+RestartSec=5
+KillSignal=SIGINT
+SyslogIdentifier=baudorf
+User=baudorf
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=ASPNETCORE_URLS=http://127.0.0.1:5000
+Environment=DOTNET_NOLOGO=1
+Environment=DOTNET_CLI_TELEMETRY_OPTOUT=1
+
+[Install]
+WantedBy=multi-user.target

@@ -116,6 +116,18 @@ builder.Services.AddDataProtection()
 
 var app = builder.Build();
 
+// Hinter dem Nginx-Reverse-Proxy (Linux/Hetzner) das Original-Schema (https) und die
+// echte Client-IP übernehmen — sonst würde UseHttpsRedirection() in eine Schleife laufen
+// und Rate-Limit/Logs zeigten nur die Proxy-IP. Auf IIS/Windows unschädlich.
+var forwardedOptions = new Microsoft.AspNetCore.Builder.ForwardedHeadersOptions
+{
+    ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor
+                     | Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto
+};
+forwardedOptions.KnownNetworks.Clear();
+forwardedOptions.KnownProxies.Clear();
+app.UseForwardedHeaders(forwardedOptions);
+
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
