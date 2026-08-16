@@ -474,6 +474,9 @@ h1, h2, h3 {
 .bd-footer__brand img { height: 40px; margin-bottom: 24px; }
 .bd-footer__brand p { margin: 0; max-width: 280px; font: 300 14px/1.7 var(--font); color: rgba(24,22,20,.6); }
 .bd-footer__slogan { margin: 24px 0 0 !important; font: italic 20px/1.4 var(--font) !important; color: var(--bd-gold) !important; }
+.bd-footer__social { display: flex; gap: 12px; margin-top: 22px; }
+.bd-footer__social a { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(24,22,20,.16); color: rgba(24,22,20,.66); transition: .3s var(--ease); }
+.bd-footer__social a:hover { border-color: var(--accent); color: var(--accent); background: rgba(196,164,107,.08); transform: translateY(-2px); }
 .bd-footer__col { display: flex; flex-direction: column; gap: 13px; }
 .bd-footer__head { font: 600 11px/1 var(--font); letter-spacing: .2em; text-transform: uppercase; color: var(--accent-dk); margin-bottom: 9px; }
 .bd-footer__col a, .bd-footer__col span { font: 300 14px/1.6 var(--font); color: rgba(24,22,20,.7); transition: .3s; }

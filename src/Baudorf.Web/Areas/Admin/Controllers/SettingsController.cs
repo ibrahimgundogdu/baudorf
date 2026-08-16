@@ -30,6 +30,7 @@ public class SettingsController(ApplicationDbContext db) : Controller
         new("whatsapp.message", "Vorausgefüllte Nachricht", "WhatsApp", Multiline: true),
         new("social.instagram", "Instagram-URL", "Social"),
         new("social.linkedin", "LinkedIn-URL", "Social"),
+        new("social.youtube", "YouTube-URL", "Social"),
     ];
 
     public async Task<IActionResult> Index()
