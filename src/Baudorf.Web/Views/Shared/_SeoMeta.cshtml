@@ -1,6 +1,7 @@
 @using Baudorf.Web.Models
 @using Baudorf.Web.Services
 @inject Microsoft.Extensions.Options.IOptions<SiteOptions> SiteOpt
+@inject ISiteSettings Settings
 @{
     var site = SiteOpt.Value;
     var req = ViewContext.HttpContext.Request;
@@ -22,7 +23,17 @@
     var logoUrl = SeoUrls.Absolute(req, site, "/img/brand/baudorf-logo-ink.png");
 
     // --- Site-weites JSON-LD: RealEstateAgent (Organisation) + WebSite ---
-    var sameAs = site.SameAs?.Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+    // sameAs = konfigurierte Profile (Site:SameAs) + im Admin gepflegte Social-Links.
+    var sameAs = (site.SameAs ?? new List<string>())
+        .Concat(new[]
+        {
+            Settings.Get("social.instagram"),
+            Settings.Get("social.linkedin"),
+            Settings.Get("social.youtube")
+        })
+        .Where(s => !string.IsNullOrWhiteSpace(s))
+        .Distinct()
+        .ToList();
     var organization = new Dictionary<string, object?>
     {
         ["@context"] = "https://schema.org",
@@ -89,6 +100,15 @@
 @if (!string.IsNullOrWhiteSpace(site.TwitterHandle))
 {
     <meta name="twitter:site" content="@site.TwitterHandle" />
+}
+
+@if (!string.IsNullOrWhiteSpace(site.GoogleSiteVerification))
+{
+    <meta name="google-site-verification" content="@site.GoogleSiteVerification" />
+}
+@if (!string.IsNullOrWhiteSpace(site.BingSiteVerification))
+{
+    <meta name="msvalidate.01" content="@site.BingSiteVerification" />
 }
 
 <meta name="theme-color" content="#0C0C0C" />

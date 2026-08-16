@@ -19,6 +19,13 @@ public class SiteOptions
     public string DefaultOgImage { get; set; } = "/img/og/baudorf-og.png";
     public string FoundingYear { get; set; } = "1994";
 
+    /// <summary>Google-Search-Console-Bestätigung (Token aus der "HTML-Tag"-Methode, nur der
+    /// content-Wert). Gesetzt → &lt;meta name="google-site-verification"&gt; wird gerendert.</summary>
+    public string GoogleSiteVerification { get; set; } = string.Empty;
+
+    /// <summary>Bing-Webmaster-Bestätigung (msvalidate.01). Optional.</summary>
+    public string BingSiteVerification { get; set; } = string.Empty;
+
     public ContactOptions Contact { get; set; } = new();
     public List<string> SameAs { get; set; } = [];
 }

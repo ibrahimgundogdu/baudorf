@@ -53,11 +53,22 @@ public class SeoController(ApplicationDbContext db, IOptions<SiteOptions> siteOp
         // Statische öffentliche Seiten
         urlset.Add(Url("/", "weekly", "1.0"));
         urlset.Add(Url("/Immobilien", "daily", "0.9"));
+        urlset.Add(Url("/Leistungen", "monthly", "0.7"));
         urlset.Add(Url("/Aktuelles", "weekly", "0.7"));
         urlset.Add(Url("/Kontakt", "monthly", "0.6"));
         urlset.Add(Url("/Legal/Impressum", "yearly", "0.3"));
         urlset.Add(Url("/Legal/Datenschutz", "yearly", "0.3"));
         urlset.Add(Url("/Legal/Agb", "yearly", "0.3"));
+
+        // Veröffentlichte Leistungen (Detailseiten)
+        var leistungen = await db.Leistungen
+            .Where(l => l.IstVeroeffentlicht)
+            .Select(l => l.Slug)
+            .ToListAsync();
+        foreach (var slug in leistungen)
+        {
+            urlset.Add(Url($"/Leistungen/{slug}", "monthly", "0.6"));
+        }
 
         // Veröffentlichte, NICHT off-market Objekte (off-market ist gated → kein Index)
         var objekte = await db.Properties
