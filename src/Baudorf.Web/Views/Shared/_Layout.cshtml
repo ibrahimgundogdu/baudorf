@@ -155,11 +155,6 @@
     <partial name="_CookieConsent" />
 
     <script src="~/js/site.js" asp-append-version="true"></script>
-    @if ((Context.Request.Path.Value ?? "").Contains("/Account/Manage/EnableAuthenticator", StringComparison.OrdinalIgnoreCase))
-    {
-        <script src="~/lib/qrcodejs/qrcode.min.js"></script>
-        <script src="~/js/qr-init.js" asp-append-version="true"></script>
-    }
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
