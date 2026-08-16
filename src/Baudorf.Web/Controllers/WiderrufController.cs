@@ -6,6 +6,7 @@ using Baudorf.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Baudorf.Web.Controllers;
 
@@ -13,6 +14,7 @@ namespace Baudorf.Web.Controllers;
 public class WiderrufController(
     ApplicationDbContext db,
     IEmailService email,
+    IOptions<EmailOptions> emailOptions,
     ILogger<WiderrufController> logger) : Controller
 {
     [HttpGet]
@@ -60,10 +62,9 @@ public class WiderrufController(
     {
         try
         {
-            var adminEmail = await db.SiteSettings
-                .Where(s => s.Key == "contact.email")
-                .Select(s => s.Value)
-                .FirstOrDefaultAsync() ?? "andrea.krueger@baudorf.de";
+            var adminEmail = string.IsNullOrWhiteSpace(emailOptions.Value.NotifyTo)
+                ? "andrea.krueger@baudorf.de"
+                : emailOptions.Value.NotifyTo;
 
             var body = $"""
                 <h2>Neuer Vertragswiderruf</h2>

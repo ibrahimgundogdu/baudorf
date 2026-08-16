@@ -93,7 +93,8 @@ public class LoginModel(
 
         if (result.RequiresTwoFactor)
         {
-            return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, Input.RememberMe });
+            // Zweiter Faktor per E-Mail-Code (statt Authenticator-App).
+            return RedirectToPage("./LoginWithEmailCode", new { ReturnUrl = returnUrl, Input.RememberMe });
         }
 
         if (result.IsLockedOut)

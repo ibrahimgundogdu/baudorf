@@ -59,6 +59,32 @@ public static class DbSeeder
         await SeedAdminAsync(cfg["Seed:AdminEmail"] ?? "andrea.krueger@baudorf.de", cfg["Seed:AdminPassword"], "Andrea Krüger");
         await SeedAdminAsync(cfg["Seed:Admin2Email"], cfg["Seed:Admin2Password"], cfg["Seed:Admin2Name"] ?? "Administrator");
 
+        // E-Mail-Zwei-Faktor NUR aktiv, wenn BEIDES zutrifft:
+        //  1) SMTP ist konfiguriert (Email:Host) UND
+        //  2) es wurde bewusst freigeschaltet ("TwoFactor:Enabled": true).
+        // So sperrt allein das Einrichten von SMTP (z. B. fürs Kontaktformular) niemanden aus —
+        // 2FA wird erst scharfgeschaltet, wenn der Mailversand nachweislich funktioniert.
+        // Streng idempotent: nur ändern, wenn der Wert wirklich abweicht — sonst würde jeder
+        // Neustart den SecurityStamp wechseln und angemeldete Nutzer ausloggen.
+        var mailKonfiguriert = !string.IsNullOrWhiteSpace(cfg["Email:Host"])
+                            && cfg.GetValue("TwoFactor:Enabled", false);
+        var gesehen = new HashSet<string>();
+        foreach (var rolle in new[] { Roles.Admin, Roles.Redakteur })
+        {
+            foreach (var staff in await userMgr.GetUsersInRoleAsync(rolle))
+            {
+                if (!gesehen.Add(staff.Id)) continue; // Doppelrollen nicht zweimal anfassen
+
+                if (mailKonfiguriert && !staff.EmailConfirmed)
+                {
+                    staff.EmailConfirmed = true;
+                    await userMgr.UpdateAsync(staff);
+                }
+                if (await userMgr.GetTwoFactorEnabledAsync(staff) != mailKonfiguriert)
+                    await userMgr.SetTwoFactorEnabledAsync(staff, mailKonfiguriert);
+            }
+        }
+
         await SeedTeamAsync(db);
         await SeedSettingsAsync(db);
         await SeedLegalPagesAsync(db);

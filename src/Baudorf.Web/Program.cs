@@ -41,6 +41,9 @@ builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Identity/Account/Login";
     options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+    // Sitzung 14 Tage gültig, gleitend verlängert — kein Rauswurf nach kurzer Inaktivität.
+    options.ExpireTimeSpan = TimeSpan.FromDays(14);
+    options.SlidingExpiration = true;
     options.Events.OnSignedIn = async ctx =>
     {
         var sp = ctx.HttpContext.RequestServices;
@@ -57,6 +60,10 @@ builder.Services.ConfigureApplicationCookie(options =>
     };
 });
 
+// SecurityStamp seltener prüfen (Standard 30 Min.) — verhindert schnelle Abmeldungen,
+// wenn sich am Konto etwas ändert. 12 Stunden ist für ein kleines Admin-Team ausreichend.
+builder.Services.Configure<SecurityStampValidatorOptions>(o => o.ValidationInterval = TimeSpan.FromHours(12));
+
 // --- Site-/SEO-Konfiguration ---
 builder.Services.Configure<SiteOptions>(builder.Configuration.GetSection(SiteOptions.SectionName));
 
@@ -66,9 +73,18 @@ builder.Services.AddHttpClient<ITurnstileVerifier, TurnstileVerifier>();
 
 // --- Anwendungsdienste ---
 builder.Services.AddScoped<IStorageService, LocalStorageService>();
-builder.Services.AddScoped<IEmailService, LoggingEmailService>();
 builder.Services.AddScoped<ISiteSettings, SiteSettingsService>();
 builder.Services.AddScoped<IMediaLibrary, MediaLibrary>();
+
+// E-Mail: echter SMTP-Versand, sobald "Email:Host" konfiguriert ist (appsettings.Production.json /
+// Umgebungsvariablen). Ohne Host → Log-Only (kein realer Versand). Steuert auch die 2FA-Methode:
+// bei konfiguriertem SMTP läuft die Zwei-Faktor-Anmeldung über einen per E-Mail zugestellten Code.
+builder.Services.Configure<EmailOptions>(builder.Configuration.GetSection(EmailOptions.SectionName));
+var emailConfigured = !string.IsNullOrWhiteSpace(builder.Configuration["Email:Host"]);
+if (emailConfigured)
+    builder.Services.AddScoped<IEmailService, SmtpEmailService>();
+else
+    builder.Services.AddScoped<IEmailService, LoggingEmailService>();
 
 // --- Autorisierung ---
 builder.Services.AddAuthorization(options =>
@@ -108,10 +124,22 @@ builder.Services.AddRazorPages();
 // Antiforgery-Token auch per Header (für den JS-Consent-POST).
 builder.Services.AddAntiforgery(o => o.HeaderName = "RequestVerificationToken");
 
-// Data-Protection-Schlüssel dauerhaft ablegen — sonst werden Auth-Cookies bei
-// jedem App-Neustart ungültig (Nutzer wird ausgeloggt). Ordner "keys" ist gitignored.
+// Data-Protection-Schlüssel dauerhaft ablegen — sonst werden Auth-Cookies bei jedem
+// App-Neustart/AppPool-Recycle ungültig (Nutzer wird ausgeloggt). Standardmäßig AUSSERHALB
+// des Site-Ordners (Windows: C:\ProgramData\Baudorf\keys), damit ein Deploy die Schlüssel
+// nicht überschreibt. Per Konfiguration überschreibbar: "DataProtection:KeysPath".
+var keysPath = builder.Configuration["DataProtection:KeysPath"];
+if (string.IsNullOrWhiteSpace(keysPath))
+{
+    keysPath = OperatingSystem.IsWindows()
+        ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Baudorf", "keys")
+        : Path.Combine(builder.Environment.ContentRootPath, "keys");
+}
+try { Directory.CreateDirectory(keysPath); }
+catch { keysPath = Path.Combine(builder.Environment.ContentRootPath, "keys"); Directory.CreateDirectory(keysPath); }
+
 builder.Services.AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, "keys")))
+    .PersistKeysToFileSystem(new DirectoryInfo(keysPath))
     .SetApplicationName("Baudorf");
 
 var app = builder.Build();
@@ -152,42 +180,10 @@ app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// 2FA-Pflicht für Staff: angemeldete Admins/Redakteure ohne aktivierte
-// Zwei-Faktor-Authentifizierung werden zur Einrichtung geleitet. Nur echte
-// Seitenaufrufe (GET/HTML), Manage-/Logout-Pfade bleiben frei (kein Loop).
-// In Development deaktiviert: lokale Maschinen haben oft eine falsche Uhr/Zeitzone,
-// wodurch TOTP-Codes nie passen. In Produktion (korrekte Zeit) voll aktiv.
-// Notausschalter: "TwoFactor:Enforce": false in appsettings.Production.json setzt die
-// erzwungene Einrichtung aus (z. B. solange die Server-Uhr noch nicht per NTP stimmt),
-// ohne die 2FA-Funktion selbst zu deaktivieren.
-if (!app.Environment.IsDevelopment() && app.Configuration.GetValue("TwoFactor:Enforce", true))
-{
-app.Use(async (context, next) =>
-{
-    var user = context.User;
-    if (user.Identity?.IsAuthenticated == true &&
-        (user.IsInRole(Roles.Admin) || user.IsInRole(Roles.Redakteur)) &&
-        HttpMethods.IsGet(context.Request.Method) &&
-        context.Request.Headers.Accept.ToString().Contains("text/html", StringComparison.OrdinalIgnoreCase))
-    {
-        var path = context.Request.Path.Value ?? string.Empty;
-        var frei = path.StartsWith("/Identity/Account/Manage", StringComparison.OrdinalIgnoreCase)
-                || path.StartsWith("/Identity/Account/Logout", StringComparison.OrdinalIgnoreCase)
-                || path.StartsWith("/Identity/Account/LoginWith2fa", StringComparison.OrdinalIgnoreCase);
-        if (!frei)
-        {
-            var userMgr = context.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
-            var appUser = await userMgr.GetUserAsync(user);
-            if (appUser is not null && !await userMgr.GetTwoFactorEnabledAsync(appUser))
-            {
-                context.Response.Redirect("/Identity/Account/Manage/EnableAuthenticator");
-                return;
-            }
-        }
-    }
-    await next();
-});
-}
+// Hinweis: Die frühere "Authenticator-Pflicht" (Weiterleitung zur TOTP-Einrichtung) wurde
+// entfernt. Die Zwei-Faktor-Anmeldung läuft jetzt — sofern SMTP konfiguriert ist — direkt beim
+// Login über einen per E-Mail zugestellten Code (siehe LoginWithEmailCode). Ohne SMTP-Konfiguration
+// gilt reine Passwort-Anmeldung; der DbSeeder gleicht das 2FA-Flag der Konten entsprechend ab.
 
 app.MapStaticAssets();
 

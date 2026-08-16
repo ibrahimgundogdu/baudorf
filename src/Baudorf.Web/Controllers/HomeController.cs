@@ -50,6 +50,14 @@ public class HomeController(ApplicationDbContext db, UserManager<ApplicationUser
             .Include(s => s.Items.OrderBy(i => i.Reihenfolge))
             .ToDictionaryAsync(s => s.Key, s => s);
 
+        // Off-Market-Teaser bleiben in der Mosaik-Kachel sichtbar (Titel, Region, Status),
+        // aber Preis, Kennzahlen und Bild-URLs werden serverseitig entfernt, solange der Nutzer
+        // nicht freigegeben ist — nichts Vertrauliches erreicht das DOM (nicht per F12 lesbar).
+        var darfOffMarket = await CanViewOffMarketAsync();
+        if (!darfOffMarket)
+            foreach (var o in featured.Where(o => o.IstOffMarket))
+                o.RedactOffMarket();
+
         var vm = new HomeViewModel
         {
             FeaturedObjekte = featured,
@@ -58,7 +66,7 @@ public class HomeController(ApplicationDbContext db, UserManager<ApplicationUser
             Leistungen = leistungen,
             Settings = settings,
             Sections = sections,
-            CanViewOffMarket = await CanViewOffMarketAsync()
+            CanViewOffMarket = darfOffMarket
         };
         return View(vm);
     }

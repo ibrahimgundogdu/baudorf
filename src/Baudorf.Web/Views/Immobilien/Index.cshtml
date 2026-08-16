@@ -105,7 +105,7 @@
                         <div class="hx-lcard__foot">
                             @if (locked)
                             {
-                                <div class="hx-lcard__faktor"><small>Eckdaten</small><b style="filter:blur(6px);user-select:none;color:#8a847d">@(p.Faktor?.ToString() ?? "—")</b></div>
+                                <div class="hx-lcard__faktor"><small>Eckdaten</small><b style="color:#8a847d">&#128274; nach Freigabe</b></div>
                                 <a class="hx-lcard__lock" asp-area="Identity" asp-page="/Account/Register">Freischalten</a>
                             }
                             else

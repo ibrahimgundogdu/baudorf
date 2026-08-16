@@ -65,6 +65,13 @@ public class ImmobilienController(ApplicationDbContext db, UserManager<Applicati
             .Take(PageSize)
             .ToListAsync();
 
+        // Vertrauliche Off-Market-Daten (Preis, Faktor, Kennzahlen, Bild-URLs) serverseitig
+        // entfernen, wenn der Nutzer nicht freigegeben ist — nichts davon erreicht das DOM.
+        var darfOffMarket = await CanViewOffMarketAsync();
+        if (!darfOffMarket)
+            foreach (var o in objekte.Where(o => o.IstOffMarket))
+                o.RedactOffMarket();
+
         return View(new ImmobilienListViewModel
         {
             Objekte = objekte,
@@ -72,7 +79,7 @@ public class ImmobilienController(ApplicationDbContext db, UserManager<Applicati
             Page = page,
             TotalPages = totalPages,
             TotalCount = total,
-            CanViewOffMarket = await CanViewOffMarketAsync()
+            CanViewOffMarket = darfOffMarket
         });
     }
 
@@ -89,7 +96,8 @@ public class ImmobilienController(ApplicationDbContext db, UserManager<Applicati
         if (objekt is null) return NotFound();
 
         var istAngemeldet = User.Identity?.IsAuthenticated == true;
-        var gesperrt = objekt.IstOffMarket && !await CanViewOffMarketAsync();
+        var darfOffMarket = await CanViewOffMarketAsync();
+        var gesperrt = objekt.IstOffMarket && !darfOffMarket;
 
         // Objekt-Aufruf protokollieren (für Admin-Aktivität).
         db.PropertyViews.Add(new PropertyView
@@ -107,6 +115,12 @@ public class ImmobilienController(ApplicationDbContext db, UserManager<Applicati
             .OrderByDescending(p => p.IstFeatured)
             .Take(3)
             .ToListAsync();
+
+        // WICHTIG: vertrauliche Off-Market-Daten serverseitig entfernen, BEVOR die View rendert —
+        // so gelangen Preis, Kennzahlen und Bild-URLs gar nicht erst ins HTML (nicht per F12 lesbar).
+        if (gesperrt) objekt.RedactOffMarket();
+        foreach (var a in aehnliche)
+            if (a.IstOffMarket && !darfOffMarket) a.RedactOffMarket();
 
         ViewData["Title"] = objekt.MetaTitle ?? objekt.Titel;
         ViewData["MetaDescription"] = objekt.MetaDescription;

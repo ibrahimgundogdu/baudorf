@@ -72,6 +72,31 @@ public static class DisplayHelpers
         return Math.Max(1, (int)Math.Ceiling(woerter / 200.0));
     }
 
+    /// <summary>
+    /// Entfernt vertrauliche Off-Market-Daten (Preis, Kennzahlen, Beschreibung, Adresse,
+    /// Koordinaten und ALLE Medien) aus dem Objekt, BEVOR es an eine View geht — für nicht
+    /// freigegebene Besucher. Sichtbar bleiben nur Teaser-Felder: Titel, Region, Land, Art, Status.
+    /// Nur auf AsNoTracking-Instanzen anwenden (verändert keine Datenbankwerte).
+    /// </summary>
+    public static void RedactOffMarket(this Property p)
+    {
+        p.Kaufpreis = null;
+        p.Faktor = null;
+        p.RenditeProzent = null;
+        p.Wohnflaeche = null;
+        p.Grundstuecksflaeche = null;
+        p.Baujahr = null;
+        p.Einheiten = null;
+        p.Energieklasse = null;
+        p.Zustand = null;
+        p.Beschreibung = null;
+        p.AdresseIntern = null;
+        p.Lat = null;
+        p.Lng = null;
+        p.MetaDescription = null;
+        p.Medien = new List<PropertyMedia>();
+    }
+
     /// <summary>Cover-URL oder null (View rendert dann einen Marken-Platzhalter).</summary>
     public static string? CoverUrl(this Property p)
     {

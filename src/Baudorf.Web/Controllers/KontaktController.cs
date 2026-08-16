@@ -16,6 +16,7 @@ public class KontaktController(
     IEmailService email,
     ITurnstileVerifier turnstile,
     IOptions<TurnstileOptions> turnstileOptions,
+    IOptions<EmailOptions> emailOptions,
     ILogger<KontaktController> logger) : Controller
 {
     /// <summary>Site-Key fürs Turnstile-Widget; null = CAPTCHA deaktiviert (z. B. lokal ohne Keys).</summary>
@@ -108,10 +109,9 @@ public class KontaktController(
     {
         try
         {
-            var adminEmail = await db.SiteSettings
-                .Where(s => s.Key == "contact.email")
-                .Select(s => s.Value)
-                .FirstOrDefaultAsync() ?? "andrea.krueger@baudorf.de";
+            var adminEmail = string.IsNullOrWhiteSpace(emailOptions.Value.NotifyTo)
+                ? "andrea.krueger@baudorf.de"
+                : emailOptions.Value.NotifyTo;
 
             var objektZeile = objektTitel is null ? "" : $"<p><strong>Objekt:</strong> {WebUtility.HtmlEncode(objektTitel)}</p>";
             var body = $"""

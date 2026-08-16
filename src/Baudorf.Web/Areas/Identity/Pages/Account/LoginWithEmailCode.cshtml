@@ -1,0 +1,50 @@
+@page
+@model LoginWithEmailCodeModel
+@{
+    ViewData["Title"] = "Anmeldung bestätigen";
+    ViewData["MetaDescription"] = "Bestätigen Sie Ihre Anmeldung mit dem per E-Mail zugesandten Code.";
+}
+
+<section class="hx-pagehead">
+    <img class="hx-pagehead__emblem" src="~/img/brand/baudorf-emblem-gold.png" alt="" />
+    <div class="hx-wrap">
+        <div class="hx-eyebrow"><span>Sicherheit</span></div>
+        <h1>Anmeldung <em class="hx-em">bestätigen</em></h1>
+        <p>Wir haben einen 6-stelligen Code an <strong>@Model.MaskedEmail</strong> gesendet.
+           Bitte geben Sie ihn ein, um die Anmeldung abzuschließen.</p>
+    </div>
+</section>
+
+<div class="hx-wrap">
+    <div class="hx-auth">
+        <form method="post" asp-route-returnUrl="@Model.ReturnUrl" asp-route-rememberMe="@Model.RememberMe">
+            <div asp-validation-summary="ModelOnly" class="hx-vsum"></div>
+
+            <div class="hx-field">
+                <label asp-for="Input.Code">E-Mail-Code</label>
+                <input asp-for="Input.Code" autocomplete="one-time-code" inputmode="numeric"
+                       placeholder="123456" autofocus aria-required="true" />
+                <span asp-validation-for="Input.Code"></span>
+            </div>
+
+            <div class="hx-check">
+                <input asp-for="Input.RememberMachine" type="checkbox" value="true" />
+                <label asp-for="Input.RememberMachine">Diesen Browser 14 Tage merken (kein Code mehr auf diesem Gerät)</label>
+            </div>
+
+            <div style="margin-top:1.4rem">
+                <button type="submit" class="hx-btn hx-btn--gold">Anmelden</button>
+            </div>
+        </form>
+
+        <form method="post" asp-page-handler="Resend" asp-route-returnUrl="@Model.ReturnUrl" asp-route-rememberMe="@Model.RememberMe" class="hx-auth__alt">
+            Keinen Code erhalten?
+            <button type="submit" style="background:none;border:0;color:var(--gold,#96773A);cursor:pointer;text-decoration:underline;font:inherit;padding:0">Code erneut senden</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+}
