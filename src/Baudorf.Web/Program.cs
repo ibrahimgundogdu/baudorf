@@ -157,7 +157,10 @@ app.UseAuthorization();
 // Seitenaufrufe (GET/HTML), Manage-/Logout-Pfade bleiben frei (kein Loop).
 // In Development deaktiviert: lokale Maschinen haben oft eine falsche Uhr/Zeitzone,
 // wodurch TOTP-Codes nie passen. In Produktion (korrekte Zeit) voll aktiv.
-if (!app.Environment.IsDevelopment())
+// Notausschalter: "TwoFactor:Enforce": false in appsettings.Production.json setzt die
+// erzwungene Einrichtung aus (z. B. solange die Server-Uhr noch nicht per NTP stimmt),
+// ohne die 2FA-Funktion selbst zu deaktivieren.
+if (!app.Environment.IsDevelopment() && app.Configuration.GetValue("TwoFactor:Enforce", true))
 {
 app.Use(async (context, next) =>
 {
