@@ -313,25 +313,32 @@
     </section>
 }
 
-@{ var zahlen = Model.Sec("zahlen"); var testi = Model.Sec("testimonial"); }
-@if (zahlen is not null)
+@{
+    var zahlen = Model.Sec("zahlen");
+    var testi = Model.Sec("testimonial");
+    var hasZahlen = zahlen is not null && zahlen.Items.Any();
+}
+@if (hasZahlen || testi is not null)
 {
     <section id="bd-stats" class="hx-sec hx-sec--band">
         <div class="hx-wrap">
-            <div class="hx-zahlen">
-                @foreach (var z in zahlen.Items)
-                {
-                    <div class="hx-zahl" data-reveal>
-                        <b>@Html.Raw(z.Titel)</b>
-                        <span class="hx-zahl__line"></span>
-                        <span>@z.Text</span>
-                    </div>
-                }
-            </div>
+            @if (hasZahlen)
+            {
+                <div class="hx-zahlen">
+                    @foreach (var z in zahlen!.Items)
+                    {
+                        <div class="hx-zahl" data-reveal>
+                            <b>@Html.Raw(z.Titel)</b>
+                            <span class="hx-zahl__line"></span>
+                            <span>@z.Text</span>
+                        </div>
+                    }
+                </div>
+            }
             @if (testi is not null)
             {
-                <div class="hx-testi" data-reveal>
-                    <div style="display:flex;gap:50px;align-items:flex-start;justify-content:space-between">
+                <div class="hx-testi @(hasZahlen ? "" : "hx-testi--solo")" data-reveal>
+                    <div class="hx-testi__row">
                         <div class="hx-testi__quote">
                             <span class="hx-testi__mark">&ldquo;</span>
                             <p>@testi.Text</p>
