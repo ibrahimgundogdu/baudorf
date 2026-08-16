@@ -1,6 +1,26 @@
 @model HomeSection
 @{
     ViewData["Title"] = $"Abschnitt: {Model.Key}";
+
+    // Pro Abschnitt nur die Felder zeigen, die auf der Startseite tatsächlich verwendet werden.
+    var key = Model.Key;
+    bool showOverline = key is "hero" or "philosophie" or "leistungen" or "statement" or "vorgehen" or "klientel" or "ueber-uns" or "tippgeber" or "karriere" or "insights" or "kontakt";
+    bool showTitel = key != "zahlen";
+    bool showText = key is "hero" or "philosophie" or "leistungen" or "statement" or "klientel" or "tippgeber" or "karriere" or "kontakt" or "testimonial";
+    bool showCta = key is "hero" or "statement" or "tippgeber" or "karriere" or "kontakt";
+    bool showCta2 = key is "hero";
+    bool showBild = key is "philosophie" or "statement" or "kontakt";
+    string itemsMode = key switch { "hero" => "hero", "vorgehen" or "klientel" or "zahlen" => "list", _ => "none" };
+
+    // Abschnittsspezifische Beschriftungen (klarere Bedeutung).
+    string titelLabel = key == "testimonial" ? "Quelle / Autor (z. B. Family Office · Düsseldorf)" : "Titel (HTML <em> erlaubt für Gold-Kursiv)";
+    string textLabel = key == "testimonial" ? "Zitat" : "Text";
+    string itemsLegend = key switch {
+        "zahlen" => "Zahlen (Titel = große Zahl, Text = Beschriftung darunter)",
+        "vorgehen" => "Schritte (Titel + Text)",
+        "klientel" => "Einträge (nur Titel)",
+        _ => "Listenelemente"
+    };
 }
 
 <div class="bd-toolbar">
@@ -11,47 +31,96 @@
     @Html.AntiForgeryToken()
     <fieldset>
         <legend>Inhalt (@Model.Key)</legend>
-        <div class="bd-form-field">
-            <label asp-for="Overline">Overline (kleine Überschrift)</label>
-            <input asp-for="Overline" />
-        </div>
-        <div class="bd-form-field">
-            <label asp-for="Titel">Titel (HTML &lt;em&gt; erlaubt für Gold-Kursiv)</label>
-            <input asp-for="Titel" />
-        </div>
-        <div class="bd-form-field">
-            <label asp-for="Text">Text</label>
-            <textarea asp-for="Text" rows="4"></textarea>
-        </div>
-        <div class="bd-grid-2">
-            <div class="bd-form-field"><label asp-for="CtaText">Button 1 — Text</label><input asp-for="CtaText" /></div>
-            <div class="bd-form-field"><label asp-for="CtaUrl">Button 1 — Link</label><input asp-for="CtaUrl" /></div>
-        </div>
-        <div class="bd-grid-2">
-            <div class="bd-form-field"><label asp-for="Cta2Text">Button 2 — Text</label><input asp-for="Cta2Text" /></div>
-            <div class="bd-form-field"><label asp-for="Cta2Url">Button 2 — Link</label><input asp-for="Cta2Url" /></div>
-        </div>
+
+        @if (showOverline)
+        {
+            <div class="bd-form-field">
+                <label asp-for="Overline">Overline (kleine Überschrift)</label>
+                <input asp-for="Overline" />
+            </div>
+        }
+        else
+        {
+            <input type="hidden" asp-for="Overline" />
+        }
+
+        @if (showTitel)
+        {
+            <div class="bd-form-field">
+                <label asp-for="Titel">@titelLabel</label>
+                <input asp-for="Titel" />
+            </div>
+        }
+        else
+        {
+            <input type="hidden" asp-for="Titel" />
+        }
+
+        @if (showText)
+        {
+            <div class="bd-form-field">
+                <label asp-for="Text">@textLabel</label>
+                <textarea asp-for="Text" rows="@(key == "testimonial" ? 4 : 4)"></textarea>
+            </div>
+        }
+        else
+        {
+            <input type="hidden" asp-for="Text" />
+        }
+
+        @if (showCta)
+        {
+            <div class="bd-grid-2">
+                <div class="bd-form-field"><label asp-for="CtaText">Button — Text</label><input asp-for="CtaText" /></div>
+                <div class="bd-form-field"><label asp-for="CtaUrl">Button — Link</label><input asp-for="CtaUrl" /></div>
+            </div>
+        }
+        else
+        {
+            <input type="hidden" asp-for="CtaText" /><input type="hidden" asp-for="CtaUrl" />
+        }
+
+        @if (showCta2)
+        {
+            <div class="bd-grid-2">
+                <div class="bd-form-field"><label asp-for="Cta2Text">Button 2 — Text</label><input asp-for="Cta2Text" /></div>
+                <div class="bd-form-field"><label asp-for="Cta2Url">Button 2 — Link</label><input asp-for="Cta2Url" /></div>
+            </div>
+        }
+        else
+        {
+            <input type="hidden" asp-for="Cta2Text" /><input type="hidden" asp-for="Cta2Url" />
+        }
+
         <div class="bd-grid-2">
             <div class="bd-form-field"><label asp-for="Reihenfolge">Reihenfolge</label><input asp-for="Reihenfolge" type="number" /></div>
             <div class="bd-checkline" style="align-self:end;"><input asp-for="IstSichtbar" /> <label asp-for="IstSichtbar">Sichtbar</label></div>
         </div>
-        <div class="bd-form-field">
-            <label>Bild (optional)</label>
-            <img id="secBildPreview" class="bd-thumb" style="width:140px;height:auto;display:@(string.IsNullOrWhiteSpace(Model.BildUrl) ? "none" : "block");margin-bottom:0.5rem;" src="@Model.BildUrl" alt="" />
-            <input type="hidden" asp-for="BildUrl" id="secBildUrl" />
-            <div style="display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;">
-                <button type="button" class="bd-btn bd-btn--plain bd-btn--xs" data-media-pick data-media-target="#secBildUrl" data-media-preview="#secBildPreview">Aus Mediathek wählen</button>
-                <span class="bd-muted">oder hochladen:</span>
-                <input type="file" name="bild" accept="image/*" />
+
+        @if (showBild)
+        {
+            <div class="bd-form-field">
+                <label>Bild (Hintergrund / Medien)</label>
+                <img id="secBildPreview" class="bd-thumb" style="width:140px;height:auto;display:@(string.IsNullOrWhiteSpace(Model.BildUrl) ? "none" : "block");margin-bottom:0.5rem;" src="@Model.BildUrl" alt="" />
+                <input type="hidden" asp-for="BildUrl" id="secBildUrl" />
+                <div style="display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;">
+                    <button type="button" class="bd-btn bd-btn--plain bd-btn--xs" data-media-pick data-media-target="#secBildUrl" data-media-preview="#secBildPreview">Aus Mediathek wählen</button>
+                    <span class="bd-muted">oder hochladen:</span>
+                    <input type="file" name="bild" accept="image/*" />
+                </div>
             </div>
-        </div>
+        }
+        else
+        {
+            <input type="hidden" asp-for="BildUrl" />
+        }
     </fieldset>
     <div class="bd-form-actions">
         <button type="submit" class="bd-btn bd-btn--gold">Abschnitt speichern</button>
     </div>
 </form>
 
-@if (Model.Key == "hero")
+@if (itemsMode == "hero")
 {
     <fieldset class="bd-aform" style="margin-top:2rem;">
         <legend>Hero-Slides (@Model.Items.Count)</legend>
@@ -91,19 +160,25 @@
         </form>
     </fieldset>
 }
-else
+else if (itemsMode == "list")
 {
     <fieldset class="bd-aform" style="margin-top:2rem;">
-        <legend>Listenelemente (@Model.Items.Count)</legend>
-        <p class="bd-muted" style="font-size:0.85rem;">Z. B. Leistungs-Karten, Vorgehens-Schritte, Zahlen (Titel = Zahl), Klientel-Einträge.</p>
+        <legend>@itemsLegend (@Model.Items.Count)</legend>
 
         @foreach (var item in Model.Items.OrderBy(i => i.Reihenfolge))
         {
             <form method="post" asp-action="UpdateItem" asp-route-id="@Model.Id" class="bd-item-row">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="itemId" value="@item.Id" />
-                <input name="titel" value="@item.Titel" placeholder="Titel / Zahl" />
-                <input name="text" value="@item.Text" placeholder="Text" />
+                <input name="titel" value="@item.Titel" placeholder="@(key == "zahlen" ? "Zahl (z. B. 480 Mio. €)" : "Titel")" />
+                @if (key == "klientel")
+                {
+                    <input type="hidden" name="text" value="@item.Text" />
+                }
+                else
+                {
+                    <input name="text" value="@item.Text" placeholder="@(key == "zahlen" ? "Beschriftung" : "Text")" />
+                }
                 <button type="submit" class="bd-btn bd-btn--plain bd-btn--xs">Speichern</button>
                 <span class="bd-item-row__btns">
                     <button formaction="@Url.Action("MoveItem", new { id = Model.Id })" name="direction" value="-1" class="bd-btn bd-btn--plain bd-btn--xs">↑</button>
@@ -115,8 +190,8 @@ else
 
         <form method="post" asp-action="AddItem" asp-route-id="@Model.Id" class="bd-item-row bd-item-row--add">
             @Html.AntiForgeryToken()
-            <input name="titel" placeholder="Neuer Titel / Zahl" />
-            <input name="text" placeholder="Neuer Text" />
+            <input name="titel" placeholder="@(key == "zahlen" ? "Neue Zahl" : "Neuer Titel")" />
+            <input name="text" placeholder="@(key == "klientel" ? "(leer lassen)" : (key == "zahlen" ? "Beschriftung" : "Neuer Text"))" />
             <button type="submit" class="bd-btn bd-btn--ink bd-btn--xs">+ Hinzufügen</button>
             <span></span>
         </form>
