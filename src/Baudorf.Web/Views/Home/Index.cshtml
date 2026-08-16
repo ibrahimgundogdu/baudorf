@@ -282,13 +282,32 @@
                     <div class="hx-eyebrow"><span>@ueber.Overline</span></div>
                     <h2>@andrea.Name</h2>
                     @if (!string.IsNullOrWhiteSpace(andrea.Rolle)) { <p class="hx-ueber__role">@andrea.Rolle</p> }
-                    @foreach (var para in (andrea.Bio ?? "").Split("\n\n", StringSplitOptions.RemoveEmptyEntries))
-                    {
-                        <p>@para</p>
-                    }
+                    <div class="hx-ueber__bio hx-prose">
+                        @if ((andrea.Bio ?? "").Contains('<'))
+                        {
+                            @Html.Raw(andrea.Bio)
+                        }
+                        else
+                        {
+                            @foreach (var para in (andrea.Bio ?? "").Split("\n\n", StringSplitOptions.RemoveEmptyEntries))
+                            {
+                                <p>@para</p>
+                            }
+                        }
+                    </div>
                     <div class="hx-ueber__stats">
-                        <div><b>1994</b><small>Gegründet</small></div>
-                        <div><b>Velbert</b><small>Sitz · NRW</small></div>
+                        @if (ueber.Items.Any())
+                        {
+                            @foreach (var st in ueber.Items.OrderBy(i => i.Reihenfolge))
+                            {
+                                <div><b>@st.Titel</b><small>@st.Text</small></div>
+                            }
+                        }
+                        else
+                        {
+                            <div><b>1994</b><small>Gegründet</small></div>
+                            <div><b>Velbert</b><small>Sitz · NRW</small></div>
+                        }
                     </div>
                 </div>
                 <div class="hx-ueber__photo" data-reveal>
@@ -305,7 +324,10 @@
                     <div class="hx-ayla__body">
                         <span>@ayla.Rolle</span>
                         <h3>@ayla.Name</h3>
-                        @if (!string.IsNullOrWhiteSpace(ayla.Bio)) { <p>@ayla.Bio</p> }
+                        @if (!string.IsNullOrWhiteSpace(ayla.Bio))
+                        {
+                            <div class="hx-prose">@(ayla.Bio.Contains('<') ? Html.Raw(ayla.Bio) : Html.Raw("<p>" + System.Net.WebUtility.HtmlEncode(ayla.Bio).Replace("\n\n", "</p><p>") + "</p>"))</div>
+                        }
                     </div>
                 </div>
             }

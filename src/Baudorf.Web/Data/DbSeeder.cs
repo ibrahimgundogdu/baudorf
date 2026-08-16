@@ -71,6 +71,25 @@ public static class DbSeeder
         // Einmalige Inhalts-Aktualisierung auf den freigegebenen Entwurf (Version 2).
         await RefreshDesignContentAsync(db);
         await db.SaveChangesAsync();
+
+        // Einmalig: Kennzahlen für "Über uns" als bearbeitbare Elemente anlegen
+        // (ohne Design-Version zu erhöhen → andere Admin-Inhalte bleiben unberührt).
+        await SeedUeberStatsAsync(db);
+        await db.SaveChangesAsync();
+    }
+
+    private static async Task SeedUeberStatsAsync(ApplicationDbContext db)
+    {
+        var marker = await db.SiteSettings.FirstOrDefaultAsync(s => s.Key == "seed.ueberStatsV1");
+        if (marker is not null) return;
+
+        var ueber = await db.HomeSections.Include(s => s.Items).FirstOrDefaultAsync(s => s.Key == "ueber-uns");
+        if (ueber is not null && ueber.Items.Count == 0)
+        {
+            ueber.Items.Add(new HomeSectionItem { Titel = "1994", Text = "Gegründet", Reihenfolge = 0 });
+            ueber.Items.Add(new HomeSectionItem { Titel = "Velbert", Text = "Sitz · NRW", Reihenfolge = 1 });
+        }
+        db.SiteSettings.Add(new SiteSetting { Key = "seed.ueberStatsV1", Value = "1" });
     }
 
     private static async Task SeedTeamAsync(ApplicationDbContext db)
@@ -646,7 +665,7 @@ public static class DbSeeder
                 ("Dienstleisternetzwerk", "Architekten, Gutachter, Finanzierer — kuratiert und verlässlich.")),
             Sec("statement", 4, "Off-Market · NRW",
                 "Die besten Objekte werden nie inseriert.<br><em>Sie werden vertraut.</em>",
-                "Über 480 Mio. € begleitetes Transaktionsvolumen — abseits des öffentlichen Marktes, auf Augenhöhe mit professionellen Investoren.",
+                "Die wertvollsten Transaktionen entstehen im Vertrauen, nicht im Schaufenster — abseits des öffentlichen Marktes, auf Augenhöhe mit professionellen Investoren.",
                 "Off-Market-Zugang anfragen", "/Kontakt"),
             Sec("vorgehen", 5, "Unser Vorgehen", "Vom ersten Gespräch <em>bis zum Notar</em>", null,
                 null, null, null, null,
