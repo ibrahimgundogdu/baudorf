@@ -118,9 +118,9 @@ public class RegisterModel(
             Beruf = Input.Beruf.Trim(),
             Investorentyp = Input.Investorentyp.Trim(),
             Registrierungsgrund = Input.Registrierungsgrund.Trim(),
-            AgbAkzeptiertAm = DateTime.UtcNow,
+            AgbAkzeptiertAm = DateTimeOffset.UtcNow,
             IstFreigegeben = false,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTimeOffset.UtcNow
         };
 
         var result = await userManager.CreateAsync(user, Input.Password);

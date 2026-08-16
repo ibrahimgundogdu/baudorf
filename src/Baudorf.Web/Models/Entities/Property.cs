@@ -48,8 +48,8 @@ public class Property
     [MaxLength(200)] public string? MetaTitle { get; set; }
     [MaxLength(320)] public string? MetaDescription { get; set; }
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime? UpdatedAt { get; set; }
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset? UpdatedAt { get; set; }
 
     public ICollection<PropertyMedia> Medien { get; set; } = new List<PropertyMedia>();
     public ICollection<Lead> Leads { get; set; } = new List<Lead>();

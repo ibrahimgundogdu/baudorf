@@ -22,5 +22,5 @@ public class Leistung
 
     public int Reihenfolge { get; set; }
     public bool IstVeroeffentlicht { get; set; } = true;
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }

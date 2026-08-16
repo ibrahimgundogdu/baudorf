@@ -16,7 +16,7 @@ public class TippgeberApplication
 
     public LeadStatus Status { get; set; } = LeadStatus.Neu;
     public bool DsgvoAkzeptiert { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }
 
 /// <summary>Karriere-Bewerbung (offene Stelle oder Initiativbewerbung).</summary>
@@ -34,5 +34,5 @@ public class CareerApplication
 
     public LeadStatus Status { get; set; } = LeadStatus.Neu;
     public bool DsgvoAkzeptiert { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }

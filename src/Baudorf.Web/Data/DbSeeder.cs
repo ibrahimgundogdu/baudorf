@@ -42,7 +42,7 @@ public static class DbSeeder
                     EmailConfirmed = true,
                     AnzeigeName = name,
                     IstFreigegeben = true,
-                    FreigegebenAm = DateTime.UtcNow
+                    FreigegebenAm = DateTimeOffset.UtcNow
                 };
                 var res = await userMgr.CreateAsync(user, pwd);
                 if (!res.Succeeded)

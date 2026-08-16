@@ -34,7 +34,7 @@ public class PropertiesController(ApplicationDbContext db, IStorageService stora
         await ValidateSlugUniqueAsync(model);
         if (!ModelState.IsValid) return View("Form", model);
 
-        model.CreatedAt = DateTime.UtcNow;
+        model.CreatedAt = DateTimeOffset.UtcNow;
         db.Properties.Add(model);
         await db.SaveChangesAsync();
         TempData["Success"] = "Objekt angelegt. Jetzt Bilder hinzufügen.";
@@ -76,7 +76,7 @@ public class PropertiesController(ApplicationDbContext db, IStorageService stora
         p.Kaufpreis = model.Kaufpreis; p.Beschreibung = model.Beschreibung;
         p.IstOffMarket = model.IstOffMarket; p.IstFeatured = model.IstFeatured; p.IstVeroeffentlicht = model.IstVeroeffentlicht;
         p.MetaTitle = model.MetaTitle; p.MetaDescription = model.MetaDescription;
-        p.UpdatedAt = DateTime.UtcNow;
+        p.UpdatedAt = DateTimeOffset.UtcNow;
 
         await db.SaveChangesAsync();
         TempData["Success"] = "Objekt gespeichert.";

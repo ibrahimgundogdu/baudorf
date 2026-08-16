@@ -22,5 +22,5 @@ public class LegalPage
     /// <summary>Inhalt als HTML (im Admin via WYSIWYG-Editor gepflegt).</summary>
     public string BodyHtml { get; set; } = string.Empty;
 
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
 }

@@ -55,7 +55,7 @@ public class UsersController(
         var u = await db.Users.FirstOrDefaultAsync(x => x.Id == id);
         if (u is null) return NotFound();
         u.IstFreigegeben = freigeben;
-        u.FreigegebenAm = freigeben ? DateTime.UtcNow : null;
+        u.FreigegebenAm = freigeben ? DateTimeOffset.UtcNow : null;
         if (freigeben && !await userMgr.IsInRoleAsync(u, Roles.Investor))
             await userMgr.AddToRoleAsync(u, Roles.Investor);
         await db.SaveChangesAsync();

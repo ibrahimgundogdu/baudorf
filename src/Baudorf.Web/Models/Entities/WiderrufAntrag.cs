@@ -27,5 +27,5 @@ public class WiderrufAntrag
 
     [MaxLength(60)] public string? IpAdresse { get; set; }
     public bool Erledigt { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }

@@ -27,7 +27,7 @@ public class LeistungController(ApplicationDbContext db, IMediaLibrary media) : 
         await ProcessAsync(model, cover, null);
         if (!ModelState.IsValid) return View("Form", model);
 
-        model.CreatedAt = DateTime.UtcNow;
+        model.CreatedAt = DateTimeOffset.UtcNow;
         db.Leistungen.Add(model);
         await db.SaveChangesAsync();
         TempData["Success"] = "Leistung angelegt.";

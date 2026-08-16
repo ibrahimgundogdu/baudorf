@@ -22,6 +22,6 @@ public class BlogPost
     [MaxLength(320)] public string? MetaDescription { get; set; }
 
     public bool IstVeroeffentlicht { get; set; }
-    public DateTime? PublishedAt { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTimeOffset? PublishedAt { get; set; }
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }

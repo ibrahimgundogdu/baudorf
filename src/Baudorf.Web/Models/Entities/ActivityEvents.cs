@@ -14,7 +14,7 @@ public class LoginEvent
     [MaxLength(64)] public string? IpAdresse { get; set; }
     [MaxLength(400)] public string? UserAgent { get; set; }
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }
 
 /// <summary>Objekt-Aufruf: welcher Nutzer (oder Gast) welche Immobilie angesehen hat.</summary>
@@ -29,7 +29,7 @@ public class PropertyView
     public ApplicationUser? User { get; set; }
 
     [MaxLength(64)] public string? IpAdresse { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }
 
 /// <summary>
@@ -57,7 +57,7 @@ public class ConsentLog
 
     [MaxLength(400)] public string? UserAgent { get; set; }
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }
 
 /// <summary>WhatsApp-Klick: Klick auf den Click-to-Chat-Button (Lead-Indikator).</summary>
@@ -74,5 +74,5 @@ public class WhatsAppClick
 
     [MaxLength(300)] public string? Quelle { get; set; }   // z. B. URL/Seite des Klicks
     [MaxLength(64)] public string? IpAdresse { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }

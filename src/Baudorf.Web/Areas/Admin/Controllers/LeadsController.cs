@@ -60,7 +60,7 @@ public class LeadsController(ApplicationDbContext db, IEmailService email) : Con
                    "<hr /><p style=\"color:#888;font-size:13px\">Baudorf Immobilien GmbH · Auf der Egge 68 · 42555 Velbert</p>";
         await email.SendAsync(lead.Email, string.IsNullOrWhiteSpace(betreff) ? "Ihre Anfrage bei Baudorf Immobilien" : betreff, body);
 
-        var stamp = DateTime.UtcNow.ToLocalTime().ToString("dd.MM.yyyy HH:mm");
+        var stamp = DateTimeOffset.UtcNow.ToLocalTime().ToString("dd.MM.yyyy HH:mm");
         lead.Notiz = $"[{stamp}] Antwort gesendet:\n{antwort}\n\n{lead.Notiz}".Trim();
         if (lead.Status == LeadStatus.Neu) lead.Status = LeadStatus.InBearbeitung;
         await db.SaveChangesAsync();

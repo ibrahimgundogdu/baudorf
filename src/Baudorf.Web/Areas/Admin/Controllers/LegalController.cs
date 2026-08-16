@@ -30,7 +30,7 @@ public class LegalController(ApplicationDbContext db) : Controller
         page.Titel = model.Titel;
         page.Overline = model.Overline;
         page.BodyHtml = model.BodyHtml ?? string.Empty;
-        page.UpdatedAt = DateTime.UtcNow;
+        page.UpdatedAt = DateTimeOffset.UtcNow;
         await db.SaveChangesAsync();
 
         TempData["Success"] = "Rechtsseite gespeichert.";

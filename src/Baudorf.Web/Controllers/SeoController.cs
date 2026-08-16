@@ -37,7 +37,7 @@ public class SeoController(ApplicationDbContext db, IOptions<SiteOptions> siteOp
         XNamespace ns = "http://www.sitemaps.org/schemas/sitemap/0.9";
         var urlset = new XElement(ns + "urlset");
 
-        XElement Url(string path, string changefreq, string priority, DateTime? lastmod = null)
+        XElement Url(string path, string changefreq, string priority, DateTimeOffset? lastmod = null)
         {
             var el = new XElement(ns + "url",
                 new XElement(ns + "loc", SeoUrls.Absolute(Request, _site, path)),

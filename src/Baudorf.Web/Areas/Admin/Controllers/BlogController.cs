@@ -27,8 +27,8 @@ public class BlogController(ApplicationDbContext db, IStorageService storage, IM
         await ProcessAsync(model, cover, null);
         if (!ModelState.IsValid) return View("Form", model);
 
-        model.CreatedAt = DateTime.UtcNow;
-        if (model.IstVeroeffentlicht && model.PublishedAt is null) model.PublishedAt = DateTime.UtcNow;
+        model.CreatedAt = DateTimeOffset.UtcNow;
+        if (model.IstVeroeffentlicht && model.PublishedAt is null) model.PublishedAt = DateTimeOffset.UtcNow;
         db.BlogPosts.Add(model);
         await db.SaveChangesAsync();
         TempData["Success"] = "Beitrag angelegt.";
@@ -58,7 +58,7 @@ public class BlogController(ApplicationDbContext db, IStorageService storage, IM
         b.MetaTitle = model.MetaTitle; b.MetaDescription = model.MetaDescription;
         b.CoverUrl = model.CoverUrl;
         if (model.IstVeroeffentlicht && !b.IstVeroeffentlicht && b.PublishedAt is null)
-            b.PublishedAt = DateTime.UtcNow;
+            b.PublishedAt = DateTimeOffset.UtcNow;
         b.IstVeroeffentlicht = model.IstVeroeffentlicht;
 
         await db.SaveChangesAsync();

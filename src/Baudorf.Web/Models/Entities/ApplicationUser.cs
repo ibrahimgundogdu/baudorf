@@ -24,13 +24,13 @@ public class ApplicationUser : IdentityUser
     [MaxLength(2000)] public string? Registrierungsgrund { get; set; }
 
     /// <summary>Zeitpunkt der AGB-/Vertragszustimmung bei der Registrierung.</summary>
-    public DateTime? AgbAkzeptiertAm { get; set; }
+    public DateTimeOffset? AgbAkzeptiertAm { get; set; }
 
     /// <summary>Vom Admin freigegebener Investor → darf Off-Market-Details sehen.</summary>
     public bool IstFreigegeben { get; set; }
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime? FreigegebenAm { get; set; }
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset? FreigegebenAm { get; set; }
 
     public ICollection<Favorite> Favoriten { get; set; } = new List<Favorite>();
 }
