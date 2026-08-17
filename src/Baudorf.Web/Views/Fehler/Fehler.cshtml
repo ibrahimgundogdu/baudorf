@@ -1,0 +1,18 @@
+@{
+    ViewData["Title"] = "Ein Fehler ist aufgetreten";
+    ViewData["Robots"] = "noindex, follow";
+    var code = ViewData["Code"] as int? ?? 0;
+}
+
+<section class="hx-pagehead">
+    <img class="hx-pagehead__emblem" src="~/img/brand/baudorf-emblem-gold.png" alt="" />
+    <div class="hx-wrap">
+        <div class="hx-eyebrow"><span>Fehler @(code > 0 ? code.ToString() : "")</span></div>
+        <h1>Ein <em class="hx-em">Fehler</em> ist aufgetreten</h1>
+        <p>Bitte versuchen Sie es erneut oder kehren Sie zur Startseite zurück.</p>
+    </div>
+</section>
+
+<div class="hx-wrap" style="padding-bottom:4rem">
+    <a class="hx-btn hx-btn--gold" asp-controller="Home" asp-action="Index">Zur Startseite</a>
+</div>

@@ -1,0 +1,53 @@
+@model List<Baudorf.Web.Models.Entities.Redirect>
+@{
+    ViewData["Title"] = "Weiterleitungen";
+    var offen = ViewData["Offen404"] as int? ?? 0;
+}
+
+<div class="bd-toolbar">
+    <h2>Weiterleitungen (301)</h2>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <a class="bd-btn bd-btn--plain bd-btn--sm" asp-action="Protokoll">
+            404-Protokoll@(offen > 0 ? $" ({offen} offen)" : "")
+        </a>
+        <a class="bd-btn bd-btn--gold bd-btn--sm" asp-action="Create">+ Neue Weiterleitung</a>
+    </div>
+</div>
+
+<p class="bd-muted" style="margin:-.4rem 0 1rem;font-size:.9rem;">
+    Alte, in Suchmaschinen indexierte Adressen dauerhaft (301) auf die neue Seite umleiten.
+    Pfade werden normalisiert (klein, ohne Schrägstrich am Ende). Ziel darf ein relativer Pfad
+    („/Immobilien“) oder eine vollständige URL sein.
+</p>
+
+<table class="bd-table">
+    <thead>
+        <tr><th>Von (alt)</th><th>Nach (neu)</th><th>Code</th><th>Status</th><th>Treffer</th><th></th></tr>
+    </thead>
+    <tbody>
+        @if (Model.Count == 0)
+        {
+            <tr><td colspan="6" class="bd-empty-row">Noch keine Weiterleitungen. Sieh ins 404-Protokoll, um kaputte URLs zu finden.</td></tr>
+        }
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td><code>@r.VonPfad</code></td>
+                <td><code>@r.NachPfad</code>@if (!string.IsNullOrWhiteSpace(r.Notiz)) { <br /><span class="bd-muted">@r.Notiz</span> }</td>
+                <td>@r.Code</td>
+                <td>
+                    @if (r.IstAktiv) { <span class="bd-pill bd-pill--ok">Aktiv</span> }
+                    else { <span class="bd-pill bd-pill--muted">Inaktiv</span> }
+                </td>
+                <td>@r.Treffer</td>
+                <td class="bd-table__actions">
+                    <a class="bd-btn bd-btn--ink bd-btn--xs" asp-action="Edit" asp-route-id="@r.Id">Bearbeiten</a>
+                    <form method="post" asp-action="Delete" asp-route-id="@r.Id" onsubmit="return confirm('Weiterleitung löschen?');">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="bd-btn bd-btn--danger bd-btn--xs">Löschen</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

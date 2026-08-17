@@ -101,7 +101,41 @@ public static class DbSeeder
         // Einmalig: Kennzahlen für "Über uns" als bearbeitbare Elemente anlegen
         // (ohne Design-Version zu erhöhen → andere Admin-Inhalte bleiben unberührt).
         await SeedUeberStatsAsync(db);
+        await SeedRedirectsAsync(db);
         await db.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Startset an Weiterleitungen für die WICHTIGSTEN strukturellen Änderungen gegenüber der
+    /// alten WordPress-Seite (Rechtstexte liegen jetzt unter /Legal/…, „Über uns“ ist ein
+    /// Startseiten-Anker). Nur, wenn noch keine Weiterleitungen existieren — im Admin anpassbar.
+    /// </summary>
+    private static async Task SeedRedirectsAsync(ApplicationDbContext db)
+    {
+        var marker = await db.SiteSettings.FirstOrDefaultAsync(s => s.Key == "seed.redirectsV1");
+        if (marker is not null) return;
+
+        if (!await db.Redirects.AnyAsync())
+        {
+            (string von, string nach)[] defaults =
+            [
+                ("/impressum",             "/Legal/Impressum"),
+                ("/datenschutz",           "/Legal/Datenschutz"),
+                ("/datenschutzerklaerung", "/Legal/Datenschutz"),
+                ("/agb",                   "/Legal/Agb"),
+                ("/ueber-uns",             "/#ueber"),
+                ("/uber-uns",              "/#ueber"),
+                ("/karriere",              "/Kontakt"),
+                ("/tippgeber",             "/Kontakt"),
+                // Hinweis: reine Groß-/Kleinschreibungs-Weiterleitungen (z. B. /immobilien → /Immobilien)
+                // werden NICHT geseedet — die neuen Routen sind case-insensitiv erreichbar, und eine
+                // solche Regel würde (wegen der case-insensitiven Zuordnung) eine Schleife erzeugen.
+            ];
+            foreach (var (von, nach) in defaults)
+                db.Redirects.Add(new Redirect { VonPfad = von, NachPfad = nach, Code = 301, Notiz = "Seed — bei Bedarf anpassen" });
+        }
+
+        db.SiteSettings.Add(new SiteSetting { Key = "seed.redirectsV1", Value = "1" });
     }
 
     private static async Task SeedUeberStatsAsync(ApplicationDbContext db)

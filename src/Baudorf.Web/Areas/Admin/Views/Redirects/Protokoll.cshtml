@@ -1,0 +1,55 @@
+@model List<Baudorf.Web.Models.Entities.NotFoundHit>
+@{
+    ViewData["Title"] = "404-Protokoll";
+    var alle = ViewData["Alle"] as bool? ?? false;
+}
+
+<div class="bd-toolbar">
+    <a class="bd-btn bd-btn--plain bd-btn--xs" asp-action="Index">&larr; Weiterleitungen</a>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <a class="bd-btn bd-btn--plain bd-btn--sm" asp-action="Protokoll" asp-route-alle="@(!alle)">
+            @(alle ? "Nur offene zeigen" : "Auch erledigte zeigen")
+        </a>
+    </div>
+</div>
+
+<h2 style="margin:.2rem 0 .2rem">Kaputte / nicht gefundene Adressen</h2>
+<p class="bd-muted" style="margin:0 0 1rem;font-size:.9rem;">
+    Aufgerufene URLs, die 404 lieferten — häufigste zuerst. Lege für relevante Einträge eine
+    Weiterleitung an; der Eintrag gilt danach als erledigt.
+</p>
+
+<table class="bd-table">
+    <thead>
+        <tr><th>Pfad</th><th>Treffer</th><th>Zuletzt</th><th>Referrer</th><th></th></tr>
+    </thead>
+    <tbody>
+        @if (Model.Count == 0)
+        {
+            <tr><td colspan="5" class="bd-empty-row">Keine @(alle ? "" : "offenen ")404-Einträge.</td></tr>
+        }
+        @foreach (var h in Model)
+        {
+            <tr>
+                <td><code>@h.Pfad</code>@if (h.Erledigt) { <span class="bd-pill bd-pill--ok" style="margin-left:.4rem">erledigt</span> }</td>
+                <td>@h.Anzahl</td>
+                <td class="bd-muted">@h.Zuletzt.LocalDateTime.ToString("dd.MM.yyyy HH:mm")</td>
+                <td class="bd-muted" style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">@(h.LetzterReferrer ?? "—")</td>
+                <td class="bd-table__actions">
+                    <a class="bd-btn bd-btn--gold bd-btn--xs" asp-action="Create" asp-route-von="@h.Pfad">Weiterleitung</a>
+                    @if (!h.Erledigt)
+                    {
+                        <form method="post" asp-action="HitErledigt" asp-route-id="@h.Id">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="bd-btn bd-btn--ink bd-btn--xs">Erledigt</button>
+                        </form>
+                    }
+                    <form method="post" asp-action="HitLoeschen" asp-route-id="@h.Id" onsubmit="return confirm('Eintrag löschen?');">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="bd-btn bd-btn--danger bd-btn--xs">×</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

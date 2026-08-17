@@ -1,0 +1,23 @@
+@{
+    ViewData["Title"] = "Seite nicht gefunden";
+    ViewData["Robots"] = "noindex, follow";
+}
+
+<section class="hx-pagehead">
+    <img class="hx-pagehead__emblem" src="~/img/brand/baudorf-emblem-gold.png" alt="" />
+    <div class="hx-wrap">
+        <div class="hx-eyebrow"><span>Fehler 404</span></div>
+        <h1>Seite <em class="hx-em">nicht gefunden</em></h1>
+        <p>Die aufgerufene Adresse existiert nicht mehr oder wurde verschoben.
+           Vielleicht finden Sie hier weiter:</p>
+    </div>
+</section>
+
+<div class="hx-wrap" style="padding-bottom:4rem">
+    <div style="display:flex;flex-wrap:wrap;gap:1rem;margin-top:1rem">
+        <a class="hx-btn hx-btn--gold" asp-controller="Home" asp-action="Index">Zur Startseite</a>
+        <a class="hx-btn hx-btn--ghost" asp-controller="Immobilien" asp-action="Index">Immobilien</a>
+        <a class="hx-btn hx-btn--ghost" asp-controller="Leistung" asp-action="Index">Leistungen</a>
+        <a class="hx-btn hx-btn--ghost" asp-controller="Kontakt" asp-action="Index">Kontakt</a>
+    </div>
+</div>

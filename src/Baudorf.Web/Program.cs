@@ -76,6 +76,10 @@ builder.Services.AddScoped<IStorageService, LocalStorageService>();
 builder.Services.AddScoped<ISiteSettings, SiteSettingsService>();
 builder.Services.AddScoped<IMediaLibrary, MediaLibrary>();
 
+// SEO-Weiterleitungen (alte, indexierte URLs → neue Adressen) + 404-Protokoll.
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<IRedirectService, RedirectService>();
+
 // E-Mail: echter SMTP-Versand, sobald "Email:Host" konfiguriert ist (appsettings.Production.json /
 // Umgebungsvariablen). Ohne Host → Log-Only (kein realer Versand). Steuert auch die 2FA-Methode:
 // bei konfiguriertem SMTP läuft die Zwei-Faktor-Anmeldung über einen per E-Mail zugestellten Code.
@@ -176,6 +180,13 @@ app.UseHttpsRedirection();
 // MapStaticAssets() bedient nur die zur Build-Zeit bekannten Assets — Uploads sind
 // dort nicht enthalten und würden sonst 404 liefern.
 app.UseStaticFiles();
+
+// Eigene Fehlerseiten (404 etc.) + Protokollierung kaputter URLs. NACH StaticFiles, damit
+// fehlende Assets nicht neu ausgeführt werden; das Ziel /Fehler/{code} rendert die Markenseite.
+app.UseStatusCodePagesWithReExecute("/Fehler/{0}");
+
+// Alte, in Google indexierte URLs per 301 auf die neuen Adressen umleiten (vor dem Routing).
+app.UseMiddleware<Baudorf.Web.Services.SeoRedirectMiddleware>();
 
 app.UseRouting();
 

@@ -1,0 +1,60 @@
+@model Baudorf.Web.Models.Entities.Redirect
+@{
+    var isEdit = Model.Id > 0;
+    ViewData["Title"] = isEdit ? "Weiterleitung bearbeiten" : "Neue Weiterleitung";
+}
+
+<div class="bd-toolbar">
+    <a class="bd-btn bd-btn--plain bd-btn--xs" asp-action="Index">&larr; Zurück</a>
+</div>
+
+<form method="post" asp-action="@(isEdit ? "Edit" : "Create")" asp-route-id="@Model.Id" class="bd-aform">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="bd-validation-summary"></div>
+
+    <fieldset>
+        <legend>Weiterleitung</legend>
+
+        <div class="bd-form-field">
+            <label asp-for="VonPfad">Von — alter Pfad *</label>
+            <input asp-for="VonPfad" placeholder="/alte-immobilien-seite" />
+            <span asp-validation-for="VonPfad"></span>
+            <span class="bd-muted" style="font-size:.85rem">z. B. <code>/immobilien-velbert</code> oder <code>/?p=123</code></span>
+        </div>
+
+        <div class="bd-form-field">
+            <label asp-for="NachPfad">Nach — neues Ziel *</label>
+            <input asp-for="NachPfad" placeholder="/Immobilien" />
+            <span asp-validation-for="NachPfad"></span>
+            <span class="bd-muted" style="font-size:.85rem">Relativer Pfad (<code>/Immobilien</code>) oder volle URL (<code>https://…</code>)</span>
+        </div>
+
+        <div class="bd-grid-2">
+            <div class="bd-form-field">
+                <label asp-for="Code">Typ</label>
+                <select asp-for="Code">
+                    <option value="301">301 — dauerhaft (empfohlen, überträgt Ranking)</option>
+                    <option value="302">302 — temporär</option>
+                </select>
+            </div>
+            <div class="bd-checkline" style="align-self:end;">
+                <input asp-for="IstAktiv" /> <label asp-for="IstAktiv">Aktiv</label>
+            </div>
+        </div>
+
+        <div class="bd-form-field">
+            <label asp-for="Notiz">Notiz (intern, optional)</label>
+            <input asp-for="Notiz" />
+        </div>
+    </fieldset>
+
+    <div class="bd-form-actions">
+        <button type="submit" class="bd-btn bd-btn--gold">@(isEdit ? "Speichern" : "Anlegen")</button>
+        <a class="bd-btn bd-btn--plain" asp-action="Index">Abbrechen</a>
+    </div>
+</form>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -26,10 +26,15 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<MediaAsset> MediaAssets => Set<MediaAsset>();
     public DbSet<WiderrufAntrag> WiderrufAntraege => Set<WiderrufAntrag>();
     public DbSet<Leistung> Leistungen => Set<Leistung>();
+    public DbSet<Redirect> Redirects => Set<Redirect>();
+    public DbSet<NotFoundHit> NotFoundHits => Set<NotFoundHit>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+
+        builder.Entity<Redirect>().HasIndex(r => r.VonPfad).IsUnique();
+        builder.Entity<NotFoundHit>().HasIndex(n => n.Pfad).IsUnique();
 
         builder.Entity<Property>(e =>
         {
