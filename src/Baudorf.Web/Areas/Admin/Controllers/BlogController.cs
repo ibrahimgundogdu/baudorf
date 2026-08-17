@@ -24,7 +24,7 @@ public class BlogController(ApplicationDbContext db, IStorageService storage, IM
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(BlogPost model, IFormFile? cover)
     {
-        await ProcessAsync(model, cover, null);
+        await ProcessAsync(model, cover, null, 0);
         if (!ModelState.IsValid) return View("Form", model);
 
         model.CreatedAt = DateTimeOffset.UtcNow;
@@ -50,7 +50,7 @@ public class BlogController(ApplicationDbContext db, IStorageService storage, IM
         var b = await db.BlogPosts.FindAsync(id);
         if (b is null) return NotFound();
 
-        await ProcessAsync(model, cover, b.CoverUrl);
+        await ProcessAsync(model, cover, b.CoverUrl, id);
         if (!ModelState.IsValid) return View("Form", model);
 
         b.Titel = model.Titel; b.Slug = model.Slug; b.Excerpt = model.Excerpt; b.Body = model.Body;
@@ -79,16 +79,16 @@ public class BlogController(ApplicationDbContext db, IStorageService storage, IM
         return RedirectToAction(nameof(Index));
     }
 
-    private async Task ProcessAsync(BlogPost model, IFormFile? cover, string? existingCover)
+    private async Task ProcessAsync(BlogPost model, IFormFile? cover, string? existingCover, int exceptId)
     {
-        if (string.IsNullOrWhiteSpace(model.Slug) && !string.IsNullOrWhiteSpace(model.Titel))
-            model.Slug = SlugHelper.Generate(model.Titel);
-        else if (!string.IsNullOrWhiteSpace(model.Slug))
-            model.Slug = SlugHelper.Generate(model.Slug);
-
-        if (!string.IsNullOrWhiteSpace(model.Slug) &&
-            await db.BlogPosts.AnyAsync(b => b.Slug == model.Slug && b.Id != model.Id))
-            ModelState.AddModelError(nameof(BlogPost.Slug), "Dieser Slug ist bereits vergeben.");
+        // Slug ist optional → automatisch aus Titel (oder eingegebenem Slug) erzeugen und
+        // bei Kollision "-2", "-3", … anhängen, bis er eindeutig ist.
+        ModelState.Remove(nameof(BlogPost.Slug));
+        var basis = SlugHelper.Generate(string.IsNullOrWhiteSpace(model.Slug) ? model.Titel : model.Slug);
+        if (string.IsNullOrWhiteSpace(basis)) basis = "beitrag";
+        var slug = basis; var n = 2;
+        while (await db.BlogPosts.AnyAsync(b => b.Slug == slug && b.Id != exceptId)) slug = $"{basis}-{n++}";
+        model.Slug = slug;
 
         // CoverUrl ist bereits aus dem Formular gebunden (Bestand oder aus der Mediathek gewählt).
         if (string.IsNullOrWhiteSpace(model.CoverUrl)) model.CoverUrl = existingCover;

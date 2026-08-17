@@ -10,8 +10,9 @@ public class Property
     [Required, MaxLength(200)]
     public string Titel { get; set; } = string.Empty;
 
-    /// <summary>URL-Slug, eindeutig.</summary>
-    [Required, MaxLength(220)]
+    /// <summary>URL-Slug, eindeutig. Wird bei leerem Feld automatisch aus dem Titel erzeugt
+    /// (siehe PropertiesController.AssignUniqueSlugAsync) — daher kein [Required].</summary>
+    [MaxLength(220)]
     public string Slug { get; set; } = string.Empty;
 
     public PropertyKind Art { get; set; }

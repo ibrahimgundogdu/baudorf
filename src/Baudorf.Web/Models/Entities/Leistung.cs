@@ -8,7 +8,7 @@ public class Leistung
     public int Id { get; set; }
 
     [Required, MaxLength(200)] public string Titel { get; set; } = string.Empty;
-    [Required, MaxLength(220)] public string Slug { get; set; } = string.Empty;
+    [MaxLength(220)] public string Slug { get; set; } = string.Empty; // leer → aus Titel erzeugt
 
     [MaxLength(120)] public string? Overline { get; set; }
     [MaxLength(400)] public string? Teaser { get; set; }   // Kurztext für die Karte

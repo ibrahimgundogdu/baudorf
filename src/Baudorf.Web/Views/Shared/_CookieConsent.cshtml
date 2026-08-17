@@ -6,7 +6,7 @@
     var ccVersion = Settings.Get("cookie.version", "2026-07-05");
 }
 <div id="bd-cookie" class="bd-cc" hidden role="dialog" aria-label="Datenschutz-Einstellungen"
-     data-cc-version="@ccVersion" data-cc-url="@Url.Action("Consent", "Cookie")">
+     data-cc-version="@ccVersion" data-cc-url="@Url.Action("Consent", "Cookie", new { area = "" })">
     @Html.AntiForgeryToken()
     <div class="bd-cc__card">
         <h2 class="bd-cc__title">@ccTitle</h2>

@@ -30,9 +30,11 @@ public class PropertiesController(ApplicationDbContext db, IStorageService stora
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Property model)
     {
-        NormalizeSlug(model);
-        await ValidateSlugUniqueAsync(model);
+        // Slug ist nicht mehr Pflicht → evtl. Validierungsfehler des Leerfelds verwerfen,
+        // danach automatisch einen eindeutigen Slug erzeugen.
+        ModelState.Remove(nameof(Property.Slug));
         if (!ModelState.IsValid) return View("Form", model);
+        await AssignUniqueSlugAsync(model);
 
         model.CreatedAt = DateTimeOffset.UtcNow;
         db.Properties.Add(model);
@@ -57,14 +59,14 @@ public class PropertiesController(ApplicationDbContext db, IStorageService stora
         var p = await db.Properties.FirstOrDefaultAsync(x => x.Id == id);
         if (p is null) return NotFound();
 
-        NormalizeSlug(model);
-        await ValidateSlugUniqueAsync(model, id);
+        ModelState.Remove(nameof(Property.Slug));
         if (!ModelState.IsValid)
         {
             await db.Entry(p).Collection(x => x.Medien).LoadAsync();
             model.Medien = p.Medien;
             return View("Form", model);
         }
+        await AssignUniqueSlugAsync(model, id);
 
         // Felder übernehmen
         p.Titel = model.Titel; p.Slug = model.Slug; p.Art = model.Art; p.Status = model.Status;
@@ -176,19 +178,21 @@ public class PropertiesController(ApplicationDbContext db, IStorageService stora
         return RedirectToAction(nameof(Edit), new { id });
     }
 
-    private static void NormalizeSlug(Property model)
+    /// <summary>
+    /// Weist dem Objekt einen eindeutigen, URL-sicheren Slug zu: Basis ist der eingegebene Slug,
+    /// sonst der Titel. Bei Kollision wird "-2", "-3", … angehängt, bis er frei ist.
+    /// </summary>
+    private async Task AssignUniqueSlugAsync(Property model, int? exceptId = null)
     {
-        if (string.IsNullOrWhiteSpace(model.Slug) && !string.IsNullOrWhiteSpace(model.Titel))
-            model.Slug = SlugHelper.Generate(model.Titel);
-        else if (!string.IsNullOrWhiteSpace(model.Slug))
-            model.Slug = SlugHelper.Generate(model.Slug);
-    }
+        var basis = SlugHelper.Generate(
+            string.IsNullOrWhiteSpace(model.Slug) ? model.Titel : model.Slug);
+        if (string.IsNullOrWhiteSpace(basis)) basis = "objekt";
 
-    private async Task ValidateSlugUniqueAsync(Property model, int? exceptId = null)
-    {
-        if (string.IsNullOrWhiteSpace(model.Slug)) return;
-        var exists = await db.Properties.AnyAsync(p => p.Slug == model.Slug && p.Id != (exceptId ?? 0));
-        if (exists)
-            ModelState.AddModelError(nameof(Property.Slug), "Dieser Slug ist bereits vergeben.");
+        var slug = basis;
+        var i = 2;
+        while (await db.Properties.AnyAsync(p => p.Slug == slug && p.Id != (exceptId ?? 0)))
+            slug = $"{basis}-{i++}";
+
+        model.Slug = slug;
     }
 }

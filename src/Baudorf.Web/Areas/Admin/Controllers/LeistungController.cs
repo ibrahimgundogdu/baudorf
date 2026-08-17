@@ -24,7 +24,7 @@ public class LeistungController(ApplicationDbContext db, IMediaLibrary media) : 
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Leistung model, IFormFile? cover)
     {
-        await ProcessAsync(model, cover, null);
+        await ProcessAsync(model, cover, null, 0);
         if (!ModelState.IsValid) return View("Form", model);
 
         model.CreatedAt = DateTimeOffset.UtcNow;
@@ -49,7 +49,7 @@ public class LeistungController(ApplicationDbContext db, IMediaLibrary media) : 
         var l = await db.Leistungen.FindAsync(id);
         if (l is null) return NotFound();
 
-        await ProcessAsync(model, cover, l.CoverUrl);
+        await ProcessAsync(model, cover, l.CoverUrl, id);
         if (!ModelState.IsValid) return View("Form", model);
 
         l.Titel = model.Titel; l.Slug = model.Slug; l.Overline = model.Overline;
@@ -74,19 +74,15 @@ public class LeistungController(ApplicationDbContext db, IMediaLibrary media) : 
         return RedirectToAction(nameof(Index));
     }
 
-    private async Task ProcessAsync(Leistung model, IFormFile? cover, string? existingCover)
+    private async Task ProcessAsync(Leistung model, IFormFile? cover, string? existingCover, int exceptId)
     {
-        if (string.IsNullOrWhiteSpace(model.Slug) && !string.IsNullOrWhiteSpace(model.Titel))
-            model.Slug = SlugHelper.Generate(model.Titel);
-        else if (!string.IsNullOrWhiteSpace(model.Slug))
-            model.Slug = SlugHelper.Generate(model.Slug);
-
-        if (!string.IsNullOrWhiteSpace(model.Slug))
-            ModelState.Remove(nameof(Leistung.Slug));
-
-        if (!string.IsNullOrWhiteSpace(model.Slug) &&
-            await db.Leistungen.AnyAsync(l => l.Slug == model.Slug && l.Id != model.Id))
-            ModelState.AddModelError(nameof(Leistung.Slug), "Dieser Slug ist bereits vergeben.");
+        // Slug optional → automatisch aus Titel erzeugen, bei Kollision "-2", "-3", … anhängen.
+        ModelState.Remove(nameof(Leistung.Slug));
+        var basis = SlugHelper.Generate(string.IsNullOrWhiteSpace(model.Slug) ? model.Titel : model.Slug);
+        if (string.IsNullOrWhiteSpace(basis)) basis = "leistung";
+        var slug = basis; var n = 2;
+        while (await db.Leistungen.AnyAsync(l => l.Slug == slug && l.Id != exceptId)) slug = $"{basis}-{n++}";
+        model.Slug = slug;
 
         // CoverUrl ist bereits aus dem Formular gebunden (Bestand oder aus der Mediathek gewählt).
         if (string.IsNullOrWhiteSpace(model.CoverUrl)) model.CoverUrl = existingCover;

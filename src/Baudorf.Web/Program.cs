@@ -118,7 +118,11 @@ builder.Services.AddRateLimiter(options =>
             }));
 });
 
-builder.Services.AddControllersWithViews();
+// Non-nullable Reference-Types (z. B. "string Slug") NICHT automatisch als Pflichtfeld
+// behandeln — sonst erzeugt jedes solche Formularfeld ein client-seitiges "required",
+// obwohl der Wert serverseitig erzeugt wird (Slugs). Pflichtfelder nutzen explizit [Required].
+builder.Services.AddControllersWithViews(options =>
+    options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
 builder.Services.AddRazorPages();
 
 // Antiforgery-Token auch per Header (für den JS-Consent-POST).
