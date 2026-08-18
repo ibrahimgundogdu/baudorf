@@ -97,6 +97,20 @@
         });
       });
     });
+
+    // Galerie-Picker: Button [data-media-add="#formId"] wählt ein Bild aus der Mediathek,
+    // schreibt die URL ins verborgene Formular und sendet es ab (hängt es als neues Medium an).
+    document.querySelectorAll("[data-media-add]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const form = document.querySelector(btn.dataset.mediaAdd);
+        if (!form) return;
+        const target = form.querySelector("input[name='url']");
+        open((url) => {
+          if (target) target.value = url;
+          form.submit();
+        });
+      });
+    });
   }
 
   // ---------- WYSIWYG (Quill) ----------

@@ -137,6 +137,42 @@ public class PropertiesController(ApplicationDbContext db, IStorageService stora
         return RedirectToAction(nameof(Edit), new { id });
     }
 
+    /// <summary>Ein bereits in der Mediathek vorhandenes Bild (URL unter /uploads) als Medium anhängen.</summary>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddFromLibrary(int id, string url)
+    {
+        var p = await db.Properties.Include(x => x.Medien).FirstOrDefaultAsync(x => x.Id == id);
+        if (p is null) return NotFound();
+
+        // Nur eigene Mediathek-URLs zulassen (keine beliebigen externen Adressen).
+        if (string.IsNullOrWhiteSpace(url) || !url.StartsWith("/uploads", StringComparison.OrdinalIgnoreCase))
+        {
+            TempData["Error"] = "Ungültige Bildauswahl.";
+            return RedirectToAction(nameof(Edit), new { id });
+        }
+
+        // Doppelte Zuordnung desselben Bildes vermeiden.
+        if (p.Medien.Any(m => m.Url == url))
+        {
+            TempData["Error"] = "Dieses Bild ist bereits zugeordnet.";
+            return RedirectToAction(nameof(Edit), new { id });
+        }
+
+        var maxOrder = p.Medien.Count == 0 ? 0 : p.Medien.Max(m => m.Reihenfolge);
+        p.Medien.Add(new PropertyMedia
+        {
+            Typ = MediaType.Image,
+            Url = url,
+            Reihenfolge = maxOrder + 1,
+            IstCover = !p.Medien.Any(m => m.IstCover),
+            Alt = p.Titel
+        });
+        await db.SaveChangesAsync();
+        TempData["Success"] = "Bild aus der Mediathek hinzugefügt.";
+        return RedirectToAction(nameof(Edit), new { id });
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SetCover(int id, int mediaId)
