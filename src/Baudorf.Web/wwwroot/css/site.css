@@ -621,3 +621,11 @@ h1, h2, h3 {
 .bd-media-lb__nav:hover { background: rgba(245,242,236,.2); }
 .bd-media-lb__nav--prev { left: 3vw; }
 .bd-media-lb__nav--next { right: 3vw; }
+
+/* Medien-Picker: Mehrfachauswahl */
+.bd-mp__item { position: relative; }
+.bd-mp__item.is-selected { outline: 3px solid var(--gold); outline-offset: -1px; }
+.bd-mp__item.is-selected::after { content: "✓"; position: absolute; top: 6px; right: 6px; width: 22px; height: 22px; border-radius: 50%; background: var(--gold); color: #fff; display: flex; align-items: center; justify-content: center; font: 700 13px/1 var(--font); box-shadow: 0 2px 6px rgba(0,0,0,.3); }
+.bd-mp__foot { display: flex; align-items: center; justify-content: flex-end; gap: 14px; padding: 12px 18px; border-top: 1px solid var(--line); background: var(--parch); }
+.bd-mp__foot[hidden] { display: none; }
+.bd-mp__count { font-size: 13px; color: var(--stone); }

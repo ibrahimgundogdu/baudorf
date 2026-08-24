@@ -181,39 +181,38 @@ public class PropertiesController(ApplicationDbContext db, IStorageService stora
         return RedirectToAction(nameof(Edit), new { id });
     }
 
-    /// <summary>Ein bereits in der Mediathek vorhandenes Bild (URL unter /uploads) als Medium anhängen.</summary>
+    /// <summary>Ein oder mehrere Mediathek-Medien (URLs unter /uploads) als Medien anhängen.</summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> AddFromLibrary(int id, string url)
+    public async Task<IActionResult> AddFromLibrary(int id, List<string> url)
     {
         var p = await db.Properties.Include(x => x.Medien).FirstOrDefaultAsync(x => x.Id == id);
         if (p is null) return NotFound();
 
-        // Nur eigene Mediathek-URLs zulassen (keine beliebigen externen Adressen).
-        if (string.IsNullOrWhiteSpace(url) || !url.StartsWith("/uploads", StringComparison.OrdinalIgnoreCase))
-        {
-            TempData["Error"] = "Ungültige Bildauswahl.";
-            return RedirectToAction(nameof(Edit), new { id });
-        }
-
-        // Doppelte Zuordnung desselben Bildes vermeiden.
-        if (p.Medien.Any(m => m.Url == url))
-        {
-            TempData["Error"] = "Dieses Bild ist bereits zugeordnet.";
-            return RedirectToAction(nameof(Edit), new { id });
-        }
-
         var maxOrder = p.Medien.Count == 0 ? 0 : p.Medien.Max(m => m.Reihenfolge);
-        p.Medien.Add(new PropertyMedia
+        var added = 0;
+
+        foreach (var u in (url ?? []).Select(x => x?.Trim()).Where(x => !string.IsNullOrWhiteSpace(x)))
         {
-            Typ = MediaType.Image,
-            Url = url,
-            Reihenfolge = maxOrder + 1,
-            IstCover = !p.Medien.Any(m => m.IstCover),
-            Alt = p.Titel
-        });
+            // Nur eigene Mediathek-URLs zulassen; Duplikate überspringen.
+            if (!u!.StartsWith("/uploads", StringComparison.OrdinalIgnoreCase)) continue;
+            if (p.Medien.Any(m => m.Url == u)) continue;
+
+            p.Medien.Add(new PropertyMedia
+            {
+                Typ = DisplayHelpers.IsVideoUrl(u) ? MediaType.Video : MediaType.Image,
+                Url = u,
+                Reihenfolge = ++maxOrder,
+                IstCover = !p.Medien.Any(m => m.IstCover),
+                Alt = p.Titel
+            });
+            added++;
+        }
+
         await db.SaveChangesAsync();
-        TempData["Success"] = "Bild aus der Mediathek hinzugefügt.";
+        TempData["Success"] = added > 0
+            ? $"{added} Medium/Medien aus der Mediathek hinzugefügt."
+            : "Keine neuen Medien hinzugefügt (bereits zugeordnet?).";
         return RedirectToAction(nameof(Edit), new { id });
     }
 

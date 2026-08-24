@@ -5,6 +5,8 @@
   // ---------- Medien-Picker ----------
   const el = document.getElementById("bd-media-picker");
   let cb = null;
+  let multi = false;      // Mehrfachauswahl-Modus
+  let selected = [];      // gewählte URLs im Mehrfachmodus
 
   if (el) {
     const listUrl = el.dataset.listUrl;
@@ -14,8 +16,12 @@
     const grid = el.querySelector('[data-mp-panel="library"]');
     const status = el.querySelector("[data-mp-status]");
     const fileInput = el.querySelector("#bd-mp-file");
+    const multiFoot = el.querySelector("[data-mp-multifoot]");
+    const countEl = el.querySelector("[data-mp-count]");
+    const confirmBtn = el.querySelector("[data-mp-confirm]");
 
-    const close = () => { el.hidden = true; cb = null; };
+    const updateCount = () => { if (countEl) countEl.textContent = selected.length + " ausgewählt"; };
+    const close = () => { el.hidden = true; cb = null; multi = false; selected = []; if (multiFoot) multiFoot.hidden = true; };
     const choose = (url, asset) => { const c = cb; close(); if (c) c(url, asset); };
 
     async function loadLibrary() {
@@ -37,7 +43,17 @@
             b.style.backgroundImage = "url('" + it.url + "')";
           }
           b.title = it.fileName || it.url;
-          b.addEventListener("click", () => choose(it.url, it));
+          if (multi && selected.indexOf(it.url) >= 0) b.classList.add("is-selected");
+          b.addEventListener("click", () => {
+            if (multi) {
+              const i = selected.indexOf(it.url);
+              if (i >= 0) { selected.splice(i, 1); b.classList.remove("is-selected"); }
+              else { selected.push(it.url); b.classList.add("is-selected"); }
+              updateCount();
+            } else {
+              choose(it.url, it);
+            }
+          });
           grid.appendChild(b);
         });
       } catch {
@@ -45,11 +61,24 @@
       }
     }
 
-    function open(callback) {
+    function open(callback, opts) {
       cb = callback;
+      multi = !!(opts && opts.multi);
+      selected = [];
+      if (multiFoot) multiFoot.hidden = !multi;
+      updateCount();
       el.hidden = false;
       // Standard-Tab: Mediathek
       el.querySelector('[data-mp-tab="library"]').click();
+    }
+
+    // Mehrfachauswahl bestätigen → cb(Array der URLs).
+    if (confirmBtn) {
+      confirmBtn.addEventListener("click", () => {
+        const c = cb; const urls = selected.slice();
+        close();
+        if (c) c(urls);
+      });
     }
 
     el.querySelectorAll("[data-mp-close]").forEach((x) => x.addEventListener("click", close));
@@ -98,17 +127,24 @@
       });
     });
 
-    // Galerie-Picker: Button [data-media-add="#formId"] wählt ein Bild aus der Mediathek,
-    // schreibt die URL ins verborgene Formular und sendet es ab (hängt es als neues Medium an).
+    // Galerie-Picker: Button [data-media-add="#formId"] wählt EIN ODER MEHRERE Medien aus der
+    // Mediathek und hängt sie per fetch (robust, kein stilles form.submit) als Medien an.
     document.querySelectorAll("[data-media-add]").forEach((btn) => {
       btn.addEventListener("click", () => {
         const form = document.querySelector(btn.dataset.mediaAdd);
         if (!form) return;
-        const target = form.querySelector("input[name='url']");
-        open((url) => {
-          if (target) target.value = url;
-          form.submit();
-        });
+        const action = form.getAttribute("action");
+        const formToken = form.querySelector('input[name="__RequestVerificationToken"]');
+        open((urls) => {
+          const list = Array.isArray(urls) ? urls : (urls ? [urls] : []);
+          if (!list.length) return;
+          const fd = new FormData();
+          if (formToken) fd.append("__RequestVerificationToken", formToken.value);
+          list.forEach((u) => fd.append("url", u));
+          fetch(action, { method: "POST", headers: { "X-Requested-With": "XMLHttpRequest" }, body: fd })
+            .then(function () { location.reload(); })
+            .catch(function () { location.reload(); });
+        }, { multi: true });
       });
     });
   }
