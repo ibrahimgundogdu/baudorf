@@ -52,6 +52,11 @@ public class Property
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
     public DateTimeOffset? UpdatedAt { get; set; }
 
+    /// <summary>Soft-Delete: im Papierkorb, überall ausgeblendet (globaler Query-Filter),
+    /// im Admin wiederherstellbar. Erst „endgültig löschen" entfernt Datensatz + Dateien.</summary>
+    public bool IstGeloescht { get; set; }
+    public DateTimeOffset? GeloeschtAm { get; set; }
+
     public ICollection<PropertyMedia> Medien { get; set; } = new List<PropertyMedia>();
     public ICollection<Lead> Leads { get; set; } = new List<Lead>();
 }

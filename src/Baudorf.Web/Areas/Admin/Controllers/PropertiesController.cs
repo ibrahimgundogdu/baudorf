@@ -20,6 +20,7 @@ public class PropertiesController(ApplicationDbContext db, IStorageService stora
 
         var list = await query.OrderByDescending(p => p.CreatedAt).ToListAsync();
         ViewData["q"] = q;
+        ViewData["TrashCount"] = await db.Properties.IgnoreQueryFilters().CountAsync(p => p.IstGeloescht);
         return View(list);
     }
 
@@ -85,11 +86,53 @@ public class PropertiesController(ApplicationDbContext db, IStorageService stora
         return RedirectToAction(nameof(Edit), new { id });
     }
 
+    /// <summary>Soft-Delete: verschiebt das Objekt in den Papierkorb (wiederherstellbar).
+    /// Dateien/Bilder bleiben erhalten, bis endgültig gelöscht wird.</summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
-        var p = await db.Properties.Include(x => x.Medien).FirstOrDefaultAsync(x => x.Id == id);
+        var p = await db.Properties.FirstOrDefaultAsync(x => x.Id == id);
+        if (p is null) return NotFound();
+
+        p.IstGeloescht = true;
+        p.GeloeschtAm = DateTimeOffset.UtcNow;
+        await db.SaveChangesAsync();
+        TempData["Success"] = "Objekt in den Papierkorb verschoben. Es kann dort wiederhergestellt werden.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    // ---------- Papierkorb (Soft-Delete) ----------
+
+    public async Task<IActionResult> Papierkorb()
+    {
+        var list = await db.Properties.IgnoreQueryFilters().AsNoTracking()
+            .Where(p => p.IstGeloescht).Include(p => p.Medien)
+            .OrderByDescending(p => p.GeloeschtAm).ToListAsync();
+        return View(list);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Restore(int id)
+    {
+        var p = await db.Properties.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == id && x.IstGeloescht);
+        if (p is null) return NotFound();
+
+        p.IstGeloescht = false;
+        p.GeloeschtAm = null;
+        await db.SaveChangesAsync();
+        TempData["Success"] = "Objekt wiederhergestellt.";
+        return RedirectToAction(nameof(Papierkorb));
+    }
+
+    /// <summary>Endgültig löschen (aus dem Papierkorb): entfernt Datensatz + zugehörige Dateien.</summary>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeletePermanent(int id)
+    {
+        var p = await db.Properties.IgnoreQueryFilters().Include(x => x.Medien)
+            .FirstOrDefaultAsync(x => x.Id == id && x.IstGeloescht);
         if (p is null) return NotFound();
 
         foreach (var m in p.Medien)
@@ -97,8 +140,8 @@ public class PropertiesController(ApplicationDbContext db, IStorageService stora
 
         db.Properties.Remove(p);
         await db.SaveChangesAsync();
-        TempData["Success"] = "Objekt gelöscht.";
-        return RedirectToAction(nameof(Index));
+        TempData["Success"] = "Objekt endgültig gelöscht.";
+        return RedirectToAction(nameof(Papierkorb));
     }
 
     [HttpPost]
@@ -226,7 +269,8 @@ public class PropertiesController(ApplicationDbContext db, IStorageService stora
 
         var slug = basis;
         var i = 2;
-        while (await db.Properties.AnyAsync(p => p.Slug == slug && p.Id != (exceptId ?? 0)))
+        // IgnoreQueryFilters: auch Objekte im Papierkorb belegen ihren Slug (Unique-Index gilt für alle).
+        while (await db.Properties.IgnoreQueryFilters().AnyAsync(p => p.Slug == slug && p.Id != (exceptId ?? 0)))
             slug = $"{basis}-{i++}";
 
         model.Slug = slug;

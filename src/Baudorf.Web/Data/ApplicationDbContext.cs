@@ -38,6 +38,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
         builder.Entity<Property>(e =>
         {
+            // Soft-Delete: gelöschte Objekte global ausblenden (Startseite, Liste, Detail,
+            // Sitemap, Admin-Liste). Der Papierkorb nutzt IgnoreQueryFilters().
+            e.HasQueryFilter(p => !p.IstGeloescht);
             e.HasIndex(p => p.Slug).IsUnique();
             e.Property(p => p.Faktor).HasPrecision(9, 2);
             e.Property(p => p.RenditeProzent).HasPrecision(6, 2);

@@ -212,6 +212,19 @@
             </div>
         }
     </fieldset>
+
+    <fieldset class="bd-aform" style="margin-top:2rem;">
+        <legend>Objekt löschen</legend>
+        <p class="bd-muted" style="font-size:.9rem;margin:0 0 .8rem;">
+            Verschiebt das Objekt in den Papierkorb. Von dort kann es wiederhergestellt oder
+            endgültig gelöscht werden.
+        </p>
+        <form method="post" asp-action="Delete" asp-route-id="@Model.Id"
+              onsubmit="return confirm('Objekt in den Papierkorb verschieben?');">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="bd-btn bd-btn--danger bd-btn--sm">In den Papierkorb</button>
+        </form>
+    </fieldset>
 }
 
 @section Scripts {

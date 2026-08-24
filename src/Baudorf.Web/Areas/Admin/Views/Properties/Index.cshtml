@@ -8,7 +8,10 @@
         <input type="text" name="q" value="@ViewData["q"]" placeholder="Suchen…" />
         <button class="bd-btn bd-btn--plain bd-btn--xs" type="submit">Suchen</button>
     </form>
-    <a class="bd-btn bd-btn--gold bd-btn--sm" asp-action="Create">+ Neues Objekt</a>
+    <span style="display:flex;gap:.5rem;">
+        <a class="bd-btn bd-btn--plain bd-btn--sm" asp-action="Papierkorb">Papierkorb@(ViewData["TrashCount"] is int tc && tc > 0 ? $" ({tc})" : "")</a>
+        <a class="bd-btn bd-btn--gold bd-btn--sm" asp-action="Create">+ Neues Objekt</a>
+    </span>
 </div>
 
 <table class="bd-table">
@@ -64,10 +67,7 @@
                 <td class="bd-table__actions">
                     <a class="bd-btn bd-btn--plain bd-btn--xs" asp-controller="Immobilien" asp-area="" asp-action="Details" asp-route-slug="@p.Slug" target="_blank">Ansehen</a>
                     <a class="bd-btn bd-btn--ink bd-btn--xs" asp-action="Edit" asp-route-id="@p.Id">Bearbeiten</a>
-                    <form method="post" asp-action="Delete" asp-route-id="@p.Id" onsubmit="return confirm('Objekt wirklich löschen?');">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="bd-btn bd-btn--danger bd-btn--xs">Löschen</button>
-                    </form>
+                    @* Löschen bewusst NICHT in der Liste — nur auf der Bearbeiten-Seite (verhindert Fehlklicks). *@
                 </td>
             </tr>
         }

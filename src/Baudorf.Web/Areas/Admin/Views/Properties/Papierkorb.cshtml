@@ -1,0 +1,53 @@
+@model List<Property>
+@{
+    ViewData["Title"] = "Papierkorb — Immobilien";
+}
+
+<div class="bd-toolbar">
+    <a class="bd-btn bd-btn--plain bd-btn--xs" asp-action="Index">&larr; Zurück zu Immobilien</a>
+</div>
+
+<h2 style="margin:.2rem 0 .2rem">Papierkorb</h2>
+<p class="bd-muted" style="margin:0 0 1rem;font-size:.9rem;">
+    Gelöschte Objekte. „Wiederherstellen" holt das Objekt samt Bildern zurück.
+    „Endgültig löschen" entfernt es unwiderruflich inklusive Dateien.
+</p>
+
+<table class="bd-table">
+    <thead>
+        <tr><th></th><th>Titel</th><th>Art</th><th>Gelöscht am</th><th></th></tr>
+    </thead>
+    <tbody>
+        @if (Model.Count == 0)
+        {
+            <tr><td colspan="5" class="bd-empty-row">Der Papierkorb ist leer.</td></tr>
+        }
+        @foreach (var p in Model)
+        {
+            var cover = p.CoverUrl();
+            <tr>
+                <td>
+                    @if (cover != null) { <img class="bd-thumb" src="@cover" alt="" /> }
+                    else { <img class="bd-thumb" src="~/img/brand/baudorf-emblem-ink.png" alt="" /> }
+                </td>
+                <td>
+                    <strong>@p.Titel</strong><br />
+                    <span class="bd-muted">@(string.IsNullOrWhiteSpace(p.Region) ? p.Land : p.Region)</span>
+                </td>
+                <td>@p.Art.Label()</td>
+                <td class="bd-muted">@(p.GeloeschtAm?.ToLocalTime().ToString("dd.MM.yyyy HH:mm") ?? "—")</td>
+                <td class="bd-table__actions">
+                    <form method="post" asp-action="Restore" asp-route-id="@p.Id">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="bd-btn bd-btn--gold bd-btn--xs">Wiederherstellen</button>
+                    </form>
+                    <form method="post" asp-action="DeletePermanent" asp-route-id="@p.Id"
+                          onsubmit="return confirm('Objekt ENDGÜLTIG löschen? Dies kann nicht rückgängig gemacht werden.');">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="bd-btn bd-btn--danger bd-btn--xs">Endgültig löschen</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
