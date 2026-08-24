@@ -33,8 +33,8 @@ public class ImmobilienController(ApplicationDbContext db, UserManager<Applicati
             .Include(p => p.Medien)
             .AsQueryable();
 
-        if (filter.Art is { } art)
-            query = query.Where(p => p.Art == art);
+        if (!string.IsNullOrWhiteSpace(filter.Art))
+            query = query.Where(p => p.ArtKey == filter.Art);
 
         if (filter.Status is { } status)
             query = query.Where(p => p.Status == status);
@@ -110,7 +110,7 @@ public class ImmobilienController(ApplicationDbContext db, UserManager<Applicati
 
         var aehnliche = await db.Properties
             .AsNoTracking()
-            .Where(p => p.IstVeroeffentlicht && p.Id != objekt.Id && p.Art == objekt.Art)
+            .Where(p => p.IstVeroeffentlicht && p.Id != objekt.Id && p.ArtKey == objekt.ArtKey)
             .Include(p => p.Medien)
             .OrderByDescending(p => p.IstFeatured)
             .Take(3)

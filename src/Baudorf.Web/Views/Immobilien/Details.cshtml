@@ -13,7 +13,7 @@
     var coverAbs = SeoUrls.Absolute(req, site, cover ?? site.DefaultOgImage);
     ViewData["Title"] = string.IsNullOrWhiteSpace(p.MetaTitle) ? p.Titel : p.MetaTitle;
     ViewData["MetaDescription"] = string.IsNullOrWhiteSpace(p.MetaDescription)
-        ? $"{p.Art.Label()} in {p.Region ?? "NRW"} — diskret vermittelt von Baudorf Immobilien."
+        ? $"{Lookup.Label("objektart", p.ArtKey)} in {p.Region ?? "NRW"} — diskret vermittelt von Baudorf Immobilien."
         : p.MetaDescription;
     ViewData["OgType"] = "product";
     ViewData["OgImage"] = cover;
@@ -22,7 +22,7 @@
     ViewData["JsonLd"] = new Microsoft.AspNetCore.Html.HtmlString(
         "<script type=\"application/ld+json\">"
         + PropertyJsonLd.Build(p, canonical, coverAbs, SeoUrls.Base(req, site),
-            SeoUrls.Absolute(req, site, Url.Action("Index", "Immobilien")), locked)
+            SeoUrls.Absolute(req, site, Url.Action("Index", "Immobilien")), locked, Lookup.Label("objektart", p.ArtKey))
         + "</script>");
 
     string BadgeBg(PropertyStatus s) => s switch
@@ -99,7 +99,7 @@
 
     <div class="hx-dbody">
         <div class="hx-dmain">
-            <span class="hx-dmain__art">@p.Art.Label() · @(string.IsNullOrWhiteSpace(p.Region) ? p.Land : p.Region)</span>
+            <span class="hx-dmain__art">@Lookup.Label("objektart", p.ArtKey) · @(string.IsNullOrWhiteSpace(p.Region) ? p.Land : p.Region)</span>
             <h1>@p.Titel</h1>
 
             @if (!locked && !string.IsNullOrWhiteSpace(p.VideoUrl))
@@ -151,7 +151,7 @@
 
             <h2>Objektdaten</h2>
             <dl class="hx-kuenye">
-                <div><dt>Objektart</dt><dd>@p.Art.Label()</dd></div>
+                <div><dt>Objektart</dt><dd>@Lookup.Label("objektart", p.ArtKey)</dd></div>
                 <div><dt>Standort</dt><dd>@(string.IsNullOrWhiteSpace(p.Region) ? p.Land : p.Region)</dd></div>
                 @if (locked)
                 {

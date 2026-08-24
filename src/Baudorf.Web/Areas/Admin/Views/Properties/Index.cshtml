@@ -49,7 +49,7 @@
                     <strong>@p.Titel</strong><br />
                     <span class="bd-muted">@(string.IsNullOrWhiteSpace(p.Region) ? p.Land : p.Region)</span>
                 </td>
-                <td>@p.Art.Label()</td>
+                <td>@Lookup.Label("objektart", p.ArtKey)</td>
                 <td>@p.Status.Label()</td>
                 <td>
                     @if (p.IstVeroeffentlicht)

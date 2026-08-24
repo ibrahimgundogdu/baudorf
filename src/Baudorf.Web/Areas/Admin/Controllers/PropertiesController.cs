@@ -70,7 +70,7 @@ public class PropertiesController(ApplicationDbContext db, IStorageService stora
         await AssignUniqueSlugAsync(model, id);
 
         // Felder übernehmen
-        p.Titel = model.Titel; p.Slug = model.Slug; p.Art = model.Art; p.Status = model.Status;
+        p.Titel = model.Titel; p.Slug = model.Slug; p.ArtKey = model.ArtKey; p.Status = model.Status;
         p.Region = model.Region; p.Land = model.Land; p.AdresseIntern = model.AdresseIntern;
         p.Lat = model.Lat; p.Lng = model.Lng;
         p.Wohnflaeche = model.Wohnflaeche; p.Gewerbeflaeche = model.Gewerbeflaeche;

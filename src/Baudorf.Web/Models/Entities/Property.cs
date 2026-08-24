@@ -15,7 +15,12 @@ public class Property
     [MaxLength(220)]
     public string Slug { get; set; } = string.Empty;
 
+    /// <summary>Alte Enum-Spalte — bleibt als Backup erhalten; führend ist jetzt <see cref="ArtKey"/>.</summary>
     public PropertyKind Art { get; set; }
+
+    /// <summary>Objektart als admin-pflegbarer Lookup-Schlüssel (LookupOption Kategorie "objektart").</summary>
+    [MaxLength(60)] public string ArtKey { get; set; } = string.Empty;
+
     public PropertyStatus Status { get; set; }
 
     // Standort (genaue Adresse bei Off-Market verborgen → nur Region/Land öffentlich)

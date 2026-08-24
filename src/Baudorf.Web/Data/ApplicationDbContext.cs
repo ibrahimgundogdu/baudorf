@@ -28,6 +28,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Leistung> Leistungen => Set<Leistung>();
     public DbSet<Redirect> Redirects => Set<Redirect>();
     public DbSet<NotFoundHit> NotFoundHits => Set<NotFoundHit>();
+    public DbSet<LookupOption> LookupOptions => Set<LookupOption>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -35,6 +36,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
         builder.Entity<Redirect>().HasIndex(r => r.VonPfad).IsUnique();
         builder.Entity<NotFoundHit>().HasIndex(n => n.Pfad).IsUnique();
+        builder.Entity<LookupOption>().HasIndex(l => new { l.Kategorie, l.Wert }).IsUnique();
 
         builder.Entity<Property>(e =>
         {

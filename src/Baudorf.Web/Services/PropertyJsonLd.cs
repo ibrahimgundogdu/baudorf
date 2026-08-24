@@ -16,7 +16,8 @@ public static class PropertyJsonLd
         string? imageAbsolute,
         string baseUrl,
         string immobilienUrl,
-        bool gated)
+        bool gated,
+        string artLabel)
     {
         var additional = new List<object>();
         void AddProp(string name, object? value, string? unitCode = null)
@@ -27,7 +28,7 @@ public static class PropertyJsonLd
             additional.Add(pv);
         }
 
-        AddProp("Objektart", p.Art.Label());
+        AddProp("Objektart", artLabel);
         if (p.Wohnflaeche.HasValue) AddProp("Wohnfläche", p.Wohnflaeche.Value, "MTK");
         if (p.Grundstuecksflaeche.HasValue) AddProp("Grundstücksfläche", p.Grundstuecksflaeche.Value, "MTK");
         if (p.Baujahr.HasValue) AddProp("Baujahr", p.Baujahr.Value);
@@ -41,7 +42,7 @@ public static class PropertyJsonLd
             ["name"] = JsonLd.NullIfBlank(p.MetaTitle) ?? p.Titel,
             ["description"] = JsonLd.NullIfBlank(p.MetaDescription) ?? JsonLd.NullIfBlank(StripDescription(p)),
             ["url"] = canonical,
-            ["category"] = p.Art.Label(),
+            ["category"] = artLabel,
             ["image"] = string.IsNullOrEmpty(imageAbsolute) ? null : new[] { imageAbsolute },
             ["brand"] = new Dictionary<string, object?> { ["@type"] = "Organization", ["@id"] = baseUrl + "/#organization" },
             ["areaServed"] = JsonLd.NullIfBlank(p.Region),

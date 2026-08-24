@@ -103,7 +103,38 @@ public static class DbSeeder
         await SeedUeberStatsAsync(db);
         await SeedRedirectsAsync(db);
         await SeedTestimonialItemAsync(db);
+        await SeedLookupsAsync(db);
         await db.SaveChangesAsync();
+    }
+
+    /// <summary>Einmalig: Objektart-Optionen (aus dem bisherigen Enum) als admin-pflegbare
+    /// LookupOptions anlegen. Andrea kann danach eigene Objektarten hinzufügen.</summary>
+    private static async Task SeedLookupsAsync(ApplicationDbContext db)
+    {
+        var marker = await db.SiteSettings.FirstOrDefaultAsync(s => s.Key == "seed.lookupObjektartV1");
+        if (marker is not null) return;
+
+        if (!await db.LookupOptions.AnyAsync(l => l.Kategorie == "objektart"))
+        {
+            (string wert, string label)[] arten =
+            [
+                ("offmarket", "Off-Market"),
+                ("kapitalanlage", "Kapitalanlage"),
+                ("investment", "Investment"),
+                ("gewerbe", "Gewerbeimmobilie"),
+                ("wohnimmobilie", "Wohnimmobilie"),
+                ("grundstueck", "Grundstück"),
+                ("projektentwicklung", "Projektentwicklung"),
+                ("auslandsimmobilie", "Auslandsimmobilie"),
+            ];
+            for (var i = 0; i < arten.Length; i++)
+                db.LookupOptions.Add(new LookupOption
+                {
+                    Kategorie = "objektart", Wert = arten[i].wert, Label = arten[i].label, Reihenfolge = i
+                });
+        }
+
+        db.SiteSettings.Add(new SiteSetting { Key = "seed.lookupObjektartV1", Value = "1" });
     }
 
     /// <summary>Einmalig: bestehendes Einzel-Testimonial (Section.Text/Titel) in ein Listenelement
@@ -484,7 +515,7 @@ public static class DbSeeder
             {
                 Titel = "Faktor 20,7 — 40 Wohneinheiten · KfW 40 / QNG",
                 Slug = "faktor-20-7-40-wohneinheiten-kfw40-qng",
-                Art = PropertyKind.Kapitalanlage,
+                Art = PropertyKind.Kapitalanlage, ArtKey = "kapitalanlage",
                 Status = PropertyStatus.OffMarket,
                 Region = "NRW",
                 Wohnflaeche = 2809,
@@ -508,7 +539,7 @@ public static class DbSeeder
             {
                 Titel = "Neubau-Senioreneinrichtung — 80 stationäre Plätze",
                 Slug = "neubau-senioreneinrichtung-80-plaetze-herne",
-                Art = PropertyKind.Investment,
+                Art = PropertyKind.Investment, ArtKey = "investment",
                 Status = PropertyStatus.Verfuegbar,
                 Region = "Herne, NRW",
                 Grundstuecksflaeche = 7565,
@@ -529,7 +560,7 @@ public static class DbSeeder
             {
                 Titel = "Wohn- und Geschäftshaus in zentraler Lage",
                 Slug = "wohn-geschaeftshaus-wuppertal-zentrum",
-                Art = PropertyKind.Gewerbe,
+                Art = PropertyKind.Gewerbe, ArtKey = "gewerbe",
                 Status = PropertyStatus.Verfuegbar,
                 Region = "Wuppertal, NRW",
                 Wohnflaeche = 1240,
@@ -551,7 +582,7 @@ public static class DbSeeder
             {
                 Titel = "Exklusive Wohnanlage — 24 Einheiten",
                 Slug = "exklusive-wohnanlage-24-einheiten-duesseldorf",
-                Art = PropertyKind.Wohnimmobilie,
+                Art = PropertyKind.Wohnimmobilie, ArtKey = "wohnimmobilie",
                 Status = PropertyStatus.Reserviert,
                 Region = "Düsseldorf, NRW",
                 Wohnflaeche = 2150,
@@ -571,7 +602,7 @@ public static class DbSeeder
             {
                 Titel = "Baugrundstück mit Projektentwicklung",
                 Slug = "baugrundstueck-projektentwicklung-essen",
-                Art = PropertyKind.Grundstueck,
+                Art = PropertyKind.Grundstueck, ArtKey = "grundstueck",
                 Status = PropertyStatus.Verfuegbar,
                 Region = "Essen, NRW",
                 Grundstuecksflaeche = 4800,
@@ -587,7 +618,7 @@ public static class DbSeeder
             {
                 Titel = "Ferienresort am Mittelmeer — Bestandsobjekt",
                 Slug = "ferienresort-mittelmeer-bestandsobjekt",
-                Art = PropertyKind.Auslandsimmobilie,
+                Art = PropertyKind.Auslandsimmobilie, ArtKey = "auslandsimmobilie",
                 Status = PropertyStatus.OffMarket,
                 Region = "Costa Blanca",
                 Land = "Spanien",

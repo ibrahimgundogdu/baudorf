@@ -5,7 +5,7 @@ namespace Baudorf.Web.Models.ViewModels;
 /// <summary>Filter-/Sortier-Parameter der Immobilien-Liste (aus Query-String).</summary>
 public class ImmobilienFilter
 {
-    public PropertyKind? Art { get; set; }
+    public string? Art { get; set; }         // Objektart-Wert (LookupOption "objektart")
     public PropertyStatus? Status { get; set; }
     public string? Q { get; set; }            // Freitext (Titel/Region)
     public decimal? PreisMax { get; set; }

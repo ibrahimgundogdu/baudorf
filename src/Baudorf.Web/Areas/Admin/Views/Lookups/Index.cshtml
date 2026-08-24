@@ -1,0 +1,44 @@
+@model List<Baudorf.Web.Models.Entities.LookupOption>
+@{
+    ViewData["Title"] = "Attribute — Objektarten";
+}
+
+<h2 style="margin:.2rem 0 .2rem">Objektarten</h2>
+<p class="bd-muted" style="margin:0 0 1.2rem;font-size:.9rem;">
+    Diese Optionen erscheinen im Objekt-Formular als „Objektart" und als Filter auf der Website.
+    Neue Werte können Sie hier selbst hinzufügen, umbenennen, sortieren oder deaktivieren.
+</p>
+
+<fieldset class="bd-aform">
+    <legend>Optionen (@Model.Count)</legend>
+
+    @foreach (var o in Model)
+    {
+        <form method="post" asp-action="Update" asp-route-id="@o.Id" class="bd-item-row">
+            @Html.AntiForgeryToken()
+            <input name="label" value="@o.Label" placeholder="Anzeigename" />
+            <label class="bd-checkline" style="white-space:nowrap;">
+                <input type="checkbox" name="istAktiv" value="true" @(o.IstAktiv ? "checked" : "") /> aktiv
+            </label>
+            <button type="submit" class="bd-btn bd-btn--plain bd-btn--xs">Speichern</button>
+            <span class="bd-item-row__btns">
+                <button formaction="@Url.Action("Move", new { id = o.Id })" name="direction" value="-1" class="bd-btn bd-btn--plain bd-btn--xs">↑</button>
+                <button formaction="@Url.Action("Move", new { id = o.Id })" name="direction" value="1" class="bd-btn bd-btn--plain bd-btn--xs">↓</button>
+                <button formaction="@Url.Action("Delete", new { id = o.Id })" class="bd-btn bd-btn--danger bd-btn--xs" onclick="return confirm('Option löschen?');">×</button>
+            </span>
+        </form>
+    }
+
+    <form method="post" asp-action="Create" class="bd-item-row bd-item-row--add" style="margin-top:.6rem;">
+        @Html.AntiForgeryToken()
+        <input name="label" placeholder="Neue Objektart (z. B. Seniorenimmobilie)" />
+        <button type="submit" class="bd-btn bd-btn--ink bd-btn--xs">+ Hinzufügen</button>
+        <span></span>
+    </form>
+</fieldset>
+
+<p class="bd-muted" style="font-size:.82rem;margin-top:1rem;">
+    Hinweis: Eine Option, die bereits Objekten zugeordnet ist, lässt sich nicht löschen —
+    deaktivieren Sie sie stattdessen (sie bleibt dann bestehenden Objekten erhalten,
+    erscheint aber nicht mehr zur Neuauswahl).
+</p>

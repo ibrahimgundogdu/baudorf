@@ -3,5 +3,7 @@
 @using Baudorf.Web.Models.Entities
 @using Baudorf.Web.Areas.Admin.Controllers
 @using Microsoft.Extensions.Localization
+@using Baudorf.Web.Services
 @inject IStringLocalizer<SharedResource> L
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@inject ILookupService Lookup

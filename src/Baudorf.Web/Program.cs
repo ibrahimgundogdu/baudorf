@@ -79,6 +79,7 @@ builder.Services.AddScoped<IMediaLibrary, MediaLibrary>();
 // SEO-Weiterleitungen (alte, indexierte URLs → neue Adressen) + 404-Protokoll.
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<IRedirectService, RedirectService>();
+builder.Services.AddSingleton<ILookupService, LookupService>();
 
 // E-Mail: echter SMTP-Versand, sobald "Email:Host" konfiguriert ist (appsettings.Production.json /
 // Umgebungsvariablen). Ohne Host → Log-Only (kein realer Versand). Steuert auch die 2FA-Methode:

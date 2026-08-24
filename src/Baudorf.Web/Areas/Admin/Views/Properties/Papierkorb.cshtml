@@ -33,7 +33,7 @@
                     <strong>@p.Titel</strong><br />
                     <span class="bd-muted">@(string.IsNullOrWhiteSpace(p.Region) ? p.Land : p.Region)</span>
                 </td>
-                <td>@p.Art.Label()</td>
+                <td>@Lookup.Label("objektart", p.ArtKey)</td>
                 <td class="bd-muted">@(p.GeloeschtAm?.ToLocalTime().ToString("dd.MM.yyyy HH:mm") ?? "—")</td>
                 <td class="bd-table__actions">
                     <form method="post" asp-action="Restore" asp-route-id="@p.Id">

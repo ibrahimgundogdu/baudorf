@@ -17,7 +17,7 @@
     {
         var d = new Dictionary<string, string?>
         {
-            ["art"] = Model.Filter.Art.HasValue ? ((int)Model.Filter.Art).ToString() : null,
+            ["art"] = Model.Filter.Art,
             ["status"] = Model.Filter.Status.HasValue ? ((int)Model.Filter.Status).ToString() : null,
             ["q"] = Model.Filter.Q,
             ["sort"] = Model.Filter.Sort
@@ -54,10 +54,10 @@
             <div class="hx-filter__rowf">
                 <span class="hx-filter__lbl">Objektart</span>
                 <div class="hx-chips">
-                    <a class="hx-chip @(Model.Filter.Art == null ? "is-on" : "")" href="@ChipUrl("art", null)">Alle</a>
-                    @foreach (var k in Enum.GetValues<PropertyKind>())
+                    <a class="hx-chip @(string.IsNullOrEmpty(Model.Filter.Art) ? "is-on" : "")" href="@ChipUrl("art", null)">Alle</a>
+                    @foreach (var o in Lookup.Options("objektart"))
                     {
-                        <a class="hx-chip @(Model.Filter.Art == k ? "is-on" : "")" href="@ChipUrl("art", ((int)k).ToString())">@k.Label()</a>
+                        <a class="hx-chip @(Model.Filter.Art == o.Wert ? "is-on" : "")" href="@ChipUrl("art", o.Wert)">@o.Label</a>
                     }
                 </div>
             </div>
@@ -93,7 +93,7 @@
                             <span class="hx-lcard__ph"><img src="~/img/brand/baudorf-emblem-ink.png" alt="" /></span>
                         }
                         <span class="hx-lcard__badge" style="background:@BadgeBg(p.Status)">@p.Status.Label()</span>
-                        <span class="hx-lcard__art">@p.Art.Label()</span>
+                        <span class="hx-lcard__art">@Lookup.Label("objektart", p.ArtKey)</span>
                     </a>
                     <div class="hx-lcard__body">
                         <span class="hx-lcard__ort">@(string.IsNullOrWhiteSpace(p.Region) ? p.Land : p.Region)</span>
