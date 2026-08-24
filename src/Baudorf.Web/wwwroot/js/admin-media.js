@@ -115,14 +115,35 @@
 
     window.BaudorfMedia = { open, close };
 
+    // Vorschau setzen und dabei — je nach Medientyp — <img> ⇆ <video> tauschen,
+    // damit auch Video-URLs korrekt angezeigt werden (statt kaputtem Bild-Icon).
+    const isVideoUrl = (u) => /\.(mp4|webm|ogg|ogv|mov)(\?|$)/i.test(u || "");
+    function setPreview(selector, url) {
+      let el = document.querySelector(selector);
+      if (!el) return;
+      const wantVideo = isVideoUrl(url);
+      const isVideoEl = el.tagName === "VIDEO";
+      if (wantVideo !== isVideoEl) {
+        const neu = document.createElement(wantVideo ? "video" : "img");
+        neu.id = el.id;
+        neu.className = el.className;
+        neu.setAttribute("style", el.getAttribute("style") || "");
+        if (wantVideo) { neu.muted = true; neu.setAttribute("playsinline", ""); neu.setAttribute("preload", "metadata"); }
+        else { neu.alt = ""; }
+        el.parentNode.replaceChild(neu, el);
+        el = neu;
+      }
+      el.src = url;
+      el.style.display = url ? "block" : "none";
+    }
+
     // Generische Feld-Picker: Button [data-media-pick] setzt ein Ziel-Input + optionale Vorschau.
     document.querySelectorAll("[data-media-pick]").forEach((btn) => {
       btn.addEventListener("click", () => {
         const target = btn.dataset.mediaTarget ? document.querySelector(btn.dataset.mediaTarget) : null;
-        const preview = btn.dataset.mediaPreview ? document.querySelector(btn.dataset.mediaPreview) : null;
         open((url) => {
           if (target) target.value = url;
-          if (preview) { preview.src = url; preview.style.display = "block"; }
+          if (btn.dataset.mediaPreview) setPreview(btn.dataset.mediaPreview, url);
         });
       });
     });

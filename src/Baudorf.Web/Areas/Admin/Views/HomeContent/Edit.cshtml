@@ -105,7 +105,17 @@
         {
             <div class="bd-form-field">
                 <label>Bild (Hintergrund / Medien)</label>
-                <img id="secBildPreview" class="bd-thumb" style="width:140px;height:auto;display:@(string.IsNullOrWhiteSpace(Model.BildUrl) ? "none" : "block");margin-bottom:0.5rem;" src="@Model.BildUrl" alt="" />
+                @{
+                    var secStyle = $"width:140px;height:auto;display:{(string.IsNullOrWhiteSpace(Model.BildUrl) ? "none" : "block")};margin-bottom:0.5rem;";
+                }
+                @if (DisplayHelpers.IsVideoUrl(Model.BildUrl))
+                {
+                    <video id="secBildPreview" class="bd-thumb" style="@secStyle" src="@Model.BildUrl" muted playsinline preload="metadata"></video>
+                }
+                else
+                {
+                    <img id="secBildPreview" class="bd-thumb" style="@secStyle" src="@Model.BildUrl" alt="" />
+                }
                 <input type="hidden" asp-for="BildUrl" id="secBildUrl" />
                 <div style="display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;">
                     <button type="button" class="bd-btn bd-btn--plain bd-btn--xs" data-media-pick data-media-target="#secBildUrl" data-media-preview="#secBildPreview">Aus Mediathek wählen</button>
@@ -138,7 +148,18 @@
                     <input type="hidden" name="itemId" value="@item.Id" />
                     <div class="bd-slide-card__grid">
                         <div class="bd-slide-card__media">
-                            <img id="slide_@(item.Id)_prev" class="bd-thumb" style="width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:6px;display:@(string.IsNullOrWhiteSpace(item.BildUrl) ? "none" : "block");" src="@item.BildUrl" alt="" />
+                            @{
+                                var slideDisplay = string.IsNullOrWhiteSpace(item.BildUrl) ? "none" : "block";
+                                var slideStyle = $"width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:6px;display:{slideDisplay};";
+                            }
+                            @if (DisplayHelpers.IsVideoUrl(item.BildUrl))
+                            {
+                                <video id="slide_@(item.Id)_prev" class="bd-thumb" style="@slideStyle" src="@item.BildUrl" muted playsinline preload="metadata"></video>
+                            }
+                            else
+                            {
+                                <img id="slide_@(item.Id)_prev" class="bd-thumb" style="@slideStyle" src="@item.BildUrl" alt="" />
+                            }
                             <input type="hidden" name="bildUrl" id="slide_@(item.Id)_url" value="@item.BildUrl" />
                             <button type="button" class="bd-btn bd-btn--plain bd-btn--xs" style="margin-top:.5rem;width:100%;" data-media-pick data-media-target="#slide_@(item.Id)_url" data-media-preview="#slide_@(item.Id)_prev">Bild wählen</button>
                         </div>
