@@ -1,0 +1,54 @@
+@model Baudorf.Web.Models.ViewModels.ImmobilienListViewModel
+@{
+    string BadgeBg(PropertyStatus s) => s switch
+    {
+        PropertyStatus.Verfuegbar => "#2F6B4F",
+        PropertyStatus.Reserviert => "#96773A",
+        PropertyStatus.Verkauft => "#5C5550",
+        PropertyStatus.Vorankuendigung => "#3A5A96",
+        _ => "#181614"
+    };
+}
+@foreach (var p in Model.Objekte)
+{
+    var cover = p.CoverUrl();
+    var locked = p.IstOffMarket && !Model.CanViewOffMarket;
+    <article class="hx-lcard @(locked ? "is-locked" : "")">
+        <a class="hx-lcard__media" asp-controller="Immobilien" asp-action="Details" asp-route-slug="@p.Slug">
+            @if (cover != null)
+            {
+                <img src="@cover" alt="@p.Titel" loading="lazy" />
+            }
+            else
+            {
+                <span class="hx-lcard__ph"><img src="~/img/brand/baudorf-emblem-ink.png" alt="" /></span>
+            }
+            <span class="hx-lcard__badge" style="background:@BadgeBg(p.Status)">@p.Status.Label()</span>
+            <span class="hx-lcard__art">@Lookup.Label("objektart", p.ArtKey)</span>
+        </a>
+        <div class="hx-lcard__body">
+            <span class="hx-lcard__ort">@(string.IsNullOrWhiteSpace(p.Region) ? p.Land : p.Region)</span>
+            <h3 class="hx-lcard__name"><a asp-controller="Immobilien" asp-action="Details" asp-route-slug="@p.Slug">@p.Titel</a></h3>
+            <div class="hx-lcard__specs">
+                @if (p.Wohnflaeche.HasValue) { <span>Wfl. <b>@DisplayHelpers.FlaecheText(p.Wohnflaeche)</b></span> }
+                @if (p.Grundstuecksflaeche.HasValue) { <span>GF <b>@DisplayHelpers.FlaecheText(p.Grundstuecksflaeche)</b></span> }
+                @if (p.Baujahr.HasValue) { <span>BJ <b>@p.Baujahr</b></span> }
+            </div>
+            <div class="hx-lcard__foot">
+                @if (locked)
+                {
+                    <div class="hx-lcard__faktor"><small>Eckdaten</small><b style="color:#8a847d">&#128274; nach Freigabe</b></div>
+                    <a class="hx-lcard__lock" asp-area="Identity" asp-page="/Account/Register">Freischalten</a>
+                }
+                else
+                {
+                    @if (p.Faktor.HasValue)
+                    {
+                        <div class="hx-lcard__faktor"><small>Faktor</small><b>@p.Faktor</b></div>
+                    }
+                    <div class="hx-lcard__preis"><small>Kaufpreis</small><b>@p.PreisText()</b></div>
+                }
+            </div>
+        </div>
+    </article>
+}

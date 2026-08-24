@@ -3,15 +3,6 @@
     ViewData["Title"] = "Immobilien";
     ViewData["MetaDescription"] = "Off-Market-Immobilien, Kapitalanlagen und Investments in NRW — diskret vermittelt von Baudorf Immobilien.";
 
-    string BadgeBg(PropertyStatus s) => s switch
-    {
-        PropertyStatus.Verfuegbar => "#2F6B4F",
-        PropertyStatus.Reserviert => "#96773A",
-        PropertyStatus.Verkauft => "#5C5550",
-        PropertyStatus.Vorankuendigung => "#3A5A96",
-        _ => "#181614"
-    };
-
     // Chip-URLs: aktuellen Filter beibehalten, einen Wert überschreiben.
     string ChipUrl(string key, string? val)
     {
@@ -77,59 +68,18 @@
     }
     else
     {
-        <div class="hx-list">
-            @foreach (var p in Model.Objekte)
-            {
-                var cover = p.CoverUrl();
-                var locked = p.IstOffMarket && !Model.CanViewOffMarket;
-                <article class="hx-lcard @(locked ? "is-locked" : "")">
-                    <a class="hx-lcard__media" asp-controller="Immobilien" asp-action="Details" asp-route-slug="@p.Slug">
-                        @if (cover != null)
-                        {
-                            <img src="@cover" alt="@p.Titel" loading="lazy" />
-                        }
-                        else
-                        {
-                            <span class="hx-lcard__ph"><img src="~/img/brand/baudorf-emblem-ink.png" alt="" /></span>
-                        }
-                        <span class="hx-lcard__badge" style="background:@BadgeBg(p.Status)">@p.Status.Label()</span>
-                        <span class="hx-lcard__art">@Lookup.Label("objektart", p.ArtKey)</span>
-                    </a>
-                    <div class="hx-lcard__body">
-                        <span class="hx-lcard__ort">@(string.IsNullOrWhiteSpace(p.Region) ? p.Land : p.Region)</span>
-                        <h3 class="hx-lcard__name"><a asp-controller="Immobilien" asp-action="Details" asp-route-slug="@p.Slug">@p.Titel</a></h3>
-                        <div class="hx-lcard__specs">
-                            @if (p.Wohnflaeche.HasValue) { <span>Wfl. <b>@DisplayHelpers.FlaecheText(p.Wohnflaeche)</b></span> }
-                            @if (p.Grundstuecksflaeche.HasValue) { <span>GF <b>@DisplayHelpers.FlaecheText(p.Grundstuecksflaeche)</b></span> }
-                            @if (p.Baujahr.HasValue) { <span>BJ <b>@p.Baujahr</b></span> }
-                        </div>
-                        <div class="hx-lcard__foot">
-                            @if (locked)
-                            {
-                                <div class="hx-lcard__faktor"><small>Eckdaten</small><b style="color:#8a847d">&#128274; nach Freigabe</b></div>
-                                <a class="hx-lcard__lock" asp-area="Identity" asp-page="/Account/Register">Freischalten</a>
-                            }
-                            else
-                            {
-                                @if (p.Faktor.HasValue)
-                                {
-                                    <div class="hx-lcard__faktor"><small>Faktor</small><b>@p.Faktor</b></div>
-                                }
-                                <div class="hx-lcard__preis"><small>Kaufpreis</small><b>@p.PreisText()</b></div>
-                            }
-                        </div>
-                    </div>
-                </article>
-            }
+        <div class="hx-list" id="hxList">
+            <partial name="_ObjektListCards" model="Model" />
         </div>
 
-        @if (Model.TotalPages > 1)
+        @if (Model.Page < Model.TotalPages)
         {
-            <nav class="hx-pager">
-                @if (Model.HatVorige) { <a href="@ChipUrl("page", (Model.Page - 1).ToString())">&larr; Zurück</a> }
-                <span>Seite @Model.Page von @Model.TotalPages</span>
-                @if (Model.HatNaechste) { <a href="@ChipUrl("page", (Model.Page + 1).ToString())">Weiter &rarr;</a> }
-            </nav>
+            <div class="hx-loadmore">
+                <button type="button" class="hx-btn hx-btn--outline-dark" data-load-more
+                        data-base-url="@ChipUrl("page", null)"
+                        data-next-page="@(Model.Page + 1)"
+                        data-total-pages="@Model.TotalPages">Mehr laden</button>
+            </div>
         }
     }
 </div>

@@ -287,6 +287,31 @@
     btns.forEach((b) => b.addEventListener("click", () => select(b.dataset.tab)));
   });
 
+  // ---------- "Mehr laden" (Immobilien-Liste, Lazy Loading) ----------
+  const loadMoreBtn = document.querySelector("[data-load-more]");
+  if (loadMoreBtn) {
+    loadMoreBtn.addEventListener("click", function () {
+      const next = parseInt(loadMoreBtn.dataset.nextPage, 10);
+      const total = parseInt(loadMoreBtn.dataset.totalPages, 10);
+      const base = loadMoreBtn.dataset.baseUrl || "";
+      const url = base + (base.indexOf("?") >= 0 ? "&" : "?") + "page=" + next;
+      const orig = loadMoreBtn.textContent;
+      loadMoreBtn.disabled = true;
+      loadMoreBtn.textContent = "Lädt…";
+      fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } })
+        .then(function (r) { return r.text(); })
+        .then(function (html) {
+          const grid = document.getElementById("hxList");
+          const tmp = document.createElement("div");
+          tmp.innerHTML = html;
+          while (tmp.firstElementChild) grid.appendChild(tmp.firstElementChild);
+          if (next >= total) { if (loadMoreBtn.parentElement) loadMoreBtn.parentElement.remove(); }
+          else { loadMoreBtn.dataset.nextPage = String(next + 1); loadMoreBtn.disabled = false; loadMoreBtn.textContent = orig; }
+        })
+        .catch(function () { loadMoreBtn.disabled = false; loadMoreBtn.textContent = orig; });
+    });
+  }
+
   // ---------- Testimonial-Rotator (mehrere Stimmen, automatisch wechselnd) ----------
   document.querySelectorAll("[data-testi-rotator]").forEach((root) => {
     const slides = root.querySelectorAll("[data-testi-slide]");

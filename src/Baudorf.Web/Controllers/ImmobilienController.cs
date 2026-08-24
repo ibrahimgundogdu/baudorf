@@ -10,7 +10,7 @@ namespace Baudorf.Web.Controllers;
 
 public class ImmobilienController(ApplicationDbContext db, UserManager<ApplicationUser> userMgr) : Controller
 {
-    private const int PageSize = 9;
+    private const int PageSize = 30;
 
     /// <summary>
     /// Off-Market-Freigabe: angemeldet UND (Admin/Redakteur ODER als Investor freigegeben).
@@ -72,7 +72,7 @@ public class ImmobilienController(ApplicationDbContext db, UserManager<Applicati
             foreach (var o in objekte.Where(o => o.IstOffMarket))
                 o.RedactOffMarket();
 
-        return View(new ImmobilienListViewModel
+        var vm = new ImmobilienListViewModel
         {
             Objekte = objekte,
             Filter = filter,
@@ -80,7 +80,13 @@ public class ImmobilienController(ApplicationDbContext db, UserManager<Applicati
             TotalPages = totalPages,
             TotalCount = total,
             CanViewOffMarket = darfOffMarket
-        });
+        };
+
+        // "Mehr laden" (Lazy Loading): AJAX-Anfrage liefert nur die Karten der Folgeseite.
+        if (string.Equals(Request.Headers["X-Requested-With"], "XMLHttpRequest", StringComparison.OrdinalIgnoreCase))
+            return PartialView("_ObjektListCards", vm);
+
+        return View(vm);
     }
 
     [HttpGet("Immobilien/Details/{slug}")]
