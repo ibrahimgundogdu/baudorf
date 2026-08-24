@@ -32,9 +32,10 @@ main { padding-top: 84px; }
 .hx-lcard:hover { transform: translateY(-6px); border-color: var(--accent-dk); box-shadow: 0 24px 50px -28px rgba(24,22,20,.4); }
 .hx-lcard__media { position: relative; aspect-ratio: 1; overflow: hidden; display: block; background: var(--band); }
 .hx-lcard__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.hx-lcard__ph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: linear-gradient(150deg,var(--band),var(--line)); }
-.hx-lcard__ph img { width: 32%; opacity: .5; }
-.hx-lcard.is-locked .hx-lcard__media img { filter: blur(7px); }
+.hx-lcard__ph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: radial-gradient(135% 120% at 50% -10%, var(--white), var(--band) 58%, var(--line2, #DCD5C8)); }
+.hx-lcard__ph img { width: 64px; max-width: 28%; opacity: .12; filter: grayscale(1); }
+/* Nur ein echtes Cover (direktes <img>) verwischen — den Marken-Platzhalter nie. */
+.hx-lcard.is-locked .hx-lcard__media > img { filter: blur(7px); }
 .hx-lcard__badge { position: absolute; top: 14px; left: 14px; z-index: 2; color: #fff; font: 600 10px/1 var(--font); letter-spacing: .14em; text-transform: uppercase; padding: 8px 13px; }
 .hx-lcard__art { position: absolute; top: 14px; right: 14px; z-index: 2; background: rgba(253,252,250,.92); color: var(--muted); font: 500 10px/1 var(--font); letter-spacing: .1em; text-transform: uppercase; padding: 8px 12px; }
 .hx-lcard__body { padding: 24px 26px 28px; display: flex; flex-direction: column; flex: 1; }
@@ -63,8 +64,8 @@ main { padding-top: 84px; }
 .hx-dgallery { aspect-ratio: 16/9; width: 100%; background: var(--band); overflow: hidden; border-radius: 12px; position: relative; margin-top: 26px; }
 .hx-dgallery > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .hx-dgallery.is-locked > img { filter: blur(16px); }
-.hx-dgallery__ph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
-.hx-dgallery__ph img { width: 22%; opacity: .5; }
+.hx-dgallery__ph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: radial-gradient(135% 120% at 50% -10%, var(--white), var(--band) 58%, var(--line2, #DCD5C8)); }
+.hx-dgallery__ph img { width: 92px; max-width: 18%; opacity: .12; filter: grayscale(1); }
 .hx-dgallery__badge { position: absolute; top: 20px; left: 20px; z-index: 2; color: #fff; font: 600 11px/1 var(--font); letter-spacing: .14em; text-transform: uppercase; padding: 10px 16px; }
 .hx-dgallery__lock { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: #fff; background: rgba(18,16,14,.4); z-index: 2; }
 /* Galerie: Vollansicht-Button (frosted, oben rechts) */
