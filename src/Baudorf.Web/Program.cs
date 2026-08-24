@@ -122,12 +122,34 @@ builder.Services.AddRateLimiter(options =>
             }));
 });
 
+// Mehrsprachigkeit (Admin-Panel DE/EN): deutsche Texte sind die Schlüssel, nur die
+// englische Übersetzung wird in Resources/SharedResource.en.resx gepflegt.
+// Kein ResourcesPath: die .resx liegt neben der Klasse SharedResource (gleicher Namespace),
+// daher heißt die Ressource "Baudorf.Web.SharedResource(.en)" — genau das sucht der Localizer.
+builder.Services.AddLocalization();
+
 // Non-nullable Reference-Types (z. B. "string Slug") NICHT automatisch als Pflichtfeld
 // behandeln — sonst erzeugt jedes solche Formularfeld ein client-seitiges "required",
 // obwohl der Wert serverseitig erzeugt wird (Slugs). Pflichtfelder nutzen explizit [Required].
 builder.Services.AddControllersWithViews(options =>
-    options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
+    options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true)
+    .AddViewLocalization();
 builder.Services.AddRazorPages();
+
+// Unterstützte Kulturen: Standard Deutsch, optional Englisch (per Cookie umschaltbar).
+var supportedCultures = new[] { "de", "en" };
+builder.Services.Configure<Microsoft.AspNetCore.Builder.RequestLocalizationOptions>(options =>
+{
+    options.SetDefaultCulture("de")
+        .AddSupportedCultures(supportedCultures)
+        .AddSupportedUICultures(supportedCultures);
+    // Nur Cookie berücksichtigen — die Browsersprache soll die Seite NICHT automatisch umstellen
+    // (öffentliche Site bleibt Deutsch; Umschalten erfolgt bewusst im Admin).
+    options.RequestCultureProviders =
+    [
+        new Microsoft.AspNetCore.Localization.CookieRequestCultureProvider()
+    ];
+});
 
 // Antiforgery-Token auch per Header (für den JS-Consent-POST).
 builder.Services.AddAntiforgery(o => o.HeaderName = "RequestVerificationToken");
@@ -180,6 +202,9 @@ app.UseHttpsRedirection();
 // MapStaticAssets() bedient nur die zur Build-Zeit bekannten Assets — Uploads sind
 // dort nicht enthalten und würden sonst 404 liefern.
 app.UseStaticFiles();
+
+// Sprache (DE/EN) aus dem Cookie anwenden (Admin-Umschalter).
+app.UseRequestLocalization();
 
 // Eigene Fehlerseiten (404 etc.) + Protokollierung kaputter URLs. NACH StaticFiles, damit
 // fehlende Assets nicht neu ausgeführt werden; das Ziel /Fehler/{code} rendert die Markenseite.

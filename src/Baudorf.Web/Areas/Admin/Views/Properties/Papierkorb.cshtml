@@ -1,26 +1,25 @@
 @model List<Property>
 @{
-    ViewData["Title"] = "Papierkorb — Immobilien";
+    ViewData["Title"] = L["Papierkorb — Immobilien"];
 }
 
 <div class="bd-toolbar">
-    <a class="bd-btn bd-btn--plain bd-btn--xs" asp-action="Index">&larr; Zurück zu Immobilien</a>
+    <a class="bd-btn bd-btn--plain bd-btn--xs" asp-action="Index">&larr; @L["Zurück zu Immobilien"]</a>
 </div>
 
-<h2 style="margin:.2rem 0 .2rem">Papierkorb</h2>
+<h2 style="margin:.2rem 0 .2rem">@L["Papierkorb"]</h2>
 <p class="bd-muted" style="margin:0 0 1rem;font-size:.9rem;">
-    Gelöschte Objekte. „Wiederherstellen" holt das Objekt samt Bildern zurück.
-    „Endgültig löschen" entfernt es unwiderruflich inklusive Dateien.
+    @L["Gelöschte Objekte. „Wiederherstellen“ holt das Objekt samt Bildern zurück. „Endgültig löschen“ entfernt es unwiderruflich inklusive Dateien."]
 </p>
 
 <table class="bd-table">
     <thead>
-        <tr><th></th><th>Titel</th><th>Art</th><th>Gelöscht am</th><th></th></tr>
+        <tr><th></th><th>@L["Titel"]</th><th>@L["Art"]</th><th>@L["Gelöscht am"]</th><th></th></tr>
     </thead>
     <tbody>
         @if (Model.Count == 0)
         {
-            <tr><td colspan="5" class="bd-empty-row">Der Papierkorb ist leer.</td></tr>
+            <tr><td colspan="5" class="bd-empty-row">@L["Der Papierkorb ist leer."]</td></tr>
         }
         @foreach (var p in Model)
         {
@@ -39,12 +38,12 @@
                 <td class="bd-table__actions">
                     <form method="post" asp-action="Restore" asp-route-id="@p.Id">
                         @Html.AntiForgeryToken()
-                        <button type="submit" class="bd-btn bd-btn--gold bd-btn--xs">Wiederherstellen</button>
+                        <button type="submit" class="bd-btn bd-btn--gold bd-btn--xs">@L["Wiederherstellen"]</button>
                     </form>
                     <form method="post" asp-action="DeletePermanent" asp-route-id="@p.Id"
-                          onsubmit="return confirm('Objekt ENDGÜLTIG löschen? Dies kann nicht rückgängig gemacht werden.');">
+                          onsubmit="return confirm('@L["Objekt ENDGÜLTIG löschen? Dies kann nicht rückgängig gemacht werden."]');">
                         @Html.AntiForgeryToken()
-                        <button type="submit" class="bd-btn bd-btn--danger bd-btn--xs">Endgültig löschen</button>
+                        <button type="submit" class="bd-btn bd-btn--danger bd-btn--xs">@L["Endgültig löschen"]</button>
                     </form>
                 </td>
             </tr>

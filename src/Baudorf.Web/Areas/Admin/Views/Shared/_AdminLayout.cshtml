@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de" data-pal="gold">
+<html lang="@System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName" data-pal="gold">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -20,57 +20,66 @@
         </a>
         <a class="bd-admin__back" asp-area="" asp-controller="Home" asp-action="Index">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
-            Zur Website
+            @L["Zur Website"]
         </a>
 
         <nav>
-            <span class="bd-admin__group">Übersicht</span>
-            <a class="@Act("Home")" asp-area="Admin" asp-controller="Home" asp-action="Index">Dashboard</a>
+            <span class="bd-admin__group">@L["Übersicht"]</span>
+            <a class="@Act("Home")" asp-area="Admin" asp-controller="Home" asp-action="Index">@L["Dashboard"]</a>
 
-            <span class="bd-admin__group">Inhalte</span>
-            <a class="@Act("Properties")" asp-area="Admin" asp-controller="Properties" asp-action="Index">Immobilien</a>
-            <a class="@Act("Blog")" asp-area="Admin" asp-controller="Blog" asp-action="Index">Aktuelles</a>
-            <a class="@Act("Leistung")" asp-area="Admin" asp-controller="Leistung" asp-action="Index">Leistungen</a>
-            <a class="@Act("HomeContent")" asp-area="Admin" asp-controller="HomeContent" asp-action="Index">Startseite</a>
-            <a class="@Act("Team")" asp-area="Admin" asp-controller="Team" asp-action="Index">Team</a>
-            <a class="@Act("Media")" asp-area="Admin" asp-controller="Media" asp-action="Index">Mediathek</a>
-            <a class="@Act("Legal")" asp-area="Admin" asp-controller="Legal" asp-action="Index">Rechtstexte</a>
+            <span class="bd-admin__group">@L["Inhalte"]</span>
+            <a class="@Act("Properties")" asp-area="Admin" asp-controller="Properties" asp-action="Index">@L["Immobilien"]</a>
+            <a class="@Act("Blog")" asp-area="Admin" asp-controller="Blog" asp-action="Index">@L["Aktuelles"]</a>
+            <a class="@Act("Leistung")" asp-area="Admin" asp-controller="Leistung" asp-action="Index">@L["Leistungen"]</a>
+            <a class="@Act("HomeContent")" asp-area="Admin" asp-controller="HomeContent" asp-action="Index">@L["Startseite"]</a>
+            <a class="@Act("Team")" asp-area="Admin" asp-controller="Team" asp-action="Index">@L["Team"]</a>
+            <a class="@Act("Media")" asp-area="Admin" asp-controller="Media" asp-action="Index">@L["Mediathek"]</a>
+            <a class="@Act("Legal")" asp-area="Admin" asp-controller="Legal" asp-action="Index">@L["Rechtstexte"]</a>
 
-            <span class="bd-admin__group">Anfragen &amp; DSGVO</span>
-            <a class="@Act("Leads")" asp-area="Admin" asp-controller="Leads" asp-action="Index">Anfragen</a>
-            <a class="@Act("Widerruf")" asp-area="Admin" asp-controller="Widerruf" asp-action="Index">Widerrufe</a>
-            <a class="@Act("Einwilligungen")" asp-area="Admin" asp-controller="Einwilligungen" asp-action="Index">Einwilligungen</a>
+            <span class="bd-admin__group">@L["Anfragen & DSGVO"]</span>
+            <a class="@Act("Leads")" asp-area="Admin" asp-controller="Leads" asp-action="Index">@L["Anfragen"]</a>
+            <a class="@Act("Widerruf")" asp-area="Admin" asp-controller="Widerruf" asp-action="Index">@L["Widerrufe"]</a>
+            <a class="@Act("Einwilligungen")" asp-area="Admin" asp-controller="Einwilligungen" asp-action="Index">@L["Einwilligungen"]</a>
 
-            <span class="bd-admin__group">System</span>
-            <a class="@Act("Users")" asp-area="Admin" asp-controller="Users" asp-action="Index">Benutzer</a>
-            <a class="@Act("Activity")" asp-area="Admin" asp-controller="Activity" asp-action="Index">Aktivität</a>
-            <a class="@Act("Redirects")" asp-area="Admin" asp-controller="Redirects" asp-action="Index">Weiterleitungen</a>
-            <a class="@Act("Settings")" asp-area="Admin" asp-controller="Settings" asp-action="Index">Einstellungen</a>
+            <span class="bd-admin__group">@L["System"]</span>
+            <a class="@Act("Users")" asp-area="Admin" asp-controller="Users" asp-action="Index">@L["Benutzer"]</a>
+            <a class="@Act("Activity")" asp-area="Admin" asp-controller="Activity" asp-action="Index">@L["Aktivität"]</a>
+            <a class="@Act("Redirects")" asp-area="Admin" asp-controller="Redirects" asp-action="Index">@L["Weiterleitungen"]</a>
+            <a class="@Act("Settings")" asp-area="Admin" asp-controller="Settings" asp-action="Index">@L["Einstellungen"]</a>
         </nav>
     </aside>
 
     <main class="bd-admin__main">
+        @{
+            var langReturn = Context.Request.Path + Context.Request.QueryString;
+            var uiLang = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+        }
         <header class="bd-admin__head">
             <div>
-                <span class="bd-admin__crumb">Verwaltung</span>
+                <span class="bd-admin__crumb">@L["Verwaltung"]</span>
                 <h1>@ViewData["Title"]</h1>
             </div>
             <div class="bd-admin__user">
+                <span class="bd-admin__lang">
+                    <a asp-area="" asp-controller="Culture" asp-action="Set" asp-route-culture="de" asp-route-returnUrl="@langReturn" class="@(uiLang == "de" ? "is-active" : "")">DE</a>
+                    <span class="bd-admin__lang-sep">·</span>
+                    <a asp-area="" asp-controller="Culture" asp-action="Set" asp-route-culture="en" asp-route-returnUrl="@langReturn" class="@(uiLang == "en" ? "is-active" : "")">EN</a>
+                </span>
                 <span class="bd-admin__user-name">@User.Identity?.Name</span>
-                <a class="bd-admin__konto" asp-area="Identity" asp-page="/Account/Manage/ChangePassword">Konto &amp; Sicherheit</a>
+                <a class="bd-admin__konto" asp-area="Identity" asp-page="/Account/Manage/ChangePassword">@L["Konto & Sicherheit"]</a>
                 <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                    <button type="submit" class="bd-admin__logout">Abmelden</button>
+                    <button type="submit" class="bd-admin__logout">@L["Abmelden"]</button>
                 </form>
             </div>
         </header>
         <div class="bd-admin__content">
             @if (TempData["Success"] is string ok)
             {
-                <div class="bd-flash bd-flash--ok">@ok</div>
+                <div class="bd-flash bd-flash--ok">@L[ok]</div>
             }
             @if (TempData["Error"] is string err)
             {
-                <div class="bd-flash bd-flash--err">@err</div>
+                <div class="bd-flash bd-flash--err">@L[err]</div>
             }
             @RenderBody()
         </div>
