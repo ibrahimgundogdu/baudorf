@@ -115,8 +115,10 @@
 .hx-tile { position: relative; aspect-ratio: 1; border-radius: 12px; overflow: hidden; cursor: pointer; transition: box-shadow .5s ease; display: block; background: var(--band); }
 .hx-tile:hover { box-shadow: 0 32px 60px -28px rgba(18,16,14,.5); }
 .hx-tile__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.hx-tile__ph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: radial-gradient(135% 120% at 50% -10%, var(--white), var(--band) 58%, var(--line2, #DCD5C8)); }
-.hx-tile__ph img { width: 76px; max-width: 28%; opacity: .12; filter: grayscale(1); }
+.hx-tile__ph { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: linear-gradient(135deg, var(--white) 0%, var(--band) 62%, var(--line2, #DCD5C8) 100%); }
+.hx-tile__ph img { display: none; }
+.hx-tile__ph::before { content: ""; width: 52px; height: 52px; opacity: .32; background: no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235C5550' stroke-width='1.35' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2.5'/%3E%3Ccircle cx='8.5' cy='8.5' r='1.6'/%3E%3Cpath d='M21 15.5l-4.5-4.5L5 21.5'/%3E%3C/svg%3E"); }
+.hx-tile__ph::after { content: "Foto folgt"; font: 500 9px/1 var(--font); letter-spacing: .2em; text-transform: uppercase; color: var(--muted); opacity: .5; }
 .hx-tile__veil { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(18,16,14,.8) 0%, rgba(18,16,14,.05) 52%, transparent 74%); }
 .hx-tile__badge { position: absolute; top: 18px; left: 18px; z-index: 1; color: #fff; font: 600 10px/1 var(--font); letter-spacing: .14em; text-transform: uppercase; padding: 8px 13px; border-radius: 7px; }
 .hx-tile__cap { position: absolute; left: 24px; right: 24px; bottom: 22px; z-index: 1; }
