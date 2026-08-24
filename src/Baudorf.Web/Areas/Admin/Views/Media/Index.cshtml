@@ -1,6 +1,8 @@
 @model List<MediaAsset>
 @{
     ViewData["Title"] = "Mediathek";
+    var bilder = Model.Where(m => !DisplayHelpers.IsVideoUrl(m.Url)).ToList();
+    var videos = Model.Where(m => DisplayHelpers.IsVideoUrl(m.Url)).ToList();
 }
 
 <div class="bd-toolbar">
@@ -8,41 +10,57 @@
     <span class="bd-muted">@Model.Count Datei(en)</span>
 </div>
 
-<form method="post" asp-action="Upload" enctype="multipart/form-data" class="bd-media-upload">
+<form id="mediaUpload" method="post" asp-action="Upload" enctype="multipart/form-data" class="bd-media-upload">
     @Html.AntiForgeryToken()
-    <label class="bd-media-drop">
-        <input type="file" name="dateien" accept="image/*,video/*" multiple onchange="this.form.submit()" />
+    <label class="bd-media-drop" id="mediaDrop">
+        <input type="file" name="dateien" accept="image/*,video/*" multiple id="mediaFileInput" />
         <span>+ Medien hochladen <small>(Bilder · JPG/PNG/WebP max. 12&nbsp;MB · Videos MP4/WebM max. 80&nbsp;MB)</small></span>
     </label>
+    <div class="bd-media-progress" id="mediaProgress" hidden>
+        <div class="bd-media-progress__track"><div class="bd-media-progress__bar" id="mediaProgressBar"></div></div>
+        <span class="bd-media-progress__txt" id="mediaProgressTxt">Wird hochgeladen…</span>
+    </div>
 </form>
 
 @if (Model.Count == 0)
 {
-    <p class="bd-muted" style="margin-top:1.5rem;">Noch keine Medien. Lade oben Bilder hoch.</p>
+    <p class="bd-muted" style="margin-top:1.5rem;">Noch keine Medien. Lade oben Bilder oder Videos hoch.</p>
 }
 else
 {
-    <div class="bd-media-grid">
+    <div class="bd-media-tabs" role="tablist">
+        <button type="button" class="bd-media-tab is-active" data-mtab="image">Bilder <span class="bd-media-tab__n">@bilder.Count</span></button>
+        <button type="button" class="bd-media-tab" data-mtab="video">Videos <span class="bd-media-tab__n">@videos.Count</span></button>
+    </div>
+
+    <div class="bd-media-grid" id="mediaGrid" data-mtab-view="image">
         @foreach (var m in Model)
         {
-            <figure class="bd-media-card">
-                @if (DisplayHelpers.IsVideoUrl(m.Url))
+            var isVideo = DisplayHelpers.IsVideoUrl(m.Url);
+            <figure class="bd-media-card" data-mtype="@(isVideo ? "video" : "image")">
+                @if (isVideo)
                 {
-                    <div class="bd-media-card__thumb bd-media-card__thumb--video">
+                    <button type="button" class="bd-media-card__thumb bd-media-card__thumb--video" data-lb data-lb-type="video" data-lb-src="@m.Url" title="Video ansehen">
                         <video src="@m.Url" muted preload="metadata"></video>
                         <span class="bd-media-card__play">▶</span>
-                    </div>
+                    </button>
                 }
                 else
                 {
-                    <div class="bd-media-card__thumb" style="background-image:url('@m.Url')"></div>
+                    <button type="button" class="bd-media-card__thumb" data-lb data-lb-type="image" data-lb-src="@m.Url" title="Bild in Vollansicht">
+                        <img src="@m.Url" alt="@m.Alt" loading="lazy" data-reloadable />
+                        <span class="bd-media-card__reload" hidden>
+                            <span class="bd-media-card__reload-ico">⟳</span>
+                            <small>Neu laden</small>
+                        </span>
+                    </button>
                 }
                 <figcaption>
-                    <input class="bd-media-card__url" value="@m.Url" readonly onclick="this.select();document.execCommand('copy');" title="Klicken zum Kopieren" />
+                    <input class="bd-media-card__url" value="@m.Url" readonly title="Klicken zum Kopieren" />
                     <form method="post" asp-action="UpdateAlt" asp-route-id="@m.Id" class="bd-media-card__alt">
                         @Html.AntiForgeryToken()
                         <input name="alt" value="@m.Alt" placeholder="Alt-Text" />
-                        <button type="submit" class="bd-btn bd-btn--plain bd-btn--xs">✓</button>
+                        <button type="submit" class="bd-btn bd-btn--ink bd-btn--xs" title="Alt-Text speichern">Speichern</button>
                     </form>
                     <form method="post" asp-action="Delete" asp-route-id="@m.Id" onsubmit="return confirm('Datei wirklich löschen?');">
                         @Html.AntiForgeryToken()
@@ -52,4 +70,15 @@ else
             </figure>
         }
     </div>
+}
+
+<div class="bd-media-lb" id="mediaLb" aria-hidden="true">
+    <button type="button" class="bd-media-lb__close" data-lb-close aria-label="Schließen">&times;</button>
+    <button type="button" class="bd-media-lb__nav bd-media-lb__nav--prev" data-lb-prev aria-label="Zurück">&#8249;</button>
+    <div class="bd-media-lb__stage" id="mediaLbStage"></div>
+    <button type="button" class="bd-media-lb__nav bd-media-lb__nav--next" data-lb-next aria-label="Weiter">&#8250;</button>
+</div>
+
+@section Scripts {
+    <script src="~/js/admin-media-page.js" asp-append-version="true"></script>
 }
