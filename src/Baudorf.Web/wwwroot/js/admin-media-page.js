@@ -1,4 +1,4 @@
-// Mediathek-Seite: Upload mit Fortschritt, Bilder/Video-Tabs, Lightbox, Bild-Neuladen, URL-Kopieren.
+// Mediathek-Seite: Upload mit Fortschritt, Bilder/Video-Tabs, Lightbox, Datei ersetzen, URL-Kopieren.
 (function () {
   "use strict";
 
@@ -55,18 +55,21 @@
     });
   });
 
-  // ---------- Bild-Neuladen bei Ladefehler ----------
-  document.querySelectorAll("img[data-reloadable]").forEach(function (img) {
-    function overlay() { return img.parentElement && img.parentElement.querySelector(".bd-media-card__reload"); }
-    img.addEventListener("error", function () {
-      var r = overlay(); if (r) { r.hidden = false; img.style.visibility = "hidden"; }
+  // ---------- Datei ersetzen (gleicher Name/URL) ----------
+  // "Ersetzen" öffnet den versteckten Datei-Dialog; nach der Auswahl wird das Formular
+  // sofort abgeschickt → Server überschreibt die Datei unter derselben URL.
+  document.querySelectorAll("[data-replace-trigger]").forEach(function (btn) {
+    var frm = btn.closest("form");
+    var file = frm && frm.querySelector("[data-replace-input]");
+    if (!file) return;
+    btn.addEventListener("click", function () { file.click(); });
+    file.addEventListener("change", function () {
+      if (file.files && file.files.length) {
+        btn.textContent = "Wird ersetzt…";
+        btn.disabled = true;
+        frm.submit();
+      }
     });
-    // Lädt das Bild (auch nach einem kurzzeitigen Fehler) doch, blenden wir „Neu laden" wieder aus.
-    img.addEventListener("load", function () {
-      var r = overlay(); if (r) { r.hidden = true; img.style.visibility = ""; }
-    });
-    // Bereits geladenes Bild (Cache) korrekt anzeigen.
-    if (img.complete && img.naturalWidth > 0) { var r = overlay(); if (r) r.hidden = true; img.style.visibility = ""; }
   });
 
   // ---------- Lightbox (Bild + Video, mit Navigation je Tab) ----------
@@ -105,14 +108,6 @@
 
   if (grid) {
     grid.addEventListener("click", function (e) {
-      // Neu-laden-Klick zuerst (nicht die Lightbox öffnen)
-      var reload = e.target.closest(".bd-media-card__reload");
-      if (reload) {
-        e.preventDefault(); e.stopPropagation();
-        var img = reload.parentElement.querySelector("img[data-reloadable]");
-        if (img) { img.src = img.src.split("?")[0] + "?r=" + Date.now(); img.style.visibility = ""; reload.hidden = true; }
-        return;
-      }
       var el = e.target.closest("[data-lb]");
       if (el && lb) { e.preventDefault(); openLb(el); }
     });

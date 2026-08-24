@@ -1,4 +1,5 @@
 using Baudorf.Web.Data;
+using Baudorf.Web.Models;
 using Baudorf.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,18 +11,32 @@ namespace Baudorf.Web.Areas.Admin.Controllers;
 [Authorize(Policy = "AdminArea")]
 public class MediaController(ApplicationDbContext db, IMediaLibrary media, IStorageService storage) : Controller
 {
-    public async Task<IActionResult> Index() =>
-        View(await db.MediaAssets.OrderByDescending(m => m.CreatedAt).ToListAsync());
+    public async Task<IActionResult> Index()
+    {
+        var items = await media.ListLibraryAsync();
 
-    /// <summary>JSON-Liste für den Medien-Picker (Mediathek-Tab).</summary>
+        // "In Verwendung": jede URL, die irgendwo im Inhalt referenziert wird.
+        var usage = await CollectUsageAsync();
+        foreach (var i in items)
+        {
+            if (usage.TryGetValue(i.Url, out var places))
+            {
+                i.InUse = true;
+                i.UsedIn = string.Join(", ", places.OrderBy(p => p));
+            }
+        }
+
+        return View(items);
+    }
+
+    /// <summary>JSON-Liste für den Medien-Picker (Mediathek-Tab) — Disk + DB vereint.</summary>
     [HttpGet]
     public async Task<IActionResult> List()
     {
-        var items = await db.MediaAssets
-            .OrderByDescending(m => m.CreatedAt)
-            .Select(m => new { m.Id, m.Url, m.Alt, m.FileName })
-            .ToListAsync();
-        return Json(items);
+        var items = await media.ListLibraryAsync();
+        return Json(items
+            .Where(i => i.FileExists) // Picker: nur real vorhandene Dateien anbieten
+            .Select(i => new { Id = i.AssetId ?? 0, i.Url, i.Alt, i.FileName, i.IsVideo }));
     }
 
     [HttpPost]
@@ -54,6 +69,55 @@ public class MediaController(ApplicationDbContext db, IMediaLibrary media, IStor
         return RedirectToAction(nameof(Index));
     }
 
+    /// <summary>
+    /// Ersetzt die Datei einer bestehenden URL durch einen neuen Upload — Name/URL bleiben gleich,
+    /// deshalb aktualisieren sich alle Verwendungen (Objekte, Hero, …) automatisch.
+    /// </summary>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [RequestSizeLimit(90_000_000)]
+    [RequestFormLimits(MultipartBodyLengthLimit = 90_000_000)]
+    public async Task<IActionResult> Replace(string url, IFormFile? datei)
+    {
+        if (string.IsNullOrWhiteSpace(url) || datei is null || datei.Length == 0)
+        {
+            TempData["Error"] = "Keine Datei zum Ersetzen gewählt.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        if (!UploadValidation.IsValidMedia(datei.FileName, datei.ContentType, datei.Length, out var err))
+        {
+            TempData["Error"] = $"{datei.FileName}: {err}";
+            return RedirectToAction(nameof(Index));
+        }
+
+        // Gleiche Dateiendung erzwingen — sonst würde die URL nicht mehr zum Inhaltstyp passen.
+        var urlExt = Path.GetExtension(url.Split('?')[0]);
+        var newExt = Path.GetExtension(datei.FileName);
+        if (!string.Equals(urlExt, newExt, StringComparison.OrdinalIgnoreCase))
+        {
+            TempData["Error"] = $"Zum Ersetzen bitte eine Datei mit gleicher Endung ({urlExt}) wählen.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        await using (var stream = datei.OpenReadStream())
+        {
+            await storage.ReplaceAsync(url, stream);
+        }
+
+        // Metadaten des passenden MediaAsset (falls vorhanden) aktualisieren.
+        var asset = await db.MediaAssets.FirstOrDefaultAsync(m => m.Url == url);
+        if (asset is not null)
+        {
+            asset.SizeBytes = datei.Length;
+            asset.ContentType = datei.ContentType;
+            await db.SaveChangesAsync();
+        }
+
+        TempData["Success"] = "Datei ersetzt — alle Verwendungen zeigen jetzt das neue Bild.";
+        return RedirectToAction(nameof(Index));
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateAlt(int id, string? alt)
@@ -78,6 +142,45 @@ public class MediaController(ApplicationDbContext db, IMediaLibrary media, IStor
         await db.SaveChangesAsync();
         TempData["Success"] = "Datei gelöscht.";
         return RedirectToAction(nameof(Index));
+    }
+
+    /// <summary>Löscht eine reine Disk-Datei ohne MediaAsset-Eintrag ("verwaiste" Datei).</summary>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteFile(string url)
+    {
+        if (!string.IsNullOrWhiteSpace(url))
+        {
+            await storage.DeleteAsync(url);
+            TempData["Success"] = "Datei gelöscht.";
+        }
+        return RedirectToAction(nameof(Index));
+    }
+
+    /// <summary>Sammelt alle im Inhalt referenzierten Medien-URLs → Herkunftslabel(s).</summary>
+    private async Task<Dictionary<string, HashSet<string>>> CollectUsageAsync()
+    {
+        var map = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+
+        void Add(string? url, string label)
+        {
+            if (string.IsNullOrWhiteSpace(url)) return;
+            if (!map.TryGetValue(url, out var set)) map[url] = set = new HashSet<string>();
+            set.Add(label);
+        }
+
+        foreach (var u in await db.PropertyMedia.Select(m => new { m.Url, m.ThumbnailUrl }).ToListAsync())
+        {
+            Add(u.Url, "Objekt");
+            Add(u.ThumbnailUrl, "Objekt");
+        }
+        foreach (var u in await db.HomeSections.Select(s => s.BildUrl).ToListAsync()) Add(u, "Startseite");
+        foreach (var u in await db.HomeSectionItems.Select(s => s.BildUrl).ToListAsync()) Add(u, "Startseite");
+        foreach (var u in await db.TeamMembers.Select(t => t.FotoUrl).ToListAsync()) Add(u, "Team");
+        foreach (var u in await db.BlogPosts.Select(b => b.CoverUrl).ToListAsync()) Add(u, "News");
+        foreach (var u in await db.Leistungen.Select(l => l.CoverUrl).ToListAsync()) Add(u, "Leistung");
+
+        return map;
     }
 
     private bool IsAjax() =>

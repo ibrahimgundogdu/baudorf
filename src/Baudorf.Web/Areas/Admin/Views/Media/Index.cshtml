@@ -1,13 +1,17 @@
-@model List<MediaAsset>
+@using Baudorf.Web.Models.ViewModels
+@model List<MediaLibraryItem>
 @{
     ViewData["Title"] = "Mediathek";
-    var bilder = Model.Where(m => !DisplayHelpers.IsVideoUrl(m.Url)).ToList();
-    var videos = Model.Where(m => DisplayHelpers.IsVideoUrl(m.Url)).ToList();
+    var bilder = Model.Where(m => !m.IsVideo).ToList();
+    var videos = Model.Where(m => m.IsVideo).ToList();
+    var fehlend = Model.Count(m => !m.FileExists);
 }
 
 <div class="bd-toolbar">
     <h1 class="bd-h1">Mediathek</h1>
-    <span class="bd-muted">@Model.Count Datei(en)</span>
+    <span class="bd-muted">
+        @Model.Count Datei(en)@(fehlend > 0 ? $" · {fehlend} ohne Datei" : "")
+    </span>
 </div>
 
 <form id="mediaUpload" method="post" asp-action="Upload" enctype="multipart/form-data" class="bd-media-upload">
@@ -36,9 +40,26 @@ else
     <div class="bd-media-grid" id="mediaGrid" data-mtab-view="image">
         @foreach (var m in Model)
         {
-            var isVideo = DisplayHelpers.IsVideoUrl(m.Url);
-            <figure class="bd-media-card" data-mtype="@(isVideo ? "video" : "image")">
-                @if (isVideo)
+            <figure class="bd-media-card @(m.FileExists ? "" : "is-missing")" data-mtype="@(m.IsVideo ? "video" : "image")">
+                <div class="bd-media-card__badges">
+                    @if (m.InUse)
+                    {
+                        <span class="bd-media-badge bd-media-badge--use" title="In Verwendung: @m.UsedIn">● In Verwendung</span>
+                    }
+                    @if (!m.FileExists)
+                    {
+                        <span class="bd-media-badge bd-media-badge--missing" title="Die Datei liegt nicht mehr auf dem Server.">Datei fehlt</span>
+                    }
+                </div>
+
+                @if (!m.FileExists)
+                {
+                    <span class="bd-media-card__thumb bd-media-card__thumb--missing">
+                        <span class="bd-media-card__missing-ico">⚠</span>
+                        <small>Datei nicht gefunden</small>
+                    </span>
+                }
+                else if (m.IsVideo)
                 {
                     <button type="button" class="bd-media-card__thumb bd-media-card__thumb--video" data-lb data-lb-type="video" data-lb-src="@m.Url" title="Video ansehen">
                         <video src="@m.Url" muted preload="metadata"></video>
@@ -48,24 +69,57 @@ else
                 else
                 {
                     <button type="button" class="bd-media-card__thumb" data-lb data-lb-type="image" data-lb-src="@m.Url" title="Bild in Vollansicht">
-                        <img src="@m.Url" alt="@m.Alt" loading="lazy" data-reloadable />
-                        <span class="bd-media-card__reload" hidden>
-                            <span class="bd-media-card__reload-ico">⟳</span>
-                            <small>Neu laden</small>
-                        </span>
+                        <img src="@m.Url" alt="@m.Alt" loading="lazy" />
                     </button>
                 }
+
                 <figcaption>
+                    @if (!string.IsNullOrWhiteSpace(m.FileName))
+                    {
+                        <span class="bd-media-card__name" title="@m.FileName">@m.FileName</span>
+                    }
+                    @if (m.InUse)
+                    {
+                        <span class="bd-media-card__usedin">Verwendet in: @m.UsedIn</span>
+                    }
                     <input class="bd-media-card__url" value="@m.Url" readonly title="Klicken zum Kopieren" />
-                    <form method="post" asp-action="UpdateAlt" asp-route-id="@m.Id" class="bd-media-card__alt">
-                        @Html.AntiForgeryToken()
-                        <input name="alt" value="@m.Alt" placeholder="Alt-Text" />
-                        <button type="submit" class="bd-btn bd-btn--ink bd-btn--xs" title="Alt-Text speichern">Speichern</button>
-                    </form>
-                    <form method="post" asp-action="Delete" asp-route-id="@m.Id" onsubmit="return confirm('Datei wirklich löschen?');">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="bd-btn bd-btn--danger bd-btn--xs">Löschen</button>
-                    </form>
+
+                    @if (m.AssetId is { } aid)
+                    {
+                        <form method="post" asp-action="UpdateAlt" asp-route-id="@aid" class="bd-media-card__alt">
+                            @Html.AntiForgeryToken()
+                            <input name="alt" value="@m.Alt" placeholder="Alt-Text" />
+                            <button type="submit" class="bd-btn bd-btn--ink bd-btn--xs" title="Alt-Text speichern">Speichern</button>
+                        </form>
+                    }
+
+                    <div class="bd-media-card__actions">
+                        @if (m.FileExists)
+                        {
+                            <form method="post" asp-action="Replace" enctype="multipart/form-data" class="bd-media-card__replace">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="url" value="@m.Url" />
+                                <input type="file" name="datei" accept="image/*,video/*" hidden data-replace-input />
+                                <button type="button" class="bd-btn bd-btn--outline bd-btn--xs" data-replace-trigger title="Datei mit gleichem Namen ersetzen">Ersetzen</button>
+                            </form>
+                        }
+
+                        @if (m.AssetId is { } delId)
+                        {
+                            <form method="post" asp-action="Delete" asp-route-id="@delId" onsubmit="return confirm('Datei wirklich löschen?');">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="bd-btn bd-btn--danger bd-btn--xs">Löschen</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form method="post" asp-action="DeleteFile" onsubmit="return confirm('Datei wirklich löschen?');">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="url" value="@m.Url" />
+                                <button type="submit" class="bd-btn bd-btn--danger bd-btn--xs">Löschen</button>
+                            </form>
+                        }
+                    </div>
                 </figcaption>
             </figure>
         }

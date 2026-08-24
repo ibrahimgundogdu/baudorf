@@ -598,14 +598,25 @@ h1, h2, h3 {
 .bd-media-card__thumb--video { cursor: pointer; }
 .bd-media-card__thumb--video video { width: 100%; height: 100%; object-fit: cover; display: block; background: #000; }
 .bd-media-card__play { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 30px; text-shadow: 0 2px 12px rgba(0,0,0,.6); pointer-events: none; }
-.bd-media-card__reload { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 6px; align-items: center; justify-content: center; background: var(--linen); color: var(--stone); cursor: pointer; }
-/* WICHTIG: hidden-Attribut muss die Overlay wirklich ausblenden (sonst zeigt es auch bei
-   erfolgreich geladenen Bildern „Neu laden"). Höhere Spezifität als die display:flex-Regel. */
-.bd-media-card__reload[hidden] { display: none; }
-.bd-media-card__reload-ico { font-size: 26px; line-height: 1; }
-.bd-media-card__reload small { font-size: 11px; letter-spacing: .06em; }
+/* "Datei fehlt"-Platzhalter (MediaAsset ohne physische Datei) */
+.bd-media-card.is-missing { opacity: .82; }
+.bd-media-card__thumb--missing { display: flex; flex-direction: column; gap: 6px; align-items: center; justify-content: center; aspect-ratio: 4/3; background: repeating-linear-gradient(45deg, var(--linen), var(--linen) 10px, var(--parch) 10px, var(--parch) 20px); color: var(--stone); cursor: default; }
+.bd-media-card__missing-ico { font-size: 26px; line-height: 1; color: #b0332b; }
+.bd-media-card__thumb--missing small { font-size: 11px; letter-spacing: .04em; }
+
+/* Rozetler: In Verwendung / Datei fehlt (Thumbnail üzerine) */
+.bd-media-card { position: relative; }
+.bd-media-card__badges { position: absolute; top: 8px; left: 8px; z-index: 2; display: flex; flex-direction: column; gap: 5px; align-items: flex-start; pointer-events: none; }
+.bd-media-badge { font: 600 10px/1 var(--font); letter-spacing: .04em; padding: 5px 8px; border-radius: 999px; color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.28); }
+.bd-media-badge--use { background: #2F6B4F; }
+.bd-media-badge--missing { background: #b0332b; }
 
 .bd-media-card figcaption { padding: 10px 11px 12px; display: flex; flex-direction: column; gap: 7px; }
+.bd-media-card__name { font-size: 12px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bd-media-card__usedin { font-size: 11px; color: #2F6B4F; }
+.bd-media-card__actions { display: flex; gap: 6px; }
+.bd-media-card__actions > form { display: flex; }
+.bd-media-card__replace .bd-btn { width: 100%; }
 .bd-media-card__url { font-size: 11px; padding: 6px 8px; border: 1px solid var(--line2); border-radius: 5px; background: var(--parch); color: var(--stone); width: 100%; cursor: pointer; }
 .bd-media-card__url.is-copied { border-color: var(--gold); color: var(--ink); background: var(--linen); }
 .bd-media-card__alt { display: flex; gap: 6px; }
