@@ -5,12 +5,13 @@
     // Pro Abschnitt nur die Felder zeigen, die auf der Startseite tatsächlich verwendet werden.
     var key = Model.Key;
     bool showOverline = key is "hero" or "philosophie" or "leistungen" or "statement" or "vorgehen" or "klientel" or "ueber-uns" or "tippgeber" or "karriere" or "insights" or "kontakt";
-    bool showTitel = key != "zahlen";
-    bool showText = key is "hero" or "philosophie" or "leistungen" or "statement" or "klientel" or "tippgeber" or "karriere" or "kontakt" or "testimonial";
+    // Testimonial nutzt jetzt Listenelemente (mehrere rotierende Stimmen) → Einzel-Text/Titel aus.
+    bool showTitel = key != "zahlen" && key != "testimonial";
+    bool showText = key is "hero" or "philosophie" or "leistungen" or "statement" or "klientel" or "tippgeber" or "karriere" or "kontakt";
     bool showCta = key is "hero" or "statement" or "tippgeber" or "karriere" or "kontakt";
     bool showCta2 = key is "hero";
     bool showBild = key is "philosophie" or "statement" or "kontakt";
-    string itemsMode = key switch { "hero" => "hero", "vorgehen" or "klientel" or "zahlen" or "ueber-uns" => "list", _ => "none" };
+    string itemsMode = key switch { "hero" => "hero", "vorgehen" or "klientel" or "zahlen" or "ueber-uns" or "testimonial" => "list", _ => "none" };
     bool numberItems = key is "zahlen" or "ueber-uns"; // Titel = Wert/Zahl, Text = Beschriftung
 
     // Abschnittsspezifische Beschriftungen (klarere Bedeutung).
@@ -21,6 +22,7 @@
         "ueber-uns" => "Kennzahlen (z. B. 1994 / Gegründet · Velbert / Sitz · NRW)",
         "vorgehen" => "Schritte (Titel + Text)",
         "klientel" => "Einträge (nur Titel)",
+        "testimonial" => "Stimmen — je Eintrag: Zitat + Quelle (rotieren automatisch)",
         _ => "Listenelemente"
     };
 }
@@ -172,14 +174,14 @@ else if (itemsMode == "list")
             <form method="post" asp-action="UpdateItem" asp-route-id="@Model.Id" class="bd-item-row">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="itemId" value="@item.Id" />
-                <input name="titel" value="@item.Titel" placeholder="@(numberItems ? "Zahl (z. B. 480 Mio. €)" : "Titel")" />
+                <input name="titel" value="@item.Titel" placeholder="@(numberItems ? "Zahl (z. B. 480 Mio. €)" : (key == "testimonial" ? "Quelle / Autor" : "Titel"))" />
                 @if (key == "klientel")
                 {
                     <input type="hidden" name="text" value="@item.Text" />
                 }
                 else
                 {
-                    <input name="text" value="@item.Text" placeholder="@(numberItems ? "Beschriftung" : "Text")" />
+                    <input name="text" value="@item.Text" placeholder="@(numberItems ? "Beschriftung" : (key == "testimonial" ? "Zitat" : "Text"))" />
                 }
                 <button type="submit" class="bd-btn bd-btn--plain bd-btn--xs">Speichern</button>
                 <span class="bd-item-row__btns">
@@ -192,8 +194,8 @@ else if (itemsMode == "list")
 
         <form method="post" asp-action="AddItem" asp-route-id="@Model.Id" class="bd-item-row bd-item-row--add">
             @Html.AntiForgeryToken()
-            <input name="titel" placeholder="@(numberItems ? "Neue Zahl" : "Neuer Titel")" />
-            <input name="text" placeholder="@(key == "klientel" ? "(leer lassen)" : (numberItems ? "Beschriftung" : "Neuer Text"))" />
+            <input name="titel" placeholder="@(numberItems ? "Neue Zahl" : (key == "testimonial" ? "Quelle / Autor" : "Neuer Titel"))" />
+            <input name="text" placeholder="@(key == "klientel" ? "(leer lassen)" : (numberItems ? "Beschriftung" : (key == "testimonial" ? "Zitat" : "Neuer Text")))" />
             <button type="submit" class="bd-btn bd-btn--ink bd-btn--xs">+ Hinzufügen</button>
             <span></span>
         </form>

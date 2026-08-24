@@ -286,4 +286,23 @@
     };
     btns.forEach((b) => b.addEventListener("click", () => select(b.dataset.tab)));
   });
+
+  // ---------- Testimonial-Rotator (mehrere Stimmen, automatisch wechselnd) ----------
+  document.querySelectorAll("[data-testi-rotator]").forEach((root) => {
+    const slides = root.querySelectorAll("[data-testi-slide]");
+    if (slides.length < 2) return;
+    const dots = root.querySelectorAll("[data-testi-dot]");
+    let idx = 0, timer = null;
+    const show = (n) => {
+      idx = (n + slides.length) % slides.length;
+      slides.forEach((s, i) => s.classList.toggle("is-active", i === idx));
+      dots.forEach((d, i) => d.classList.toggle("is-on", i === idx));
+    };
+    const stop = () => { if (timer) { clearInterval(timer); timer = null; } };
+    const start = () => { if (!reduced) { stop(); timer = setInterval(() => show(idx + 1), 6000); } };
+    dots.forEach((d, i) => d.addEventListener("click", () => { show(i); start(); }));
+    root.addEventListener("mouseenter", stop);
+    root.addEventListener("mouseleave", start);
+    start();
+  });
 })();

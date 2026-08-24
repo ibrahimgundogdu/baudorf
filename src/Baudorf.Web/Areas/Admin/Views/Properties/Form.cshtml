@@ -62,15 +62,19 @@
                 <input asp-for="Wohnflaeche" type="number" step="0.01" />
             </div>
             <div class="bd-form-field">
+                <label asp-for="Gewerbeflaeche">Gewerbefläche (m²)</label>
+                <input asp-for="Gewerbeflaeche" type="number" step="0.01" />
+            </div>
+            <div class="bd-form-field">
                 <label asp-for="Grundstuecksflaeche">Grundstück (m²)</label>
                 <input asp-for="Grundstuecksflaeche" type="number" step="0.01" />
             </div>
+        </div>
+        <div class="bd-grid-3">
             <div class="bd-form-field">
                 <label asp-for="Baujahr">Baujahr</label>
                 <input asp-for="Baujahr" type="number" />
             </div>
-        </div>
-        <div class="bd-grid-3">
             <div class="bd-form-field">
                 <label asp-for="Einheiten">Einheiten</label>
                 <input asp-for="Einheiten" type="number" />
@@ -79,12 +83,23 @@
                 <label asp-for="Zustand">Zustand</label>
                 <input asp-for="Zustand" />
             </div>
-            <div class="bd-form-field">
-                <label asp-for="Energieklasse">Energie / Standard</label>
-                <input asp-for="Energieklasse" />
-            </div>
         </div>
         <div class="bd-grid-3">
+            <div class="bd-form-field">
+                <label asp-for="Energieklasse">Energie / Standard</label>
+                <input asp-for="Energieklasse" list="energieOptions" autocomplete="off" placeholder="wählen oder frei eingeben" />
+                <datalist id="energieOptions">
+                    <option value="A+"></option>
+                    <option value="A"></option>
+                    <option value="B"></option>
+                    <option value="C"></option>
+                    <option value="D"></option>
+                    <option value="E"></option>
+                    <option value="F"></option>
+                    <option value="G"></option>
+                    <option value="H"></option>
+                </datalist>
+            </div>
             <div class="bd-form-field">
                 <label asp-for="Faktor">Faktor</label>
                 <input asp-for="Faktor" type="number" step="0.01" />
@@ -93,9 +108,15 @@
                 <label asp-for="RenditeProzent">Rendite (%)</label>
                 <input asp-for="RenditeProzent" type="number" step="0.01" />
             </div>
+        </div>
+        <div class="bd-grid-2">
             <div class="bd-form-field">
                 <label asp-for="Kaufpreis">Kaufpreis (€) — leer = „auf Anfrage“</label>
                 <input asp-for="Kaufpreis" type="number" step="0.01" />
+            </div>
+            <div class="bd-form-field">
+                <label asp-for="VideoUrl">Video-Link (Instagram-Reel, YouTube, Vimeo oder Mediathek)</label>
+                <input asp-for="VideoUrl" placeholder="https://…" />
             </div>
         </div>
     </fieldset>

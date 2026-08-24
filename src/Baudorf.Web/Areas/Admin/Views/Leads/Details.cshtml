@@ -17,6 +17,8 @@
         <div class="bd-panel__row"><span class="bd-muted">Name</span><span>@Model.Vorname @Model.Nachname</span></div>
         <div class="bd-panel__row"><span class="bd-muted">E-Mail</span><a href="mailto:@Model.Email">@Model.Email</a></div>
         <div class="bd-panel__row"><span class="bd-muted">Telefon</span><span>@(Model.Telefon ?? "—")</span></div>
+        @if (!string.IsNullOrWhiteSpace(Model.Firma)) { <div class="bd-panel__row"><span class="bd-muted">Firma</span><span>@Model.Firma</span></div> }
+        @if (!string.IsNullOrWhiteSpace(Model.Strasse) || !string.IsNullOrWhiteSpace(Model.Ort)) { <div class="bd-panel__row"><span class="bd-muted">Anschrift</span><span>@Model.Strasse@(string.IsNullOrWhiteSpace(Model.Strasse) ? "" : ", ")@Model.Plz @Model.Ort</span></div> }
         <div class="bd-panel__row"><span class="bd-muted">Interesse</span><span>@Model.Interesse.Label()</span></div>
         <div class="bd-panel__row"><span class="bd-muted">Objekt</span><span>@(Model.Property?.Titel ?? "—")</span></div>
         <div class="bd-panel__row"><span class="bd-muted">Eingegangen</span><span>@Model.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</span></div>

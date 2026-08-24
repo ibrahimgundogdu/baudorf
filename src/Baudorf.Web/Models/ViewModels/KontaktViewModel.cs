@@ -27,6 +27,22 @@ public class KontaktViewModel
     [Display(Name = "Telefon")]
     public string? Telefon { get; set; }
 
+    [MaxLength(160)]
+    [Display(Name = "Firma")]
+    public string? Firma { get; set; }
+
+    [MaxLength(160)]
+    [Display(Name = "Straße")]
+    public string? Strasse { get; set; }
+
+    [MaxLength(20)]
+    [Display(Name = "Postleitzahl")]
+    public string? Plz { get; set; }
+
+    [MaxLength(120)]
+    [Display(Name = "Ort")]
+    public string? Ort { get; set; }
+
     [Required(ErrorMessage = "Bitte wählen Sie Ihr Anliegen.")]
     [Display(Name = "Ich interessiere mich als")]
     public InterestType Interesse { get; set; }

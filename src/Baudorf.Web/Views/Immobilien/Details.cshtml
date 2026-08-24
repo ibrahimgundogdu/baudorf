@@ -30,6 +30,7 @@
         PropertyStatus.Verfuegbar => "#2F6B4F",
         PropertyStatus.Reserviert => "#96773A",
         PropertyStatus.Verkauft => "#5C5550",
+        PropertyStatus.Vorankuendigung => "#3A5A96",
         _ => "#181614"
     };
 }
@@ -92,6 +93,32 @@
             <span class="hx-dmain__art">@p.Art.Label() · @(string.IsNullOrWhiteSpace(p.Region) ? p.Land : p.Region)</span>
             <h1>@p.Titel</h1>
 
+            @if (!locked && !string.IsNullOrWhiteSpace(p.VideoUrl))
+            {
+                var vurl = p.VideoUrl.Trim();
+                var yt = System.Text.RegularExpressions.Regex.Match(vurl, @"(?:youtube\.com/(?:watch\?v=|shorts/)|youtu\.be/)([\w-]{6,})");
+                var vimeo = System.Text.RegularExpressions.Regex.Match(vurl, @"vimeo\.com/(?:video/)?(\d+)");
+                var isFile = System.Text.RegularExpressions.Regex.IsMatch(vurl, @"\.(mp4|webm|ogg|mov)(\?.*)?$", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                <div class="hx-dvideo">
+                    @if (yt.Success)
+                    {
+                        <div class="hx-dvideo__frame"><iframe src="https://www.youtube-nocookie.com/embed/@yt.Groups[1].Value" title="Video" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+                    }
+                    else if (vimeo.Success)
+                    {
+                        <div class="hx-dvideo__frame"><iframe src="https://player.vimeo.com/video/@vimeo.Groups[1].Value" title="Video" loading="lazy" allow="fullscreen; picture-in-picture" allowfullscreen></iframe></div>
+                    }
+                    else if (isFile)
+                    {
+                        <video class="hx-dvideo__file" controls preload="metadata" src="@vurl"></video>
+                    }
+                    else
+                    {
+                        <a class="hx-btn hx-btn--ink" href="@vurl" target="_blank" rel="noopener">&#9654;&nbsp; Video ansehen</a>
+                    }
+                </div>
+            }
+
             @if (locked)
             {
                 <div class="hx-dgate" data-reveal>
@@ -124,6 +151,7 @@
                 else
                 {
                     @if (p.Wohnflaeche.HasValue) { <div><dt>Wohnfläche</dt><dd>@DisplayHelpers.FlaecheText(p.Wohnflaeche)</dd></div> }
+                    @if (p.Gewerbeflaeche.HasValue) { <div><dt>Gewerbefläche</dt><dd>@DisplayHelpers.FlaecheText(p.Gewerbeflaeche)</dd></div> }
                     @if (p.Grundstuecksflaeche.HasValue) { <div><dt>Grundstück / GF</dt><dd>@DisplayHelpers.FlaecheText(p.Grundstuecksflaeche)</dd></div> }
                     @if (p.Baujahr.HasValue) { <div><dt>Baujahr</dt><dd>@p.Baujahr</dd></div> }
                     @if (p.Einheiten.HasValue) { <div><dt>Einheiten</dt><dd>@p.Einheiten</dd></div> }

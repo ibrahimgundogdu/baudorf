@@ -274,3 +274,13 @@
 }
 
 
+
+/* Testimonial-Rotator (mehrere Stimmen, automatisch wechselnd) */
+.hx-testi__stage { display: grid; }
+.hx-testi__stage .hx-testi__row { grid-area: 1 / 1; opacity: 0; transition: opacity .6s ease; pointer-events: none; }
+.hx-testi__stage .hx-testi__row.is-active { opacity: 1; pointer-events: auto; }
+.hx-testi__dots { display: flex; gap: 8px; justify-content: center; margin-top: 26px; }
+.hx-testi__dot { width: 8px; height: 8px; border-radius: 50%; border: 0; background: rgba(24,22,20,.2); cursor: pointer; padding: 0; transition: .3s; }
+.hx-testi__dot:hover { background: rgba(24,22,20,.4); }
+.hx-testi__dot.is-on { background: var(--bd-gold); width: 22px; border-radius: 4px; }
+@media (prefers-reduced-motion: reduce) { .hx-testi__stage .hx-testi__row { transition: none; } }

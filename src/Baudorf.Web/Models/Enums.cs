@@ -19,7 +19,8 @@ public enum PropertyStatus
     OffMarket = 0,
     Verfuegbar = 1,
     Reserviert = 2,
-    Verkauft = 3
+    Verkauft = 3,
+    Vorankuendigung = 4   // "Coming Soon" / Vorankündigung
 }
 
 /// <summary>Medientyp einer Property.</summary>

@@ -12,6 +12,12 @@ public class Lead
     [Required, EmailAddress, MaxLength(200)] public string Email { get; set; } = string.Empty;
     [MaxLength(60)] public string? Telefon { get; set; }
 
+    // Anschrift (v. a. bei Objektanfragen erhoben)
+    [MaxLength(160)] public string? Firma { get; set; }
+    [MaxLength(160)] public string? Strasse { get; set; }
+    [MaxLength(20)] public string? Plz { get; set; }
+    [MaxLength(120)] public string? Ort { get; set; }
+
     public InterestType Interesse { get; set; }
 
     [Required, MaxLength(4000)] public string Nachricht { get; set; } = string.Empty;

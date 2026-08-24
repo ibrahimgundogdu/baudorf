@@ -7,6 +7,7 @@
         PropertyStatus.Verfuegbar => "#2F6B4F",
         PropertyStatus.Reserviert => "#96773A",
         PropertyStatus.Verkauft => "#5C5550",
+        PropertyStatus.Vorankuendigung => "#3A5A96",
         _ => "#181614"
     };
 }
@@ -281,7 +282,7 @@
                 <div class="hx-ueber__intro" data-reveal>
                     <div class="hx-eyebrow"><span>@ueber.Overline</span></div>
                     <h2>@andrea.Name</h2>
-                    @if (!string.IsNullOrWhiteSpace(andrea.Rolle)) { <p class="hx-ueber__role">@andrea.Rolle</p> }
+                    @if (!string.IsNullOrWhiteSpace(andrea.Rolle)) { <p class="hx-ueber__role">@andrea.Rolle.RoleLines()</p> }
                     <div class="hx-ueber__bio hx-prose">
                         @if ((andrea.Bio ?? "").Contains('<'))
                         {
@@ -322,7 +323,7 @@
                 <div class="hx-ayla" data-reveal>
                     @if (!string.IsNullOrWhiteSpace(ayla.FotoUrl)) { <img src="@ayla.FotoUrl" alt="@ayla.Name" /> }
                     <div class="hx-ayla__body">
-                        <span>@ayla.Rolle</span>
+                        <span>@ayla.Rolle.RoleLines()</span>
                         <h3>@ayla.Name</h3>
                         @if (!string.IsNullOrWhiteSpace(ayla.Bio))
                         {
@@ -339,8 +340,16 @@
     var zahlen = Model.Sec("zahlen");
     var testi = Model.Sec("testimonial");
     var hasZahlen = zahlen is not null && zahlen.Items.Any();
+    var testiItems = testi is null
+        ? new List<Baudorf.Web.Models.Entities.HomeSectionItem>()
+        : (testi.Items.Any()
+            ? testi.Items.OrderBy(i => i.Reihenfolge).ToList()
+            : (!string.IsNullOrWhiteSpace(testi.Text)
+                ? new List<Baudorf.Web.Models.Entities.HomeSectionItem> { new() { Text = testi.Text, Titel = testi.Titel } }
+                : new List<Baudorf.Web.Models.Entities.HomeSectionItem>()));
+    var hasTesti = testiItems.Count > 0;
 }
-@if (hasZahlen || testi is not null)
+@if (hasZahlen || hasTesti)
 {
     <section id="bd-stats" class="hx-sec hx-sec--band">
         <div class="hx-wrap">
@@ -357,16 +366,31 @@
                     }
                 </div>
             }
-            @if (testi is not null)
+            @if (hasTesti)
             {
-                <div class="hx-testi @(hasZahlen ? "" : "hx-testi--solo")" data-reveal>
-                    <div class="hx-testi__row">
-                        <div class="hx-testi__quote">
-                            <span class="hx-testi__mark">&ldquo;</span>
-                            <p>@testi.Text</p>
-                            <p class="hx-testi__who">@testi.Titel</p>
-                        </div>
+                <div class="hx-testi @(hasZahlen ? "" : "hx-testi--solo")" data-reveal data-testi-rotator>
+                    <div class="hx-testi__stage">
+                        @for (var i = 0; i < testiItems.Count; i++)
+                        {
+                            var t = testiItems[i];
+                            <div class="hx-testi__row @(i == 0 ? "is-active" : "")" data-testi-slide>
+                                <div class="hx-testi__quote">
+                                    <span class="hx-testi__mark">&ldquo;</span>
+                                    <p>@t.Text</p>
+                                    <p class="hx-testi__who">@t.Titel</p>
+                                </div>
+                            </div>
+                        }
                     </div>
+                    @if (testiItems.Count > 1)
+                    {
+                        <div class="hx-testi__dots">
+                            @for (var i = 0; i < testiItems.Count; i++)
+                            {
+                                <button type="button" class="hx-testi__dot @(i == 0 ? "is-on" : "")" data-testi-dot="@i" aria-label="Stimme @(i + 1)"></button>
+                            }
+                        </div>
+                    }
                 </div>
             }
         </div>

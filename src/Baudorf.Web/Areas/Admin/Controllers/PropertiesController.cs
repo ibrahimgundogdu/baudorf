@@ -73,10 +73,11 @@ public class PropertiesController(ApplicationDbContext db, IStorageService stora
         p.Titel = model.Titel; p.Slug = model.Slug; p.Art = model.Art; p.Status = model.Status;
         p.Region = model.Region; p.Land = model.Land; p.AdresseIntern = model.AdresseIntern;
         p.Lat = model.Lat; p.Lng = model.Lng;
-        p.Wohnflaeche = model.Wohnflaeche; p.Grundstuecksflaeche = model.Grundstuecksflaeche;
+        p.Wohnflaeche = model.Wohnflaeche; p.Gewerbeflaeche = model.Gewerbeflaeche;
+        p.Grundstuecksflaeche = model.Grundstuecksflaeche;
         p.Baujahr = model.Baujahr; p.Zustand = model.Zustand; p.Energieklasse = model.Energieklasse;
         p.Einheiten = model.Einheiten; p.Faktor = model.Faktor; p.RenditeProzent = model.RenditeProzent;
-        p.Kaufpreis = model.Kaufpreis; p.Beschreibung = model.Beschreibung;
+        p.Kaufpreis = model.Kaufpreis; p.Beschreibung = model.Beschreibung; p.VideoUrl = model.VideoUrl;
         p.IstOffMarket = model.IstOffMarket; p.IstFeatured = model.IstFeatured; p.IstVeroeffentlicht = model.IstVeroeffentlicht;
         p.MetaTitle = model.MetaTitle; p.MetaDescription = model.MetaDescription;
         p.UpdatedAt = DateTimeOffset.UtcNow;

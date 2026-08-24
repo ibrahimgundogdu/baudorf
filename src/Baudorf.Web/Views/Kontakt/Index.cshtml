@@ -66,6 +66,26 @@
                             <span asp-validation-for="Telefon"></span>
                         </div>
                     </div>
+                    <div class="hx-frow">
+                        <div class="hx-field">
+                            <label asp-for="Firma">Firma</label>
+                            <input asp-for="Firma" autocomplete="organization" />
+                        </div>
+                        <div class="hx-field">
+                            <label asp-for="Strasse">Straße</label>
+                            <input asp-for="Strasse" autocomplete="street-address" />
+                        </div>
+                    </div>
+                    <div class="hx-frow">
+                        <div class="hx-field">
+                            <label asp-for="Plz">Postleitzahl</label>
+                            <input asp-for="Plz" autocomplete="postal-code" />
+                        </div>
+                        <div class="hx-field">
+                            <label asp-for="Ort">Ort</label>
+                            <input asp-for="Ort" autocomplete="address-level2" />
+                        </div>
+                    </div>
                     <div class="hx-field">
                         <label asp-for="Interesse">Ich interessiere mich als</label>
                         <select asp-for="Interesse">

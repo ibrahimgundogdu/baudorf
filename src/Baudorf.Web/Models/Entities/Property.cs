@@ -27,6 +27,7 @@ public class Property
 
     // Kennzahlen
     public double? Wohnflaeche { get; set; }          // m²
+    public double? Gewerbeflaeche { get; set; }       // m² (Gewerbefläche / commercial space)
     public double? Grundstuecksflaeche { get; set; }  // m²
     public int? Baujahr { get; set; }
     [MaxLength(80)] public string? Zustand { get; set; }
@@ -39,6 +40,10 @@ public class Property
     public decimal? Kaufpreis { get; set; }
 
     public string? Beschreibung { get; set; }  // rich text / html
+
+    /// <summary>Optionaler Video-Link (Instagram-Reel, YouTube, Vimeo oder hochgeladene Datei
+    /// aus der Mediathek). Wird auf der Detailseite eingebettet bzw. als Button angezeigt.</summary>
+    [MaxLength(500)] public string? VideoUrl { get; set; }
 
     // Gating & Sichtbarkeit
     public bool IstOffMarket { get; set; }

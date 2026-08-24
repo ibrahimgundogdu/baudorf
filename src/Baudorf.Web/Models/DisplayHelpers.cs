@@ -27,6 +27,7 @@ public static class DisplayHelpers
         PropertyStatus.Verfuegbar => "Verfügbar",
         PropertyStatus.Reserviert => "Reserviert",
         PropertyStatus.Verkauft => "Verkauft",
+        PropertyStatus.Vorankuendigung => "Vorankündigung",
         _ => status.ToString()
     };
 
@@ -84,7 +85,9 @@ public static class DisplayHelpers
         p.Faktor = null;
         p.RenditeProzent = null;
         p.Wohnflaeche = null;
+        p.Gewerbeflaeche = null;
         p.Grundstuecksflaeche = null;
+        p.VideoUrl = null;
         p.Baujahr = null;
         p.Einheiten = null;
         p.Energieklasse = null;
@@ -95,6 +98,18 @@ public static class DisplayHelpers
         p.Lng = null;
         p.MetaDescription = null;
         p.Medien = new List<PropertyMedia>();
+    }
+
+    /// <summary>
+    /// Rendert eine Team-Rolle mit Zeilenumbrüchen: eigene Zeilenumbrüche werden zu &lt;br&gt;,
+    /// und ein "Dipl.-Ing. …"-Zusatz kommt automatisch auf eine neue Zeile.
+    /// </summary>
+    public static Microsoft.AspNetCore.Html.IHtmlContent RoleLines(this string? rolle)
+    {
+        if (string.IsNullOrWhiteSpace(rolle)) return Microsoft.AspNetCore.Html.HtmlString.Empty;
+        var enc = System.Net.WebUtility.HtmlEncode(rolle).Replace("\n", "<br />");
+        enc = System.Text.RegularExpressions.Regex.Replace(enc, @"\s+(Dipl\.\-?\s?Ing\.)", "<br />$1");
+        return new Microsoft.AspNetCore.Html.HtmlString(enc);
     }
 
     /// <summary>Cover-URL oder null (View rendert dann einen Marken-Platzhalter).</summary>

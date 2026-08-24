@@ -88,6 +88,10 @@ public class KontaktController(
             Nachname = vm.Nachname.Trim(),
             Email = vm.Email.Trim(),
             Telefon = vm.Telefon?.Trim(),
+            Firma = vm.Firma?.Trim(),
+            Strasse = vm.Strasse?.Trim(),
+            Plz = vm.Plz?.Trim(),
+            Ort = vm.Ort?.Trim(),
             Interesse = vm.Interesse,
             Nachricht = vm.Nachricht.Trim(),
             PropertyId = propertyId,
@@ -119,6 +123,8 @@ public class KontaktController(
                 <p><strong>Name:</strong> {WebUtility.HtmlEncode(lead.Vorname)} {WebUtility.HtmlEncode(lead.Nachname)}</p>
                 <p><strong>E-Mail:</strong> {WebUtility.HtmlEncode(lead.Email)}</p>
                 <p><strong>Telefon:</strong> {WebUtility.HtmlEncode(lead.Telefon ?? "—")}</p>
+                <p><strong>Firma:</strong> {WebUtility.HtmlEncode(lead.Firma ?? "—")}</p>
+                <p><strong>Anschrift:</strong> {WebUtility.HtmlEncode(lead.Strasse ?? "—")}, {WebUtility.HtmlEncode(lead.Plz ?? "")} {WebUtility.HtmlEncode(lead.Ort ?? "")}</p>
                 <p><strong>Interesse:</strong> {WebUtility.HtmlEncode(lead.Interesse.Label())}</p>
                 {objektZeile}
                 <p><strong>Nachricht:</strong><br />{WebUtility.HtmlEncode(lead.Nachricht).Replace("\n", "<br />")}</p>

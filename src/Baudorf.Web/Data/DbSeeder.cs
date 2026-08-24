@@ -102,7 +102,22 @@ public static class DbSeeder
         // (ohne Design-Version zu erhöhen → andere Admin-Inhalte bleiben unberührt).
         await SeedUeberStatsAsync(db);
         await SeedRedirectsAsync(db);
+        await SeedTestimonialItemAsync(db);
         await db.SaveChangesAsync();
+    }
+
+    /// <summary>Einmalig: bestehendes Einzel-Testimonial (Section.Text/Titel) in ein Listenelement
+    /// überführen, damit es beim Umstieg auf mehrere rotierende Stimmen erhalten bleibt.</summary>
+    private static async Task SeedTestimonialItemAsync(ApplicationDbContext db)
+    {
+        var marker = await db.SiteSettings.FirstOrDefaultAsync(s => s.Key == "seed.testimonialItemsV1");
+        if (marker is not null) return;
+
+        var testi = await db.HomeSections.Include(s => s.Items).FirstOrDefaultAsync(s => s.Key == "testimonial");
+        if (testi is not null && testi.Items.Count == 0 && !string.IsNullOrWhiteSpace(testi.Text))
+            testi.Items.Add(new HomeSectionItem { Text = testi.Text, Titel = testi.Titel, Reihenfolge = 0 });
+
+        db.SiteSettings.Add(new SiteSetting { Key = "seed.testimonialItemsV1", Value = "1" });
     }
 
     /// <summary>
