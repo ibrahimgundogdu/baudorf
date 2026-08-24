@@ -26,6 +26,10 @@ public class SiteOptions
     /// <summary>Bing-Webmaster-Bestätigung (msvalidate.01). Optional.</summary>
     public string BingSiteVerification { get; set; } = string.Empty;
 
+    /// <summary>Google-Analytics-4-Mess-ID (z. B. "G-XXXXXXX"). Gesetzt → gtag.js wird eingebunden
+    /// (nur außerhalb von Development, mit Google Consent Mode v2 an die Cookie-Einwilligung gekoppelt).</summary>
+    public string GoogleAnalyticsId { get; set; } = string.Empty;
+
     public ContactOptions Contact { get; set; } = new();
     public List<string> SameAs { get; set; } = [];
 }

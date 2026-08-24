@@ -1,0 +1,62 @@
+@using Baudorf.Web.Models
+@inject Microsoft.Extensions.Options.IOptions<SiteOptions> SiteOpt
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment Env
+@{
+    var gaId = SiteOpt.Value.GoogleAnalyticsId;
+    // Nur in Produktion laden (kein Tracking aus Development/lokalen Tests → keine verfälschten Daten).
+    var analyticsAktiv = !string.IsNullOrWhiteSpace(gaId) && !Env.IsDevelopment();
+}
+@if (analyticsAktiv)
+{
+    <!-- Google Analytics 4 (gtag.js) mit Google Consent Mode v2 -->
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+
+        // DSGVO/Opt-in: standardmäßig ALLES abgelehnt. Erst nach Einwilligung "granted".
+        gtag('consent', 'default', {
+            'ad_storage': 'denied',
+            'ad_user_data': 'denied',
+            'ad_personalization': 'denied',
+            'analytics_storage': 'denied',
+            'functionality_storage': 'granted',
+            'security_storage': 'granted',
+            'wait_for_update': 500
+        });
+
+        // Bereits erteilte Einwilligung (Cookie "bd_consent") sofort berücksichtigen.
+        (function () {
+            try {
+                var m = document.cookie.match(/(?:^|;\s*)bd_consent=([^;]*)/);
+                var cats = m ? decodeURIComponent(m[1]).split(',') : [];
+                var stats = cats.indexOf('statistics') !== -1 ? 'granted' : 'denied';
+                var ads = cats.indexOf('marketing') !== -1 ? 'granted' : 'denied';
+                if (stats === 'granted' || ads === 'granted') {
+                    gtag('consent', 'update', {
+                        'analytics_storage': stats,
+                        'ad_storage': ads,
+                        'ad_user_data': ads,
+                        'ad_personalization': ads
+                    });
+                }
+            } catch (e) { }
+        })();
+
+        // Auf spätere Einwilligungsänderungen aus dem Cookie-Banner reagieren (site.js sendet "bd-consent").
+        window.addEventListener('bd-consent', function (e) {
+            var cats = (e && e.detail) || [];
+            var stats = cats.indexOf('statistics') !== -1 ? 'granted' : 'denied';
+            var ads = cats.indexOf('marketing') !== -1 ? 'granted' : 'denied';
+            gtag('consent', 'update', {
+                'analytics_storage': stats,
+                'ad_storage': ads,
+                'ad_user_data': ads,
+                'ad_personalization': ads
+            });
+        });
+
+        gtag('js', new Date());
+        gtag('config', '@gaId');
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=@gaId"></script>
+}
