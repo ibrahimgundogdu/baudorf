@@ -51,6 +51,19 @@
                 </button>
             </form>
         }
+
+        @if (!Model.Rollen.Contains("Admin"))
+        {
+            <h3 style="margin-top:1.6rem;">Konto</h3>
+            <form method="post" asp-action="Delete" asp-route-id="@Model.User.Id"
+                  onsubmit="return confirm('Diesen Benutzer endgültig löschen? Das kann nicht rückgängig gemacht werden.');">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="bd-btn bd-btn--danger bd-btn--sm">Benutzer löschen</button>
+            </form>
+            <p class="bd-muted" style="font-size:.82rem;margin-top:.4rem;">
+                Löscht das Konto samt Merkliste. Protokoll-Einträge bleiben anonymisiert erhalten.
+            </p>
+        }
     </div>
 
     <div class="bd-panel">

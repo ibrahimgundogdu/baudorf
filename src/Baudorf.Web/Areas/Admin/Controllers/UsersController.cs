@@ -79,6 +79,40 @@ public class UsersController(
         TempData["Success"] = "Rollen aktualisiert.";
         return RedirectToAction(nameof(Details), new { id });
     }
+
+    /// <summary>
+    /// Benutzer endgültig löschen (z. B. Testkonten). Sicherheitsgrenzen: das eigene Konto und
+    /// Administrator-Konten sind ausgenommen. Favoriten werden mitgelöscht, Log-Einträge bleiben
+    /// (UserId → null), damit die Statistik konsistent bleibt.
+    /// </summary>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(string id)
+    {
+        var u = await userMgr.FindByIdAsync(id);
+        if (u is null) return NotFound();
+
+        if (u.Id == userMgr.GetUserId(User))
+        {
+            TempData["Error"] = "Sie können Ihr eigenes Konto nicht löschen.";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+        if (await userMgr.IsInRoleAsync(u, Roles.Admin))
+        {
+            TempData["Error"] = "Administrator-Konten können hier nicht gelöscht werden.";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
+        var res = await userMgr.DeleteAsync(u);
+        if (!res.Succeeded)
+        {
+            TempData["Error"] = "Löschen fehlgeschlagen: " + string.Join("; ", res.Errors.Select(e => e.Description));
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
+        TempData["Success"] = $"Benutzer {u.Email} wurde gelöscht.";
+        return RedirectToAction(nameof(Index));
+    }
 }
 
 public class UserRowViewModel
