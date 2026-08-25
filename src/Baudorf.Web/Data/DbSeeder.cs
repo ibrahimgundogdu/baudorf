@@ -640,7 +640,11 @@ public static class DbSeeder
             }
         };
 
-        var vorhanden = await db.Properties.Select(p => p.Slug).ToListAsync();
+        // WICHTIG: IgnoreQueryFilters — sonst zählen per Soft-Delete (Papierkorb) entfernte
+        // Seed-Objekte als "fehlend" und werden erneut eingefügt → Duplicate-Key auf dem
+        // eindeutigen Slug-Index → App-Start-Crash (500.30). Der Unique-Index umfasst auch
+        // soft-deleted Zeilen, daher muss die Prüfung sie mitzählen.
+        var vorhanden = await db.Properties.IgnoreQueryFilters().Select(p => p.Slug).ToListAsync();
         var neue = saat.Where(s => !vorhanden.Contains(s.Slug)).ToList();
         if (neue.Count > 0)
             db.Properties.AddRange(neue);
