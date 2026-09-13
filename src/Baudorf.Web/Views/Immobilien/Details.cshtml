@@ -44,6 +44,12 @@
         {
             <img src="@cover" alt="@p.Titel" data-gallery-main @(locked ? "" : Html.Raw("style=\"cursor:zoom-in\"")) />
         }
+        else if (locked)
+        {
+            @* Off-Market: dunkler Marken-Hintergrund statt „Foto folgt" — die Sperr-Overlay
+               darüber erklärt den Grund. *@
+            <span class="hx-dgallery__offm"><img src="~/img/brand/baudorf-emblem-gold.png" alt="" /></span>
+        }
         else
         {
             <span class="hx-dgallery__ph"><img src="~/img/brand/baudorf-emblem-ink.png" alt="" /></span>
@@ -197,7 +203,8 @@
                 }
                 else
                 {
-                    <a class="hx-btn hx-btn--gold" asp-controller="Kontakt" asp-action="Index" asp-route-objekt="@p.Slug">Vertraulich anfragen</a>
+                    @* Off-Market → vertrauliche Anfrage; öffentlich gelistete Objekte → Exposé. *@
+                    <a class="hx-btn hx-btn--gold" asp-controller="Kontakt" asp-action="Index" asp-route-objekt="@p.Slug">@(p.IstOffMarket ? "Vertrauliche Anfrage" : "Exposé anfordern")</a>
                 }
                 <a class="hx-btn hx-btn--outline-dark" href="tel:+4901778387898">Andrea Krüger anrufen</a>
                 <a class="hx-btn hx-btn--outline-dark" asp-controller="WhatsApp" asp-action="Chat" asp-route-objekt="@p.Id" target="_blank" rel="noopener">Per WhatsApp anfragen</a>

@@ -640,3 +640,11 @@ h1, h2, h3 {
 .bd-mp__foot { display: flex; align-items: center; justify-content: flex-end; gap: 14px; padding: 12px 18px; border-top: 1px solid var(--line); background: var(--parch); }
 .bd-mp__foot[hidden] { display: none; }
 .bd-mp__count { font-size: 13px; color: var(--stone); }
+
+/* Mobil: Rechtslinks im Footer umbrechen lassen. Ohne das ragt „Cookie-Einstellungen"
+   über den Viewport hinaus (405px statt 390px) und die ganze Seite lässt sich
+   seitlich verschieben — das wirkt auf dem Handy wie ein defektes Layout. */
+@media (max-width: 560px) {
+    .bd-footer__legal { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .bd-footer__legal nav { flex-wrap: wrap; gap: 10px 18px; }
+}

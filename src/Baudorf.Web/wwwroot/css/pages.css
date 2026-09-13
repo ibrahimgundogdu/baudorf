@@ -349,3 +349,47 @@ main > h1 { margin-top: 48px; }
 /* "Mehr laden"-Button (Immobilien-Liste) */
 .hx-loadmore { display: flex; justify-content: center; margin-top: -30px; padding-bottom: clamp(70px,9vw,110px); }
 .hx-loadmore .hx-btn[disabled] { opacity: .6; cursor: default; }
+
+/* ==========================================================================
+   Off-Market-Kachel — bewusst gestaltet statt leerer „Bild fehlt"-Fläche.
+   Bilder werden serverseitig zurückgehalten; die Kachel soll trotzdem
+   hochwertig wirken, nicht defekt.
+   ========================================================================== */
+.hx-lcard__offm { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 18px; text-align: center; background: linear-gradient(155deg, #1d1b19 0%, var(--ink) 55%, #2a2724 100%); }
+.hx-lcard__offm img { width: 52px; height: auto; opacity: .9; display: block; }
+.hx-lcard__offm em { font: 600 10px/1 var(--font); letter-spacing: .22em; text-transform: uppercase; color: var(--bd-gold); font-style: normal; }
+.hx-lcard__offm small { font: 300 11px/1.4 var(--font); color: rgba(253,252,250,.5); }
+
+.hx-dgallery__offm { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: linear-gradient(155deg, #1d1b19 0%, var(--ink) 55%, #2a2724 100%); }
+.hx-dgallery__offm img { width: min(120px, 22%); height: auto; opacity: .75; }
+
+/* Karten, die auf Mobil erst nach „Mehr laden" erscheinen. */
+.hx-lcard.is-hidden-mobile { display: none; }
+/* WICHTIG: display:flex der Regel oben würde sonst das hidden-Attribut überstimmen. */
+.hx-loadmore[hidden] { display: none; }
+
+/* ==========================================================================
+   Mobil kompakter — kleinere Überschriften, engere Abstände, weniger Scrollen
+   ========================================================================== */
+@media (max-width: 560px) {
+    /* Listenseite */
+    .hx-pagehead { padding: 40px 0 34px; }
+    .hx-pagehead h1 { font-size: clamp(34px,10vw,46px); }
+    .hx-pagehead p { margin-top: 14px; font-size: 15px; }
+    .hx-filter { margin-top: 22px; padding: 16px; gap: 14px 20px; border-radius: 14px; }
+    .hx-list { padding: 26px 0 34px; gap: 20px; }
+    .hx-lcard__body { padding: 18px 18px 20px; }
+    .hx-lcard__name { margin: 10px 0 14px; font-size: 21px; }
+    .hx-lcard__specs { padding-bottom: 14px; margin-bottom: 14px; }
+    .hx-loadmore { margin-top: 0; padding-bottom: 44px; }
+
+    /* Detailseite — Überschriften kleiner, Abschnittsabstände enger */
+    .hx-dtop { padding-top: 18px; }
+    .hx-dgallery { margin-top: 16px; border-radius: 10px; }
+    .hx-dbody { padding: 26px 0 40px; gap: 26px; }
+    .hx-dmain h1 { margin-top: 12px; font-size: clamp(25px,7vw,32px); line-height: 1.1; }
+    .hx-dmain h2 { margin-top: 26px; }
+    .hx-dgate h2 { font-size: 21px; }
+    .hx-daside .hx-btn { padding: 15px; margin-top: 9px; }
+    .hx-daside__note { padding: 16px 18px; }
+}

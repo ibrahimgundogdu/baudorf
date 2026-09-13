@@ -19,6 +19,16 @@
             {
                 <img src="@cover" alt="@p.Titel" loading="lazy" />
             }
+            else if (locked)
+            {
+                @* Off-Market: Bilder werden serverseitig zurückgehalten — statt leerer Kachel
+                   eine bewusst gestaltete Marken-Kachel (diskret statt „Bild fehlt"). *@
+                <span class="hx-lcard__offm">
+                    <img src="~/img/brand/baudorf-emblem-gold.png" alt="" />
+                    <em>Off-Market</em>
+                    <small>Bilder nach Freigabe</small>
+                </span>
+            }
             else
             {
                 <span class="hx-lcard__ph"><img src="~/img/brand/baudorf-emblem-ink.png" alt="" /></span>

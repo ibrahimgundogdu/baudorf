@@ -305,12 +305,70 @@
           const tmp = document.createElement("div");
           tmp.innerHTML = html;
           while (tmp.firstElementChild) grid.appendChild(tmp.firstElementChild);
+          // Neue Karten müssen auf Mobil ebenfalls schrittweise erscheinen.
+          grid.dispatchEvent(new CustomEvent("bd:cards-added"));
           if (next >= total) { if (loadMoreBtn.parentElement) loadMoreBtn.parentElement.remove(); }
           else { loadMoreBtn.dataset.nextPage = String(next + 1); loadMoreBtn.disabled = false; loadMoreBtn.textContent = orig; }
         })
         .catch(function () { loadMoreBtn.disabled = false; loadMoreBtn.textContent = orig; });
     });
   }
+
+  // ---------- Mobil: Liste schrittweise anzeigen (8er-Schritte) ----------
+  // Auf dem Handy sind 20+ Karten am Stück eine endlose Scrollstrecke. Wir zeigen
+  // zunächst 8 und blenden per "Mehr laden" jeweils 8 weitere ein. Am Desktop
+  // bleibt die Liste unverändert.
+  (function () {
+    const grid = document.getElementById("hxList");
+    if (!grid) return;
+
+    const STEP = 8;
+    const mq = window.matchMedia("(max-width: 560px)");
+    let shown = STEP;
+    let wrap = null;
+
+    function cards() {
+      return Array.prototype.slice.call(grid.querySelectorAll(".hx-lcard"));
+    }
+
+    function ensureWrap() {
+      if (wrap) return wrap;
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "hx-btn hx-btn--outline-dark";
+      btn.textContent = "Mehr laden";
+      btn.addEventListener("click", function () { shown += STEP; apply(); });
+      wrap = document.createElement("div");
+      wrap.className = "hx-loadmore";
+      wrap.setAttribute("data-mobile-more", "");
+      wrap.appendChild(btn);
+      grid.parentNode.insertBefore(wrap, grid.nextSibling);
+      return wrap;
+    }
+
+    function apply() {
+      const list = cards();
+      const mobile = mq.matches;
+      list.forEach(function (c, i) {
+        c.classList.toggle("is-hidden-mobile", mobile && i >= shown);
+      });
+
+      const more = mobile && list.length > shown;
+      if (more) ensureWrap().hidden = false;
+      else if (wrap) wrap.hidden = true;
+
+      // Der serverseitige "Mehr laden" (nächste Seite) erscheint erst, wenn auf
+      // dem Handy bereits alles Geladene sichtbar ist.
+      const server = document.querySelector("[data-load-more]");
+      if (server && server.parentElement) server.parentElement.hidden = more;
+    }
+
+    apply();
+    grid.addEventListener("bd:cards-added", apply);
+    const onChange = function () { shown = STEP; apply(); };
+    if (mq.addEventListener) mq.addEventListener("change", onChange);
+    else if (mq.addListener) mq.addListener(onChange);
+  })();
 
   // ---------- Testimonial-Rotator (mehrere Stimmen, automatisch wechselnd) ----------
   document.querySelectorAll("[data-testi-rotator]").forEach((root) => {
