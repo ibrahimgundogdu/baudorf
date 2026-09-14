@@ -393,3 +393,8 @@ main > h1 { margin-top: 48px; }
     .hx-daside .hx-btn { padding: 15px; margin-top: 9px; }
     .hx-daside__note { padding: 16px 18px; }
 }
+
+/* Gesperrte Eckdaten ("🔒 nach Freigabe"): erbte bisher die 24px der Faktor-Zahl —
+   dadurch war das Schloss-Emoji überdimensioniert und der Text brach neben dem
+   "Freischalten"-Button unschön um. Eigene, ruhigere Größe. */
+.hx-lcard__faktor b.hx-lcard__gated { font: 400 13px/1.35 var(--font); color: #8a847d; display: inline-flex; align-items: center; gap: 6px; }

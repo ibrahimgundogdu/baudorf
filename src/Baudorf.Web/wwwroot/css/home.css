@@ -286,3 +286,10 @@
 .hx-testi__dot:hover { background: rgba(24,22,20,.4); }
 .hx-testi__dot.is-on { background: var(--bd-gold); width: 22px; border-radius: 4px; }
 @media (prefers-reduced-motion: reduce) { .hx-testi__stage .hx-testi__row { transition: none; } }
+
+/* Mobil: Die seitlichen Hero-Pfeile lagen über dem Hero-Text (sie verdeckten den
+   Anfang des Absatzes). Auf kleinen Screens genügen die Punkte unten plus der
+   automatische Wechsel — daher ausblenden statt überlagern. */
+@media (max-width: 640px) {
+    .hx-hero__nav { display: none; }
+}

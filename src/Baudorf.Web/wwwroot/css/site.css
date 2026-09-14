@@ -458,7 +458,9 @@ h1, h2, h3 {
 .bd-nav__burger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 6px; background: none; border: 0; position: absolute; left: clamp(18px,4vw,40px); top: 50%; transform: translateY(-50%); }
 .bd-nav__burger span { width: 26px; height: 1.5px; background: var(--parch); display: block; }
 .bd-nav__burger span:last-child { width: 18px; background: var(--accent); }
-.bd-mobile { position: fixed; inset: 0; z-index: 95; background: var(--bg); display: none; flex-direction: column; padding: 30px clamp(22px,6vw,48px); }
+/* z-index über der Navileiste (90) und dem WhatsApp-Button; overflow-y, damit das
+   Menü auf kleinen Geräten scrollbar bleibt statt Inhalte abzuschneiden. */
+.bd-mobile { position: fixed; inset: 0; z-index: 120; background: var(--bg); display: none; flex-direction: column; padding: 30px clamp(22px,6vw,48px); overflow-y: auto; -webkit-overflow-scrolling: touch; }
 .bd-mobile.is-open { display: flex; }
 .bd-mobile__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 60px; }
 .bd-mobile__close { font: 300 34px/1 var(--font); color: var(--ink); cursor: pointer; background: none; border: 0; }
