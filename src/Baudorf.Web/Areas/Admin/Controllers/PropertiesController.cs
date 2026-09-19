@@ -71,7 +71,7 @@ public class PropertiesController(ApplicationDbContext db, IStorageService stora
 
         // Felder übernehmen
         p.Titel = model.Titel; p.Slug = model.Slug; p.ArtKey = model.ArtKey; p.Status = model.Status;
-        p.Region = model.Region; p.Land = model.Land; p.AdresseIntern = model.AdresseIntern;
+        p.Region = model.Region; p.Land = model.Land; p.AdresseIntern = model.AdresseIntern; p.AdresseOeffentlich = model.AdresseOeffentlich;
         p.Lat = model.Lat; p.Lng = model.Lng;
         p.Wohnflaeche = model.Wohnflaeche; p.Gewerbeflaeche = model.Gewerbeflaeche;
         p.Grundstuecksflaeche = model.Grundstuecksflaeche;

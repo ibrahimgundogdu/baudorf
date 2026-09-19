@@ -55,9 +55,16 @@
             <span class="hx-dgallery__ph"><img src="~/img/brand/baudorf-emblem-ink.png" alt="" /></span>
         }
         <span class="hx-dgallery__badge" style="background:@BadgeBg(p.Status)">@p.Status.Label()</span>
-        @if (locked)
+        @if (locked && cover == null)
         {
+            @* Kein Titelbild vorhanden → volle Sperrflaeche erklaert den Zustand. *@
             <div class="hx-dgallery__lock"><span style="font-size:1.6rem">&#128274;</span><span>Off-Market — Bilder nach Freigabe</span></div>
+        }
+        else if (locked)
+        {
+            @* Titelbild wird gezeigt → nur ein dezenter Hinweis statt einer Blende,
+               sonst verdeckt die Sperrflaeche genau das Bild, das sichtbar sein soll. *@
+            <span class="hx-dgallery__gatednote">Off-Market — weitere Bilder nach Freigabe</span>
         }
         else if (bilder.Count >= 1)
         {
@@ -176,16 +183,37 @@
             </dl>
 
             <h2>Lage</h2>
-            <p class="hx-dmain__lead" style="margin-top:14px">Aus Diskretionsgründen zeigen wir nur die ungefähre Region. Die exakte Adresse erhalten vorgemerkte Investoren nach Freigabe.</p>
+            @* Je Objekt entscheidbar: entweder die genaue Adresse oeffentlich zeigen
+               oder nur die Region nennen (Standard). *@
+            @if (p.AdresseOeffentlich && !string.IsNullOrWhiteSpace(p.AdresseIntern))
+            {
+                <p class="hx-dmain__lead" style="margin-top:14px">@p.AdresseIntern</p>
+            }
+            else
+            {
+                <p class="hx-dmain__lead" style="margin-top:14px">Aus Diskretionsgründen zeigen wir nur die ungefähre Region. Die exakte Adresse erhalten vorgemerkte Investoren nach Freigabe.</p>
+            }
         </div>
 
         <aside class="hx-daside">
             <div class="hx-daside__card">
                 <span class="hx-daside__lbl">Investment</span>
-                <div class="hx-daside__kpi">
-                    <div><small>Faktor</small><b class="gold">@(locked ? "—" : (p.Faktor?.ToString() ?? "—"))</b></div>
-                    <div><small>Brutto-Rendite</small><b>@(locked ? "—" : (p.RenditeProzent.HasValue ? p.RenditeProzent + " %" : "—"))</b></div>
-                </div>
+                @* Nur zeigen, was tatsaechlich gepflegt ist — leere Kennzahlen sollen gar
+                   nicht erscheinen (frueher stand dort ein "—"). Bei gesperrten Objekten
+                   sind die Werte ohnehin entfernt, dann entfaellt der Block komplett. *@
+                @if (p.Faktor.HasValue || p.RenditeProzent.HasValue)
+                {
+                    <div class="hx-daside__kpi">
+                        @if (p.Faktor.HasValue)
+                        {
+                            <div><small>Faktor</small><b class="gold">@p.Faktor</b></div>
+                        }
+                        @if (p.RenditeProzent.HasValue)
+                        {
+                            <div><small>Brutto-Rendite</small><b>@p.RenditeProzent %</b></div>
+                        }
+                    </div>
+                }
                 <div class="hx-daside__preis">
                     <small>Kaufpreis</small>
                     @if (locked)

@@ -272,7 +272,9 @@
 }
 @media (max-width: 560px) {
   .hx-grid-cards, .hx-mosaic, .hx-insights, .hx-zahlen, .hx-steps { grid-template-columns: 1fr; }
-  .hx-testi > div { flex-direction: column; gap: 24px; }
+  /* Nur die Zitat-Zeile umbrechen. Vorher traf ".hx-testi > div" auch __stage und
+     __dots — dadurch standen die Paginierungspunkte untereinander statt nebeneinander. */
+  .hx-testi__row { flex-direction: column; gap: 24px; }
 }
 
 
@@ -292,4 +294,8 @@
    automatische Wechsel — daher ausblenden statt überlagern. */
 @media (max-width: 640px) {
     .hx-hero__nav { display: none; }
+    /* Der "Scrollen"-Hinweis (zentriert, unten) überlappte auf schmalen Screens den
+       "Über uns"-Button und seine Linie kreuzte die Slide-Punkte. Auf Touch-Geräten
+       ist der Hinweis ohnehin entbehrlich — das schafft zusätzlich Platz. */
+    .hx-hero__scroll { display: none; }
 }

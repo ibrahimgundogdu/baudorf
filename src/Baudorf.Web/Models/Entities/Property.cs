@@ -27,6 +27,11 @@ public class Property
     [MaxLength(160)] public string? Region { get; set; }     // z. B. "Velbert, NRW"
     [MaxLength(80)] public string Land { get; set; } = "Deutschland";
     [MaxLength(260)] public string? AdresseIntern { get; set; } // nur Admin/gating
+    /// <summary>
+    /// Soll die genaue Adresse öffentlich sichtbar sein? Standard: nein (nur Region).
+    /// Wird je Objekt in der Verwaltung entschieden.
+    /// </summary>
+    public bool AdresseOeffentlich { get; set; }
     public double? Lat { get; set; }
     public double? Lng { get; set; }
 

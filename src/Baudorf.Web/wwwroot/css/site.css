@@ -650,3 +650,16 @@ h1, h2, h3 {
     .bd-footer__legal { flex-direction: column; align-items: flex-start; gap: 12px; }
     .bd-footer__legal nav { flex-wrap: wrap; gap: 10px 18px; }
 }
+
+/* Unter 1200px sind .bd-nav__left/.bd-nav__right ausgeblendet. Ohne explizite
+   Spaltenzuweisung rutscht das Logo per Auto-Placement in die ERSTE Rasterspalte
+   und liegt dann unter dem absolut positionierten Burger-Button (überlappte um 36px).
+   Feste Mittelspalte hält das Logo zentriert, egal welche Geschwister ausgeblendet sind. */
+@media (max-width: 1200px) {
+    .bd-nav__brand { grid-column: 2; }
+}
+/* Mobil zusätzlich etwas kompakter — die 66px hohe Wortmarke dominierte den Viewport. */
+@media (max-width: 560px) {
+    .bd-nav__brand img { height: 44px; }
+    .bd-nav.is-scrolled .bd-nav__brand img { height: 38px; }
+}

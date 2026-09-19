@@ -93,11 +93,16 @@ public static class DisplayHelpers
         p.Energieklasse = null;
         p.Zustand = null;
         p.Beschreibung = null;
-        p.AdresseIntern = null;
+        // Adresse nur verbergen, wenn sie nicht ausdrücklich öffentlich geschaltet ist.
+        if (!p.AdresseOeffentlich) p.AdresseIntern = null;
         p.Lat = null;
         p.Lng = null;
         p.MetaDescription = null;
-        p.Medien = new List<PropertyMedia>();
+        // Titelbild bleibt öffentlich sichtbar (Wunsch der Redaktion): nur die übrige
+        // Galerie wird entfernt. Alle Kennzahlen bleiben weiterhin geschützt.
+        var cover = p.Medien.FirstOrDefault(m => m.IstCover && m.Typ == MediaType.Image)
+                    ?? p.Medien.FirstOrDefault(m => m.Typ == MediaType.Image);
+        p.Medien = cover is null ? new List<PropertyMedia>() : new List<PropertyMedia> { cover };
     }
 
     /// <summary>
