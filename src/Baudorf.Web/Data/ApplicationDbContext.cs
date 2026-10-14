@@ -29,6 +29,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Redirect> Redirects => Set<Redirect>();
     public DbSet<NotFoundHit> NotFoundHits => Set<NotFoundHit>();
     public DbSet<LookupOption> LookupOptions => Set<LookupOption>();
+    public DbSet<SocialLink> SocialLinks => Set<SocialLink>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

@@ -80,6 +80,7 @@ builder.Services.AddScoped<IMediaLibrary, MediaLibrary>();
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<IRedirectService, RedirectService>();
 builder.Services.AddSingleton<ILookupService, LookupService>();
+builder.Services.AddSingleton<ISocialLinkService, SocialLinkService>();
 
 // E-Mail: echter SMTP-Versand, sobald "Email:Host" konfiguriert ist (appsettings.Production.json /
 // Umgebungsvariablen). Ohne Host → Log-Only (kein realer Versand). Steuert auch die 2FA-Methode:

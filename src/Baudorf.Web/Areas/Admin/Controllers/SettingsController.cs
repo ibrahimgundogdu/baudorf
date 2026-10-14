@@ -28,9 +28,8 @@ public class SettingsController(ApplicationDbContext db) : Controller
         new("whatsapp.enabled", "WhatsApp-Button anzeigen (true/false)", "WhatsApp"),
         new("whatsapp.number", "WhatsApp-Nummer (international, ohne +)", "WhatsApp"),
         new("whatsapp.message", "Vorausgefüllte Nachricht", "WhatsApp", Multiline: true),
-        new("social.instagram", "Instagram-URL", "Social"),
-        new("social.linkedin", "LinkedIn-URL", "Social"),
-        new("social.youtube", "YouTube-URL", "Social"),
+        // Social-Media-Profile werden seit der Migration "SocialLinks" frei im eigenen
+        // Bereich "Social Media" gepflegt (beliebig viele Plattformen statt drei fester Felder).
     ];
 
     public async Task<IActionResult> Index()

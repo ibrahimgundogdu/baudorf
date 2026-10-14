@@ -1,0 +1,81 @@
+@model List<Baudorf.Web.Models.Entities.SocialLink>
+@{
+    ViewData["Title"] = "Social Media";
+}
+
+<style>
+    /* Eigene Zeilen-Rasterung (mehr Spalten als .bd-item-row) — bewusst hier statt in
+       site.css, damit dieses Feature ohne wwwroot-Deploy auskommt. */
+    .bd-social-row { display: grid; grid-template-columns: 34px 170px 1fr 170px auto auto auto; gap: .6rem; align-items: center; margin-bottom: .6rem; }
+    .bd-social-row input, .bd-social-row select { font-family: inherit; font-size: .88rem; padding: .5rem .6rem; border: 1px solid var(--line2, #DCD5C8); border-radius: 8px; background: var(--white, #fff); min-width: 0; width: 100%; }
+    .bd-social-row__ico { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--linen, #EDE8DF); color: var(--ink, #181614); }
+    .bd-social-row.is-off .bd-social-row__ico { opacity: .35; }
+    .bd-social-row__btns { display: flex; gap: .3rem; }
+    .bd-social-row--add { border-top: 1px dashed var(--line2, #DCD5C8); padding-top: .8rem; margin-top: .4rem; }
+    @@media (max-width: 900px) {
+        .bd-social-row { grid-template-columns: 34px 1fr; }
+        .bd-social-row > :not(.bd-social-row__ico) { grid-column: 2; }
+    }
+</style>
+
+<h2 style="margin:.2rem 0 .2rem">Social Media</h2>
+<p class="bd-muted" style="margin:0 0 1.2rem;font-size:.9rem;">
+    Diese Profile erscheinen als Symbole im Footer der Website. Sie können beliebig viele
+    hinzufügen, sortieren oder vorübergehend deaktivieren. Steht eine Plattform nicht in der
+    Liste, wählen Sie „Andere / Website" — dann erscheint ein neutrales Link-Symbol.
+</p>
+
+<fieldset class="bd-aform">
+    <legend>Profile (@Model.Count)</legend>
+
+    @if (Model.Count == 0)
+    {
+        <p class="bd-muted" style="font-size:.88rem;">Noch keine Profile angelegt.</p>
+    }
+
+    @foreach (var s in Model)
+    {
+        <form method="post" asp-action="Update" asp-route-id="@s.Id" class="bd-social-row @(s.IstAktiv ? "" : "is-off")">
+            @Html.AntiForgeryToken()
+            <span class="bd-social-row__ico" title="@SocialPlatforms.Get(s.Plattform).Name">@Html.Raw(SocialPlatforms.IconSvg(s.Plattform, 18))</span>
+            <select name="plattform" aria-label="Plattform">
+                @foreach (var p in SocialPlatforms.All)
+                {
+                    <option value="@p.Key" selected="@(p.Key == s.Plattform)">@p.Name</option>
+                }
+            </select>
+            <input name="url" value="@s.Url" placeholder="https://…" aria-label="Adresse" />
+            <input name="bezeichnung" value="@s.Bezeichnung" placeholder="Bezeichnung (optional)" aria-label="Bezeichnung" />
+            <label class="bd-checkline" style="white-space:nowrap;">
+                <input type="checkbox" name="istAktiv" value="true" @(s.IstAktiv ? "checked" : "") /> aktiv
+            </label>
+            <button type="submit" class="bd-btn bd-btn--plain bd-btn--xs">Speichern</button>
+            <span class="bd-social-row__btns">
+                <button formaction="@Url.Action("Move", new { id = s.Id })" name="direction" value="-1" class="bd-btn bd-btn--plain bd-btn--xs" title="nach oben">↑</button>
+                <button formaction="@Url.Action("Move", new { id = s.Id })" name="direction" value="1" class="bd-btn bd-btn--plain bd-btn--xs" title="nach unten">↓</button>
+                <button formaction="@Url.Action("Delete", new { id = s.Id })" class="bd-btn bd-btn--danger bd-btn--xs" onclick="return confirm('Profil entfernen?');" title="entfernen">×</button>
+            </span>
+        </form>
+    }
+
+    <form method="post" asp-action="Create" class="bd-social-row bd-social-row--add">
+        @Html.AntiForgeryToken()
+        <span class="bd-social-row__ico">+</span>
+        <select name="plattform" aria-label="Plattform">
+            @foreach (var p in SocialPlatforms.All)
+            {
+                <option value="@p.Key" selected="@(p.Key == "tiktok")">@p.Name</option>
+            }
+        </select>
+        <input name="url" placeholder="https://www.tiktok.com/@@ihrprofil" aria-label="Adresse" required />
+        <input name="bezeichnung" placeholder="Bezeichnung (optional)" aria-label="Bezeichnung" />
+        <span></span>
+        <button type="submit" class="bd-btn bd-btn--ink bd-btn--xs">+ Hinzufügen</button>
+        <span></span>
+    </form>
+</fieldset>
+
+<p class="bd-muted" style="font-size:.82rem;margin-top:1rem;">
+    Hinweis: Es werden nur Webadressen (https://…) angenommen. Fehlt „https://", wird es
+    automatisch ergänzt. Deaktivierte Profile bleiben gespeichert, erscheinen aber nicht auf der Website.
+</p>

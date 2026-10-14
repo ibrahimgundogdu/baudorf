@@ -2,6 +2,7 @@
 @using Baudorf.Web.Services
 @inject Microsoft.Extensions.Options.IOptions<SiteOptions> SiteOpt
 @inject ISiteSettings Settings
+@inject ISocialLinkService Social
 @{
     var site = SiteOpt.Value;
     var req = ViewContext.HttpContext.Request;
@@ -25,12 +26,7 @@
     // --- Site-weites JSON-LD: RealEstateAgent (Organisation) + WebSite ---
     // sameAs = konfigurierte Profile (Site:SameAs) + im Admin gepflegte Social-Links.
     var sameAs = (site.SameAs ?? new List<string>())
-        .Concat(new[]
-        {
-            Settings.Get("social.instagram"),
-            Settings.Get("social.linkedin"),
-            Settings.Get("social.youtube")
-        })
+        .Concat(Social.Active().Select(sl => sl.Url))
         .Where(s => !string.IsNullOrWhiteSpace(s))
         .Distinct()
         .ToList();

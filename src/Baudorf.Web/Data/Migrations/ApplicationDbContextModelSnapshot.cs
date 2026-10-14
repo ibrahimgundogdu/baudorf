@@ -991,6 +991,39 @@ namespace Baudorf.Web.Data.Migrations
                     b.ToTable("SiteSettings");
                 });
 
+            modelBuilder.Entity("Baudorf.Web.Models.Entities.SocialLink", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Bezeichnung")
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<bool>("IstAktiv")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Plattform")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<int>("Reihenfolge")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SocialLinks");
+                });
+
             modelBuilder.Entity("Baudorf.Web.Models.Entities.TeamMember", b =>
                 {
                     b.Property<int>("Id")
